@@ -284,6 +284,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
         NewAttribute.Name.assign ( Name );
         NewAttribute.Type = Type;
         NewAttribute.OpenGLID = Location;
+        NewAttribute.Enabled = false;
         Attributes.push_back ( NewAttribute );
         }
     Result = true;

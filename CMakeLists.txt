@@ -15,7 +15,7 @@ include ( LocalPackage )
 include ( target_warning_options )
 
 set ( LOCAL_PACKAGE_ALLOW_SYSTEM TRUE )
-set ( LOCAL_PACKAGE_INSTALL_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/ThirdParty/${CMAKE_C_COMPILER_ID}/" )
+set ( LOCAL_PACKAGE_INSTALL_LOCATION "${PROJECT_BINARY_DIR}/output/" )
 
 option ( CROSS_RENDERER_BUILD_TESTS "Build renderer tests" TRUE )
 

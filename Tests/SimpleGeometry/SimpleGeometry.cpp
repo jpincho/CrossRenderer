@@ -52,6 +52,7 @@ class SimpleGeometryTest : public TestBase
                 PositionStream.StartOffset = 0;
                 PositionStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Float;
                 PositionStream.ComponentsPerElement = 3;
+                PositionStream.NormalizeData = false;
 
                 TriangleRenderCommand.Shader = TriangleShader;
                 TriangleRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
@@ -115,12 +116,14 @@ class SimpleGeometryTest : public TestBase
                 PositionStream.StartOffset = offsetof ( Vertex, Position );
                 PositionStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Float;
                 PositionStream.ComponentsPerElement = 3;
+                PositionStream.NormalizeData = false;
 
                 TextureStream.BufferHandle = TexturedQuadBuffer;
                 TextureStream.Stride = sizeof ( Vertex );
                 TextureStream.StartOffset = offsetof ( Vertex, TexCoord );
                 TextureStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Float;
                 TextureStream.ComponentsPerElement = 2;
+                TextureStream.NormalizeData = false;
 
                 TexturedQuadRenderCommand.Shader = TexturedQuadShader;
                 TexturedQuadRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
