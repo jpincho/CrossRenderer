@@ -131,7 +131,7 @@ void ProcessEvents ( void )
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP:
                 {
-                if ( Event.key.repeat != 0 ) break;
+                if ( Event.key.repeat != 0 ) continue;
                 NewEvent.EventType = ( Event.type == SDL_MOUSEBUTTONDOWN ? WindowEventType::ButtonPressed : WindowEventType::ButtonReleased );
                 NewEvent.EventData.ButtonPressed.Button = Event.button.button;
                 break;
@@ -139,7 +139,7 @@ void ProcessEvents ( void )
             case SDL_KEYDOWN:
             case SDL_KEYUP:
                 {
-                if ( Event.key.repeat != 0 ) break;
+                if ( Event.key.repeat != 0 ) continue;
                 NewEvent.EventType = ( Event.type == SDL_KEYDOWN ? WindowEventType::KeyPressed : WindowEventType::KeyReleased );
                 NewEvent.EventData.Raw.Data1 = Event.key.keysym.sym;
                 NewEvent.EventData.Raw.Data2 = Event.key.keysym.scancode;
@@ -155,7 +155,7 @@ void ProcessEvents ( void )
                 {
                 SDL_Window *window = SDL_GetWindowFromID ( Event.window.windowID );
                 if ( window == nullptr )
-                    break;
+                    continue;
                 static std::pair <SDL_Window *, RenderWindowHandle> CachedHandle ( 0, RenderWindowHandle() );
                 if ( window != CachedHandle.first )
                     {

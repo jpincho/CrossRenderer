@@ -153,6 +153,10 @@ bool StartFrame ( const RenderWindowHandle &Handle )
     {
     ActiveWindow = Handle;
     CurrentState.SetDefaultViewportSize ( WindowManager::GetWindowSize ( Handle ) );
+    ViewportSettings NewSettings;
+    NewSettings.Set(glm::uvec2 ( 0, 0 ), WindowManager::GetWindowSize ( Handle ));
+    CurrentState.ConfigureViewport( NewSettings );
+
     Context->MakeActive ( Handle );
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     return true;

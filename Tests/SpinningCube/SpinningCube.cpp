@@ -90,7 +90,7 @@ class SpinningCubeTest : public TestBase
                 }
             return true;
             }
-        bool RunFrame ( void )
+        void SpecificDraw ( void )
             {
             glm::quat FaceQuaternions[6] =
                 {
@@ -119,7 +119,6 @@ class SpinningCubeTest : public TestBase
                 glm::mat4 RotationMatrix = glm::toMat4 ( RotationQuat * FaceQuaternions[cont] );// Rotates the face + the cube rotation
                 RenderCommands[cont].UniformValues[0].UniformValue.Matrix4Value = PerspectiveMatrix * TiltMatrix * RotationMatrix * FaceTranslationMatrix; // MVP
                 }
-            return TestBase::RunFrame();
             }
     };
 

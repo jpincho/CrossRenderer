@@ -23,6 +23,8 @@ class TestBase : public CrossRenderer::EventListener
         bool Initialize ( const CrossRenderer::RendererBackend NewRendererBackend, const glm::ivec2 &NewWindowPosition, const glm::uvec2 &NewWindowSize );
         bool Shutdown ( void );
         bool GetResult ( void ) const;
-        virtual bool RunFrame ( void );
+        bool RunFrame ( void );
         virtual bool SpecificInitialize ( void ) = 0;
+        virtual void SpecificDraw ( void );
+        virtual void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event );
     };
