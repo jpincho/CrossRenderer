@@ -1,0 +1,27 @@
+include ( "ExternalProject" )
+
+ExternalProject_Add ( Install_Assimp
+    URL
+        "https://github.com/assimp/assimp/archive/v5.0.0.tar.gz"
+    URL_HASH
+        SHA512=0f73b6e961cd8455d6b6c8c10ed8b99485d846c96377b5d4fcc3b83f737647207c1306aa3dd51dad9654fbfa61bfe1119b34646f90288ae7ecab45efa6fa418a
+    DOWNLOAD_DIR
+        ${CMAKE_BINARY_DIR}/Downloads/
+    SOURCE_DIR
+        ${CMAKE_BINARY_DIR}/Downloads/Assimp
+    INSTALL_DIR
+        ${ASSIMP_PATH}
+    CMAKE_ARGS
+        -DBUILD_SHARED_LIBS=FALSE
+        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        -DASSIMP_BUILD_TESTS=OFF
+        -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
+        -DASSIMP_BUILD_SAMPLES=OFF
+        -DASSIMP_BUILD_ZLIB=TRUE
+        -DASSIMP_NO_EXPORT=TRUE
+        #-DASSIMP_BUILD_NO_IRR_IMPORTER=TRUE
+        #-DASSIMP_BUILD_NO_IRRMESH_IMPORTER=TRUE
+        #-DASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT=OFF
+        #-DASSIMP_BUILD_3DS_IMPORTER=TRUE
+        #-DASSIMP_BUILD_OBJ_IMPORTER=TRUE
+    )
