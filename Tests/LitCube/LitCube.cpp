@@ -1,11 +1,11 @@
 #include "../TestBase.h"
-#include <imgui/imgui.h>
-#include "../Camera.h"
+#include "../CameraInput.h"
 
 class LitCubeTest : public TestBase
     {
     protected:
         Camera SceneCamera;
+        CameraInput CameraController;
         uint32_t FrameCount = 0;
         bool ShouldMoveLight = true, ShouldRotateCube = false;
         MovableObject Box;
@@ -18,16 +18,12 @@ class LitCubeTest : public TestBase
             CrossRenderer::ShaderUniformHandle MaterialShininess, MaterialDiffuseTexture, MaterialSpecularTexture;
             CrossRenderer::ShaderUniformHandle PointLight[2];
             } Uniforms;
+
+
         struct
             {
-            struct
-                {
-                uint32_t Reset, MovePosX, MoveNegX, MovePosY, MoveNegY, MovePosZ, MoveNegZ, RotatePosX, RotateNegX, RotatePosY, RotateNegY, RotatePosZ, RotateNegZ;
-                } Keys;
-            float MovementSpeed = 2.0f, RotationSpeed = 2.0f;
-            glm::vec3 Movement, Rotation;
-            } CameraVariables;
-
+            uint32_t Reset;
+            } Keys;
         struct
             {
             glm::vec4 Position;
@@ -47,8 +43,7 @@ class LitCubeTest : public TestBase
             {
             SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
             SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
-            CameraVariables.Movement = glm::vec3 ( 0 );
-            CameraVariables.Rotation = glm::vec3 ( 0 );
+
             Box.SetPosition ( glm::vec3 ( 0, 0, 0 ) );
             Box.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
 
@@ -71,42 +66,15 @@ class LitCubeTest : public TestBase
 
         void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
             {
-            if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) && ( Event.EventData.KeyReleased.Key == CameraVariables.Keys.Reset ) )
+            if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) && ( Event.EventData.KeyReleased.Key == Keys.Reset ) )
                 {
                 Reset();
-                }
-            if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyPressed ) || ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) )
-                {
-                int Delta = ( Event.EventType == CrossRenderer::WindowEventType::KeyPressed ? 1 : -1 );
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.MovePosX )
-                    CameraVariables.Movement.x += Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.MoveNegX )
-                    CameraVariables.Movement.x -= Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.MovePosY )
-                    CameraVariables.Movement.y += Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.MoveNegY )
-                    CameraVariables.Movement.y -= Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.MovePosZ )
-                    CameraVariables.Movement.z += Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.MoveNegZ )
-                    CameraVariables.Movement.z -= Delta;
-
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.RotatePosX )
-                    CameraVariables.Rotation.x += Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.RotateNegX )
-                    CameraVariables.Rotation.x -= Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.RotatePosY )
-                    CameraVariables.Rotation.y += Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.RotateNegY )
-                    CameraVariables.Rotation.y -= Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.RotatePosZ )
-                    CameraVariables.Rotation.z += Delta;
-                if ( Event.EventData.KeyPressed.Key == CameraVariables.Keys.RotateNegZ )
-                    CameraVariables.Rotation.z -= Delta;
                 }
             }
         bool SpecificInitialize ( void )
             {
+            CameraController.Initialize ();
+            CameraController.SetCamera ( &SceneCamera );
             // Create the quad
             typedef struct
                 {
@@ -276,47 +244,18 @@ class LitCubeTest : public TestBase
             NewParameters.Near = 1.0;
             NewParameters.FOV = glm::pi<float>() / 2;
             SceneCamera.SetPerspectiveParameters ( NewParameters );
-
-            CameraVariables.Keys.MoveNegZ = CrossRenderer::WindowManager::GetKeyCode ( "w" );
-            CameraVariables.Keys.MovePosZ = CrossRenderer::WindowManager::GetKeyCode ( "s" );
-            CameraVariables.Keys.MoveNegX = CrossRenderer::WindowManager::GetKeyCode ( "a" );
-            CameraVariables.Keys.MovePosX = CrossRenderer::WindowManager::GetKeyCode ( "d" );
-            CameraVariables.Keys.MovePosY = CrossRenderer::WindowManager::GetKeyCode ( "z" );
-            CameraVariables.Keys.MoveNegY = CrossRenderer::WindowManager::GetKeyCode ( "x" );
-
-            CameraVariables.Keys.RotatePosX = CrossRenderer::WindowManager::GetKeyCode ( "up" );
-            CameraVariables.Keys.RotateNegX = CrossRenderer::WindowManager::GetKeyCode ( "down" );
-            CameraVariables.Keys.RotatePosY = CrossRenderer::WindowManager::GetKeyCode ( "left" );
-            CameraVariables.Keys.RotateNegY = CrossRenderer::WindowManager::GetKeyCode ( "right" );
-            CameraVariables.Keys.RotatePosZ = CrossRenderer::WindowManager::GetKeyCode ( "q" );
-            CameraVariables.Keys.RotateNegZ = CrossRenderer::WindowManager::GetKeyCode ( "e" );
-
-            CameraVariables.Keys.Reset = CrossRenderer::WindowManager::GetKeyCode ( "r" );
-
+            Keys.Reset = CrossRenderer::WindowManager::GetKeyCode ( "r" );
             Reset();
             return true;
             }
         void SpecificDraw ( void )
             {
             ++FrameCount;
+            const float TimeDelta = 1.0f / 60;
             CrossRenderer::ChangeShaderBufferContents ( Light0Buffer, CrossRenderer::ShaderBufferDescriptor ( &LightData[0], sizeof ( LightData[0] ) ) );
             CrossRenderer::ChangeShaderBufferContents ( Light1Buffer, CrossRenderer::ShaderBufferDescriptor ( &LightData[1], sizeof ( LightData[1] ) ) );
 
-            const float TimeDelta = 1.0f / 60;
-            if ( glm::length ( CameraVariables.Movement ) > 0 )
-                {
-                glm::vec3 FrameCameraMovement = glm::normalize ( CameraVariables.Movement );
-                FrameCameraMovement = SceneCamera.GetOrientation() * CameraVariables.Movement;
-                SceneCamera.UpdateMatrices();
-                SceneCamera.SetPosition ( SceneCamera.GetPosition() + FrameCameraMovement * CameraVariables.MovementSpeed * TimeDelta );
-                }
-
-            if ( glm::length ( CameraVariables.Rotation ) > 0 )
-                {
-                SceneCamera.Rotate ( SceneCamera.GetXVector (), CameraVariables.Rotation.x * CameraVariables.RotationSpeed * TimeDelta );
-                SceneCamera.Rotate ( glm::vec3 ( 0, 1, 0 ) /*CameraVariables.->GetYVector ()*/, CameraVariables.Rotation.y * CameraVariables.RotationSpeed * TimeDelta );
-                SceneCamera.UpdateMatrices();
-                }
+            CameraController.Update ( TimeDelta );
 
             // The test itself
             if ( ShouldRotateCube )
