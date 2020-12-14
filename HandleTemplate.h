@@ -50,7 +50,7 @@ template <typename Type, typename Type2> class VectorizedContainer
     {
     protected:
         std::vector <Type> Objects;
-        std::vector <unsigned long> FreeIndices;
+        std::vector <size_t> FreeIndices;
     public:
 
         unsigned GetFreeIndex ( void )
@@ -61,9 +61,9 @@ template <typename Type, typename Type2> class VectorizedContainer
                     FreeIndices.push_back ( Objects.size() + index );
                 Objects.resize ( Objects.size() + 10 );
                 }
-            unsigned freeIndex = FreeIndices.back();
+            size_t FreeIndex = FreeIndices.back();
             FreeIndices.pop_back();
-            return freeIndex;
+            return FreeIndex;
             }
 
         HandleTemplate<Type2> GetNewHandle ( void )
@@ -74,7 +74,7 @@ template <typename Type, typename Type2> class VectorizedContainer
                     FreeIndices.push_back ( Objects.size() + (unsigned long) index );
                 Objects.resize ( Objects.size() + 10 );
                 }
-            unsigned long FreeIndex = FreeIndices.back();
+            size_t FreeIndex = FreeIndices.back();
             FreeIndices.pop_back();
             return HandleTemplate <Type2> ( FreeIndex );
             }
@@ -103,9 +103,9 @@ template <typename Type, typename Type2> class VectorizedContainer
 
         unsigned push ( const Type &value )
             {
-            unsigned freeIndex = GetFreeIndex();
-            Objects[freeIndex] = value;
-            return freeIndex;
+            unsigned FreeIndex = GetFreeIndex();
+            Objects[FreeIndex] = value;
+            return FreeIndex;
             }
     };
 }
