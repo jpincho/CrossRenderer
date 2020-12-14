@@ -52,7 +52,7 @@ class AssimpIOStream : public Assimp::IOStream
                 default:
                     return aiReturn_FAILURE;
                 }
-            fseek ( File, pOffset, origin );
+            fseek ( File, ( long ) pOffset, origin );
             return aiReturn_SUCCESS;
             }
         size_t Tell () const
@@ -101,7 +101,7 @@ class AssimpIOSystem : public Assimp::IOSystem
         Assimp::IOStream *Open ( const char *pFile, const char *Mode = "rb" )
             {
             AssimpIOStream *NewStream = new AssimpIOStream;
-            if (( NewStream->File = fopen ( pFile, Mode ) ) == nullptr )
+            if ( ( NewStream->File = fopen ( pFile, Mode ) ) == nullptr )
                 {
                 delete NewStream;
                 return nullptr;
@@ -218,7 +218,7 @@ bool ModelLoader::Set ( const std::string &NewBasePath, const std::string &NewRe
     Models.clear();
     BasePath = NewBasePath;
     RelativePath = NewRelativePath;
-    FullPath = BasePath + std::string("/")+RelativePath;
+    FullPath = BasePath + std::string ( "/" ) + RelativePath;
 
     LOG_DEBUG ( "Checking %s", FullPath.c_str() );
     if ( File )
@@ -264,7 +264,7 @@ bool ModelLoader::Load ( void )
         float FloatValue;
 
         if ( ( Scene->mMaterials[MatIndex]->Get ( AI_MATKEY_NAME, Name ) == AI_SUCCESS ) && ( Name.length != 0 ) )
-            Descriptor.Name = RelativePath + std::string ("/") + std::string ( Name.C_Str() );
+            Descriptor.Name = RelativePath + std::string ( "/" ) + std::string ( Name.C_Str() );
         else
             return false;
 

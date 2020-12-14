@@ -122,7 +122,7 @@ class StormtrooperTest : public TestBase
             Path.append ( "Stormtrooper/" );
             Path.append ( CrossRenderer::Stringify ( RendererBackend ) );
 
-            StormtrooperShader.Handle = LoadShader (Path + "/Stormtrooper.vert", "", Path + "/Stormtrooper.frag" );
+            StormtrooperShader.Handle = LoadShader ( Path + "/Stormtrooper.vert", "", Path + "/Stormtrooper.frag" );
             if ( !StormtrooperShader.Handle )
                 return false;
 

@@ -127,7 +127,7 @@ class GeometryShaderTest : public TestBase
             Path.append ( "GeometryShader/" );
             Path.append ( CrossRenderer::Stringify ( RendererBackend ) );
 
-            StormtrooperShader.Handle = LoadShader (Path + "/Stormtrooper.vert", "", Path + "/Stormtrooper.frag" );
+            StormtrooperShader.Handle = LoadShader ( Path + "/Stormtrooper.vert", "", Path + "/Stormtrooper.frag" );
             if ( !StormtrooperShader.Handle )
                 return false;
 

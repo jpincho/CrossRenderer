@@ -71,7 +71,7 @@ template <typename Type, typename Type2> class VectorizedContainer
             if ( FreeIndices.size() == 0 )
                 {
                 for ( int index = 9; index >= 0; --index )
-                    FreeIndices.push_back ( Objects.size() + (unsigned long) index );
+                    FreeIndices.push_back ( Objects.size() + ( unsigned long ) index );
                 Objects.resize ( Objects.size() + 10 );
                 }
             size_t FreeIndex = FreeIndices.back();

@@ -41,7 +41,7 @@ typedef struct
     ShaderBufferHandle IndexBuffer;
     ShaderBufferDataStream IndexBufferStream;
     PrimitiveType Primitive;
-    unsigned VertexCount, StartVertex;
+    size_t VertexCount, StartVertex;
 
     RenderState State;
     } RenderCommand;
