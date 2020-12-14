@@ -87,7 +87,7 @@ bool DSAChangeShaderBufferContents ( const ShaderBufferHandle Handle, const Shad
     return CheckError();
     }
 
-void *MapShaderBuffer ( const ShaderBufferHandle Handle, ShaderBufferAccessType AccessType )
+void *MapShaderBuffer ( const ShaderBufferHandle Handle, const ShaderBufferAccessType AccessType )
     {
     ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
     GLenum GLAccessType = Translate ( AccessType );
@@ -104,7 +104,7 @@ void *MapShaderBuffer ( const ShaderBufferHandle Handle, ShaderBufferAccessType 
     return ShaderBufferInformation->MappedPointer;
     }
 
-void *DSAMapShaderBuffer ( const ShaderBufferHandle Handle, ShaderBufferAccessType AccessType )
+void *DSAMapShaderBuffer ( const ShaderBufferHandle Handle, const ShaderBufferAccessType AccessType )
     {
     ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
     GLenum GLAccessType = Translate ( AccessType );
