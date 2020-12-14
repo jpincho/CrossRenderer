@@ -111,7 +111,7 @@ bool TestBase::RunFrame ( void )
         CrossRenderer::RunCommand ( CommandIterator );
         }
     CrossRenderer::EndFrame ( *CrossRenderer::WindowManager::WindowList.begin() );
-
+    CrossRenderer::WindowManager::ProcessEvents();
     if ( CrossRenderer::WindowManager::WindowList.size() == 0 )
         ShouldQuit = true;
     return !ShouldQuit;

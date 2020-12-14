@@ -75,8 +75,8 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
     if ( CheckError() == false )
         goto OnError;
 
-//    for ( auto &iterator : OpenGLVendor )
-//        LOG_DEBUG ( "OpenGL vendor information: %s", iterator.c_str () );
+    //    for ( auto &iterator : OpenGLVendor )
+    //        LOG_DEBUG ( "OpenGL vendor information: %s", iterator.c_str () );
 
     LOG_DEBUG ( "Max Texture Units - %u", MaxTextureUnits );
     LOG_DEBUG ( "Direct State Access - %s", DirectStateAccess.Enabled ? "true" : "false" );
@@ -97,7 +97,7 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 #undef ATTRIB
         }
     return true;
-OnError :
+OnError:
     if ( GeneralVAO != 0 )
         {
         glDeleteVertexArrays ( 1, &GeneralVAO );
@@ -146,7 +146,45 @@ bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
         }
     if ( BitMask )
         glClear ( BitMask );
-    return true;
+    return CheckError();
+    }
+
+bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle )
+    {
+    ActiveWindow = WindowHandle;
+    Context->MakeActive ( WindowHandle );
+    glm::uvec2 WindowSize = WindowManager::GetWindowSize ( WindowHandle );
+    CurrentState.SetDefaultViewportSize ( WindowSize );
+
+    ViewportSettings NewSettings;
+    NewSettings.Set ( glm::uvec2 ( 0, 0 ), WindowSize );
+    CurrentState.ConfigureViewport ( NewSettings );
+
+    ScissorSettings NewScissorSettings;
+    NewScissorSettings.Enabled = false;
+    CurrentState.ConfigureScissor ( NewScissorSettings );
+
+    //glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
+    if ( DirectStateAccess.Enabled )
+        {
+        glBlitNamedFramebuffer( FramebufferInformation->OpenGLID,
+            0,
+            0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
+            0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
+            GL_COLOR_BUFFER_BIT, GL_NEAREST );
+        }
+    else
+        {
+        glBindFramebuffer ( GL_READ_FRAMEBUFFER, FramebufferInformation->OpenGLID );
+        glBindFramebuffer ( GL_DRAW_FRAMEBUFFER, 0 );
+        glBlitFramebuffer (
+            0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
+            0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
+            GL_COLOR_BUFFER_BIT, GL_NEAREST );
+        }
+    return CheckError();
     }
 
 bool StartFrame ( const RenderWindowHandle &Handle )
@@ -154,8 +192,8 @@ bool StartFrame ( const RenderWindowHandle &Handle )
     ActiveWindow = Handle;
     CurrentState.SetDefaultViewportSize ( WindowManager::GetWindowSize ( Handle ) );
     ViewportSettings NewSettings;
-    NewSettings.Set(glm::uvec2 ( 0, 0 ), WindowManager::GetWindowSize ( Handle ));
-    CurrentState.ConfigureViewport( NewSettings );
+    NewSettings.Set ( glm::uvec2 ( 0, 0 ), WindowManager::GetWindowSize ( Handle ) );
+    CurrentState.ConfigureViewport ( NewSettings );
 
     Context->MakeActive ( Handle );
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -165,7 +203,6 @@ bool StartFrame ( const RenderWindowHandle &Handle )
 bool EndFrame ( const RenderWindowHandle &Handle )
     {
     Context->SwapWindowBuffer ( Handle );
-    WindowManager::ProcessEvents();
     return true;
     }
 
@@ -200,8 +237,8 @@ bool RunCommand ( const RenderCommand &Command )
 
         if ( UniformInformation->Type != Iterator.UniformValue.Type )
             return false;
-//        if ( UniformInformation->CurrentValue == Iterator.UniformValue )
-//            continue;
+        //        if ( UniformInformation->CurrentValue == Iterator.UniformValue )
+        //            continue;
         if ( DirectStateAccess.Enabled )
             DSASetShaderUniformValue ( Command.Shader, Iterator.UniformHandle, Iterator.UniformValue );
         else
@@ -220,13 +257,21 @@ bool RunCommand ( const RenderCommand &Command )
             AttributeInformation->Enabled = true;
             }
 
+        if ( BufferInformation->MappedPointer )
+            {
+            if ( DirectStateAccess.Enabled )
+                DSAUnmapShaderBuffer ( Iterator.DataStream.BufferHandle );
+            else
+                UnmapShaderBuffer ( Iterator.DataStream.BufferHandle );
+            }
+
         glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
         glVertexAttribPointer ( AttributeInformation->OpenGLID,
                                 Iterator.DataStream.ComponentsPerElement,
                                 Translate ( Iterator.DataStream.ComponentType ),
                                 Iterator.DataStream.NormalizeData,
                                 Iterator.DataStream.Stride,
-                                ( void* ) Iterator.DataStream.StartOffset );
+                                ( void * ) Iterator.DataStream.StartOffset );
         }
     CheckError();
     unsigned TextureLevel = 0;
@@ -286,14 +331,14 @@ bool RunCommand ( const RenderCommand &Command )
 
     if ( Command.IndexBuffer )
         {
-        static size_t Sizes[] = {sizeof ( float ), sizeof ( uint8_t ), sizeof ( uint16_t ), sizeof ( uint32_t ) };
+        static size_t Sizes[] = { sizeof ( float ), sizeof ( uint8_t ), sizeof ( uint16_t ), sizeof ( uint32_t ) };
 
         ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBuffer];
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, BufferToUse->OpenGLID );
         glDrawElements ( Translate ( Command.Primitive ),
                          Command.VertexCount,
                          Translate ( Command.IndexBufferStream.ComponentType ),
-                         reinterpret_cast <void*> ( Command.StartVertex * Sizes [ ( int ) Command.IndexBufferStream.ComponentType ] ) );
+                         reinterpret_cast <void *> ( Command.StartVertex * Sizes[ ( int ) Command.IndexBufferStream.ComponentType] ) );
         }
     else
         {

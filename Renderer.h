@@ -14,6 +14,9 @@ namespace CrossRenderer
 extern bool ( *InitializeRenderer ) ( const RendererConfiguration &NewConfiguration );
 extern bool ( *ShutdownRenderer ) ( void );
 
+extern bool ( *StartRenderToFramebuffer ) ( const FramebufferHandle &Handle );
+extern bool ( *DisplayFramebuffer ) ( const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle );
+
 extern bool ( *StartFrame ) ( const RenderWindowHandle &Handle );
 extern bool ( *EndFrame ) ( const RenderWindowHandle &Handle );
 

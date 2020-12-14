@@ -57,6 +57,8 @@ void CreateNewRenderer ( const RendererBackend &Backend )
 #define ATTRIB(x) x = OpenGL::x
             ATTRIB ( InitializeRenderer );
             ATTRIB ( ShutdownRenderer );
+            ATTRIB ( StartRenderToFramebuffer );
+            ATTRIB ( DisplayFramebuffer );
             ATTRIB ( StartFrame );
             ATTRIB ( EndFrame );
             ATTRIB ( RunCommand );

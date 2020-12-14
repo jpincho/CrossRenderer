@@ -5,6 +5,9 @@ namespace CrossRenderer
 bool ( *InitializeRenderer ) ( const RendererConfiguration &NewConfiguration ) = 0;
 bool ( *ShutdownRenderer ) ( void ) = 0;
 
+bool ( *StartRenderToFramebuffer ) ( const FramebufferHandle &Handle ) = 0;
+bool ( *DisplayFramebuffer ) ( const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle ) = 0;
+
 bool ( *StartFrame ) ( const RenderWindowHandle &Handle ) = 0;
 bool ( *EndFrame ) ( const RenderWindowHandle &Handle ) = 0;
 
