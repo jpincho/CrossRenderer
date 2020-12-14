@@ -21,9 +21,8 @@ typedef struct FramebufferDescriptor
         DefaultClearDepth = 1.0f;
         }
     bool DepthEnabled, StencilEnabled;
-    PixelFormat DepthFormat, StencilFormat;
+    PixelFormat ColorAttachmentFormat, DepthFormat, StencilFormat;
     uint8_t ColorAttachments;
-    PixelFormat ColorAttachmentFormat;
     glm::uvec2 Dimensions;
     glm::vec4 DefaultClearColor;
     float DefaultClearDepth;

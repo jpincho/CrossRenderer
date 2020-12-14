@@ -47,3 +47,6 @@
 *vcxproj.*
 .vs
 out
+
+# Astyle generated files
+*.orig
