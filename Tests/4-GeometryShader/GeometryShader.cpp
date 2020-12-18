@@ -75,9 +75,7 @@ class GeometryShaderTest : public TestBase
         bool ShowVertexNormals, ShowFaceNormals;
     public:
         GeometryShaderTest ( void )
-            {
-            TestName.assign ( "GeometryShader" );
-            }
+            {}
         void Reset ( void )
             {
             SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
@@ -174,10 +172,7 @@ class GeometryShaderTest : public TestBase
 
             // Load the model
             ModelLoader StormtrooperModel;
-            Path.assign ( TEST_SOURCE_LOCATION );
-            Path.append ( "Data/Stormtrooper/" );
-
-            if ( StormtrooperModel.Set ( Path, "Stormtrooper.fbx" ) == false )
+            if ( StormtrooperModel.Set ( "Stormtrooper/", "Stormtrooper.fbx" ) == false )
                 return false;
             if ( StormtrooperModel.Load() == false )
                 return false;
@@ -195,7 +190,7 @@ class GeometryShaderTest : public TestBase
                     CrossRenderer::TextureBindSettings Settings;
                     if ( MaterialIterator.Textures[TextureTypeIterator].empty() == true )
                         continue;
-                    if ( LoadTextureFile ( Path + MaterialIterator.Textures[TextureTypeIterator], Settings.Handle ) == false )
+                    if ( ! ( Settings.Handle = LoadTexture ( Path + MaterialIterator.Textures[TextureTypeIterator] ) ) )
                         return false;
                     Settings.WrapSettings = MaterialIterator.WrapSettings[TextureTypeIterator];
                     NewMaterial.Textures[TextureTypeIterator] = Settings;

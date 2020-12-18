@@ -11,11 +11,12 @@ class TestBase : public CrossRenderer::EventListener
     protected:
         bool ShouldQuit = false;
         bool TestResult = false;
-        std::string TestName;
         std::vector <CrossRenderer::RenderCommand> RenderCommands;
         CrossRenderer::RendererBackend RendererBackend;
+        CrossRenderer::FramebufferHandle DefaultFramebuffer;
 
-        virtual void OnEvent ( const CrossRenderer::WindowEvent &Event );
+        void OnEvent ( const CrossRenderer::WindowEvent &Event );
+        CrossRenderer::TextureHandle LoadTexture ( const std::string &ImageFile );
         CrossRenderer::ShaderHandle LoadShader ( const std::string &VertexFile, const std::string &GeometryFile, const std::string &FragmentFile );
 
     public:

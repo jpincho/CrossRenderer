@@ -15,7 +15,7 @@ class HandleTemplate
             {
             Key = -1;
             }
-        HandleTemplate ( intptr_t NewKey )
+        explicit HandleTemplate ( intptr_t NewKey )
             {
             Key = NewKey;
             }
@@ -91,10 +91,10 @@ template <typename Type, typename Type2> class VectorizedContainer
             assert ( ( unsigned long ) Handle.key() < Objects.size() );
             return Objects[Handle.key()];
             }
-        /*        Type &operator [] ( const size_t index )
-                    {
-                    return Objects[index];
-                    }*/
+        Type &operator [] ( const intptr_t Index )
+            {
+            return Objects[Index];
+            }
 
         size_t size ( void ) const
             {

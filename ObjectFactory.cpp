@@ -80,8 +80,6 @@ void CreateNewRenderer ( const RendererBackend &Backend )
             ATTRIB ( GetShaderInformation );
             ATTRIB ( CreateFramebuffer );
             ATTRIB ( DeleteFramebuffer );
-//            ATTRIB ( BindFramebuffer );
-//            ATTRIB ( UnbindFramebuffer );
             ATTRIB ( GetFramebufferSize );
             ATTRIB ( GetColorBufferFromFramebuffer );
             ATTRIB ( GetDepthBufferFromFramebuffer );

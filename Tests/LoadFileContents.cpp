@@ -1,6 +1,4 @@
 #include "LoadFileContents.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 
 bool LoadFileContents ( const std::string &Path, std::vector <uint8_t> &Contents )
     {
@@ -24,46 +22,5 @@ bool LoadFileContents ( const std::string &Path, std::vector <uint8_t> &Contents
         TotalBytesRead += BytesRead;
         }
     fclose ( FileHandle );
-    return true;
-    }
-
-bool LoadTextureFile ( const std::string &Path, CrossRenderer::TextureHandle &TextureObject )
-    {
-    glm::ivec2 ImageSize;
-    int Channels;
-    CrossRenderer::PixelFormat ImageFormat;
-    stbi_set_flip_vertically_on_load ( 1 );
-    stbi_uc *Image = stbi_load ( Path.c_str(), &ImageSize.x, &ImageSize.y, &Channels, 0 );
-    if ( !Image )
-        return false;
-    switch ( Channels )
-        {
-        case 3:
-            ImageFormat = CrossRenderer::PixelFormat::RedGreenBlue888;
-            break;
-        case 4:
-            ImageFormat = CrossRenderer::PixelFormat::RedGreenBlueAlpha8888;
-            break;
-        default:
-            stbi_image_free ( Image );
-            return false;
-        }
-
-    CrossRenderer::TextureDescriptor TextureDescriptor;
-    TextureDescriptor.Dimensions = glm::uvec2 ( ImageSize.x, ImageSize.y );
-    TextureDescriptor.TextureFormat = ImageFormat;
-    TextureObject = CrossRenderer::Create2DTexture ( TextureDescriptor );
-    if ( !TextureObject )
-        {
-        stbi_image_free ( Image );
-        return false;
-        }
-    if ( CrossRenderer::Load2DTextureData ( TextureObject, ImageFormat, Image, 0 ) == false )
-        {
-        stbi_image_free ( Image );
-        return false;
-        }
-
-    stbi_image_free ( Image );
     return true;
     }

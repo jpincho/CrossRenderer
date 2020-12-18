@@ -189,6 +189,8 @@ void ProcessEvents ( void )
                         NewEvent.EventType = WindowEventType::WindowMoved;
                         NewEvent.EventData.WindowMoved.X = Event.window.data1;
                         NewEvent.EventData.WindowMoved.Y = Event.window.data2;
+
+                        Windows[NewEvent.OwnerHandle].Position = glm::ivec2 ( Event.window.data1, Event.window.data2 );
                         break;
                         }
 
@@ -197,6 +199,8 @@ void ProcessEvents ( void )
                         NewEvent.EventType = WindowEventType::WindowResized;
                         NewEvent.EventData.WindowResized.Width = Event.window.data1;
                         NewEvent.EventData.WindowResized.Height = Event.window.data2;
+
+                        Windows[NewEvent.OwnerHandle].Size = glm::uvec2 ( Event.window.data1, Event.window.data2 );
                         break;
                         }
                     }

@@ -28,18 +28,6 @@ class StormtrooperTest : public TestBase
                 CrossRenderer::ShaderAttributeHandle Position, Normal, TextureCoord;
                 } Attributes;
             } StormtrooperShader;
-        struct
-            {
-            CrossRenderer::ShaderHandle Handle;
-            struct
-                {
-                CrossRenderer::ShaderUniformHandle ShaderMVP, ModelTransposeInverseMatrix, NormalLength, StartNormalColor, EndNormalColor, ShowVertexNormals, ShowFaceNormals;
-                } Uniforms;
-            struct
-                {
-                CrossRenderer::ShaderAttributeHandle Position, Normal;
-                } Attributes;
-            } NormalsShader;
         typedef struct
             {
             CrossRenderer::ShaderBufferHandle Vertex, Normal, TexCoord, Index;
@@ -47,7 +35,6 @@ class StormtrooperTest : public TestBase
             size_t VertexCount;
             CrossRenderer::RenderCommand Command;
             } MeshRenderData;
-
 
         struct
             {
@@ -72,10 +59,6 @@ class StormtrooperTest : public TestBase
         MovableObject Stormtrooper;
 
     public:
-        StormtrooperTest ( void )
-            {
-            TestName.assign ( "Stormtrooper" );
-            }
         void Reset ( void )
             {
             SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
@@ -104,13 +87,10 @@ class StormtrooperTest : public TestBase
             }
         void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
             {
-
-
             if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) && ( Event.EventData.KeyReleased.Key == Keys.Reset ) )
                 {
                 Reset();
                 }
-
             }
         bool SpecificInitialize ( void )
             {
@@ -118,11 +98,7 @@ class StormtrooperTest : public TestBase
             CameraController.SetCamera ( &SceneCamera );
 
             // Load the shader
-            std::string Path ( TEST_SOURCE_LOCATION );
-            Path.append ( "Stormtrooper/" );
-            Path.append ( CrossRenderer::Stringify ( RendererBackend ) );
-
-            StormtrooperShader.Handle = LoadShader ( Path + "/Stormtrooper.vert", "", Path + "/Stormtrooper.frag" );
+            StormtrooperShader.Handle = LoadShader ( "Stormtrooper.vert", "", "Stormtrooper.frag" );
             if ( !StormtrooperShader.Handle )
                 return false;
 
@@ -156,10 +132,7 @@ class StormtrooperTest : public TestBase
 
             // Load the model
             ModelLoader StormtrooperModel;
-            Path.assign ( TEST_SOURCE_LOCATION );
-            Path.append ( "Data/Stormtrooper/" );
-
-            if ( StormtrooperModel.Set ( Path, "Stormtrooper.fbx" ) == false )
+            if ( StormtrooperModel.Set ( std::string ( TEST_SOURCE_LOCATION ) + std::string ( "Data/Stormtrooper/" ), "Stormtrooper.fbx" ) == false )
                 return false;
             if ( StormtrooperModel.Load() == false )
                 return false;
@@ -177,7 +150,7 @@ class StormtrooperTest : public TestBase
                     CrossRenderer::TextureBindSettings Settings;
                     if ( MaterialIterator.Textures[TextureTypeIterator].empty() == true )
                         continue;
-                    if ( LoadTextureFile ( Path + MaterialIterator.Textures[TextureTypeIterator], Settings.Handle ) == false )
+                    if ( ! ( Settings.Handle = LoadTexture ( std::string ( "Stormtrooper/" ) + MaterialIterator.Textures[TextureTypeIterator] ) ) )
                         return false;
                     Settings.WrapSettings = MaterialIterator.WrapSettings[TextureTypeIterator];
                     NewMaterial.Textures[TextureTypeIterator] = Settings;
@@ -274,7 +247,6 @@ class StormtrooperTest : public TestBase
 
                 RenderCommands.push_back ( NewCommand );
                 }
-
             }
     };
 

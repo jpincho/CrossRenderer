@@ -14,7 +14,7 @@ typedef struct FramebufferDescriptor
         {
         ColorAttachments = 1;
         ColorAttachmentFormat = PixelFormat::RedGreenBlueAlpha8888;
-        DepthEnabled = false;
+        DepthEnabled = true;
         DepthFormat = PixelFormat::DepthComponent;
         StencilEnabled = false;
         this->Dimensions = Dimensions;

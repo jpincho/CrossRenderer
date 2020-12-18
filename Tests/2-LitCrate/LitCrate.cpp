@@ -1,16 +1,16 @@
 #include "../TestBase.h"
 #include "../CameraInput.h"
 
-class LitCubeTest : public TestBase
+class LitCrateTest : public TestBase
     {
     protected:
         Camera SceneCamera;
         CameraInput CameraController;
         uint32_t FrameCount = 0;
         bool ShouldMoveLight = true, ShouldRotateCube = false;
-        MovableObject Box;
-        CrossRenderer::ShaderBufferHandle BoxBuffer, BoxIndexBuffer, Light0Buffer, Light1Buffer;
-        CrossRenderer::ShaderHandle BoxShader;
+        MovableObject Crate;
+        CrossRenderer::ShaderBufferHandle CrateBuffer, CrateIndexBuffer, Light0Buffer, Light1Buffer;
+        CrossRenderer::ShaderHandle CrateShader;
         struct
             {
             CrossRenderer::ShaderUniformHandle ShaderMVP, ModelMatrix, ModelTransposeInverseMatrix;
@@ -18,7 +18,6 @@ class LitCubeTest : public TestBase
             CrossRenderer::ShaderUniformHandle MaterialShininess, MaterialDiffuseTexture, MaterialSpecularTexture;
             CrossRenderer::ShaderUniformHandle PointLight[2];
             } Uniforms;
-
 
         struct
             {
@@ -35,17 +34,13 @@ class LitCubeTest : public TestBase
             } LightData[2];
 
     public:
-        LitCubeTest ( void )
-            {
-            TestName.assign ( "LitCube" );
-            }
         void Reset ( void )
             {
             SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
             SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
 
-            Box.SetPosition ( glm::vec3 ( 0, 0, 0 ) );
-            Box.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
+            Crate.SetPosition ( glm::vec3 ( 0, 0, 0 ) );
+            Crate.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
 
             LightData[0].Position = glm::vec4 ( -5, 5, 3, 1 );
             LightData[0].Diffuse = glm::vec4 ( 1, 1, 1, 1 );
@@ -83,7 +78,7 @@ class LitCubeTest : public TestBase
                 glm::vec2 TexCoord;
                 } Vertex;
 
-            Vertex CubeVertices[] =
+            Vertex CrateVertices[] =
                 {
                 // Front
                     {{-1.0f, -1.0f, 1.0f}, { 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
@@ -117,51 +112,47 @@ class LitCubeTest : public TestBase
                     {{ 1.0f, -1.0f, 1.0f}, { 0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
                 };
 
-            uint16_t BoxIndices[] = {0, 1, 2,
-                                     1, 3, 2,
+            uint16_t CrateIndices[] = {0, 1, 2,
+                                       1, 3, 2,
 
-                                     4, 5, 6,
-                                     5, 7, 6,
+                                       4, 5, 6,
+                                       5, 7, 6,
 
-                                     8, 9, 10,
-                                     9, 11, 10,
+                                       8, 9, 10,
+                                       9, 11, 10,
 
-                                     12, 13, 14,
-                                     13, 15, 14,
+                                       12, 13, 14,
+                                       13, 15, 14,
 
-                                     16, 17, 18,
-                                     17, 19, 18,
+                                       16, 17, 18,
+                                       17, 19, 18,
 
-                                     20, 21, 22,
-                                     21, 23, 22
-                                    };
-            BoxBuffer = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( CubeVertices, sizeof ( CubeVertices ) ) );
-            BoxIndexBuffer = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( BoxIndices, sizeof ( BoxIndices ) ) );
+                                       20, 21, 22,
+                                       21, 23, 22
+                                      };
+            CrateBuffer = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( CrateVertices, sizeof ( CrateVertices ) ) );
+            CrateIndexBuffer = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( CrateIndices, sizeof ( CrateIndices ) ) );
             Light0Buffer = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( &LightData[0], sizeof ( LightData[0] ) ) );
             Light1Buffer = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( &LightData[1], sizeof ( LightData[1] ) ) );
 
             // Load the shader
-            std::string Path ( TEST_SOURCE_LOCATION );
-            Path.append ( "LitCube/" );
-            Path.append ( CrossRenderer::Stringify ( RendererBackend ) );
-
-            BoxShader = LoadShader ( Path + "/Box.vert", "", Path + "/Box.frag" );
-            if ( !BoxShader )
+            CrateShader = LoadShader ( "Crate.vert", "", "Crate.frag" );
+            if ( !CrateShader )
                 return false;
 
             // Load the texture
             CrossRenderer::TextureHandle DiffuseTexture;
-            if ( LoadTextureFile ( std::string ( TEST_SOURCE_LOCATION ) + std::string ( "Data/WoodCrate/WoodCrate_Diffuse.png" ), DiffuseTexture ) == false )
+            if ( ! ( DiffuseTexture = LoadTexture ( std::string ( "WoodCrate/WoodCrate_Diffuse.png" ) ) ) )
                 return false;
             CrossRenderer::TextureHandle SpecularTexture;
-            if ( LoadTextureFile ( std::string ( TEST_SOURCE_LOCATION ) + std::string ( "Data/WoodCrate/WoodCrate_Specular.png" ), SpecularTexture ) == false )
+            if ( ! ( SpecularTexture = LoadTexture ( std::string ( "WoodCrate/WoodCrate_Specular.png" ) ) ) )
                 return false;
 
             // Configure the draw command
             CrossRenderer::ShaderBufferDataStream PositionStream, NormalStream, TextureStream, IndexStream;
-            CrossRenderer::ShaderAttributeHandle PositionShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( BoxShader, "a_VertexPosition" );
-            CrossRenderer::ShaderAttributeHandle NormalShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( BoxShader, "a_Normal" );
-            CrossRenderer::ShaderAttributeHandle TextureCoordShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( BoxShader, "a_TexCoord" );
+            CrossRenderer::ShaderAttributeHandle PositionShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( CrateShader, "a_Position" );
+            CrossRenderer::ShaderAttributeHandle NormalShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( CrateShader, "a_Normal" );
+            CrossRenderer::ShaderAttributeHandle TextureCoordShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( CrateShader, "a_TexCoord" );
 
 #define GET_UNIFORM(VARIABLE,SHADER,NAME)\
                 VARIABLE = CrossRenderer::GetShaderUniformHandle ( SHADER, NAME );\
@@ -170,73 +161,73 @@ class LitCubeTest : public TestBase
                     LOG_ERROR ( "Uniform %s not found", NAME );\
                     return false;\
                     }
-            GET_UNIFORM ( Uniforms.ShaderMVP, BoxShader, "u_MVPMatrix" );
-            GET_UNIFORM ( Uniforms.ViewPosition, BoxShader, "u_ViewPosition" );
-            GET_UNIFORM ( Uniforms.MaterialShininess, BoxShader, "u_Shininess" );
-            GET_UNIFORM ( Uniforms.MaterialDiffuseTexture, BoxShader, "u_DiffuseTexture" );
-            GET_UNIFORM ( Uniforms.MaterialSpecularTexture, BoxShader, "u_SpecularTexture" );
-            GET_UNIFORM ( Uniforms.ModelMatrix, BoxShader, "u_ModelMatrix" );
-            GET_UNIFORM ( Uniforms.ModelTransposeInverseMatrix, BoxShader, "u_ModelTransposeInverse" );
+            GET_UNIFORM ( Uniforms.ShaderMVP, CrateShader, "u_MVPMatrix" );
+            GET_UNIFORM ( Uniforms.ViewPosition, CrateShader, "u_ViewPosition" );
+            GET_UNIFORM ( Uniforms.MaterialShininess, CrateShader, "u_Shininess" );
+            GET_UNIFORM ( Uniforms.MaterialDiffuseTexture, CrateShader, "u_DiffuseTexture" );
+            GET_UNIFORM ( Uniforms.MaterialSpecularTexture, CrateShader, "u_SpecularTexture" );
+            GET_UNIFORM ( Uniforms.ModelMatrix, CrateShader, "u_ModelMatrix" );
+            GET_UNIFORM ( Uniforms.ModelTransposeInverseMatrix, CrateShader, "u_ModelTransposeInverse" );
 
-            GET_UNIFORM ( Uniforms.PointLight[0], BoxShader, "u_PointLightBlock[0]" );
-            GET_UNIFORM ( Uniforms.PointLight[1], BoxShader, "u_PointLightBlock[1]" );
+            GET_UNIFORM ( Uniforms.PointLight[0], CrateShader, "u_PointLightBlock[0]" );
+            GET_UNIFORM ( Uniforms.PointLight[1], CrateShader, "u_PointLightBlock[1]" );
 
-            PositionStream.BufferHandle = BoxBuffer;
+            PositionStream.BufferHandle = CrateBuffer;
             PositionStream.Stride = sizeof ( Vertex );
             PositionStream.StartOffset = offsetof ( Vertex, Position );
             PositionStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Float;
             PositionStream.ComponentsPerElement = 3;
             PositionStream.NormalizeData = false;
 
-            NormalStream.BufferHandle = BoxBuffer;
+            NormalStream.BufferHandle = CrateBuffer;
             NormalStream.Stride = sizeof ( Vertex );
             NormalStream.StartOffset = offsetof ( Vertex, Normal );
             NormalStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Float;
             NormalStream.ComponentsPerElement = 3;
             NormalStream.NormalizeData = true;
 
-            TextureStream.BufferHandle = BoxBuffer;
+            TextureStream.BufferHandle = CrateBuffer;
             TextureStream.Stride = sizeof ( Vertex );
             TextureStream.StartOffset = offsetof ( Vertex, TexCoord );
             TextureStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Float;
             TextureStream.ComponentsPerElement = 2;
             TextureStream.NormalizeData = false;
 
-            IndexStream.BufferHandle = BoxIndexBuffer;
+            IndexStream.BufferHandle = CrateIndexBuffer;
             IndexStream.Stride = sizeof ( uint16_t );
             IndexStream.StartOffset = 0;
             IndexStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Unsigned16;
             IndexStream.ComponentsPerElement = 1;
 
-            CrossRenderer::RenderCommand BoxRenderCommand;
+            CrossRenderer::RenderCommand CrateRenderCommand;
 
-            BoxRenderCommand.Shader = BoxShader;
-            BoxRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
+            CrateRenderCommand.Shader = CrateShader;
+            CrateRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
                         PositionShaderAttribute,
                         PositionStream ) );
-            BoxRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
+            CrateRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
                         NormalShaderAttribute,
                         NormalStream ) );
-            BoxRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
+            CrateRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
                         TextureCoordShaderAttribute,
                         TextureStream ) );
 
-            BoxRenderCommand.IndexBufferStream = IndexStream;
-            BoxRenderCommand.IndexBuffer = BoxIndexBuffer;
+            CrateRenderCommand.IndexBufferStream = IndexStream;
+            CrateRenderCommand.IndexBuffer = CrateIndexBuffer;
 
-            BoxRenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair (
+            CrateRenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair (
                         Uniforms.MaterialDiffuseTexture,
                         CrossRenderer::TextureBindSettings ( DiffuseTexture ) ) );
-            BoxRenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair (
+            CrateRenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair (
                         Uniforms.MaterialSpecularTexture,
                         CrossRenderer::TextureBindSettings ( SpecularTexture ) ) );
 
-            BoxRenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
-            BoxRenderCommand.StartVertex = 0;
-            BoxRenderCommand.VertexCount = sizeof ( BoxIndices ) / sizeof ( uint16_t );
-            BoxRenderCommand.State.Culling.Enabled = true;
-            BoxRenderCommand.State.DepthTest.Enabled = true;
-            RenderCommands.push_back ( BoxRenderCommand );
+            CrateRenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
+            CrateRenderCommand.StartVertex = 0;
+            CrateRenderCommand.VertexCount = sizeof ( CrateIndices ) / sizeof ( uint16_t );
+            CrateRenderCommand.State.Culling.Enabled = true;
+            CrateRenderCommand.State.DepthTest.Enabled = true;
+            RenderCommands.push_back ( CrateRenderCommand );
 
             Camera::PerspectiveParameters NewParameters;
             NewParameters.AspectRatio = 1.0f;
@@ -260,7 +251,7 @@ class LitCubeTest : public TestBase
             // The test itself
             if ( ShouldRotateCube )
                 {
-                Box.Rotate ( glm::vec3 ( 0, 1, 0 ), glm::pi<float>() / 120 );
+                Crate.Rotate ( glm::vec3 ( 0, 1, 0 ), glm::pi<float>() / 120 );
                 }
             if ( ShouldMoveLight )
                 {
@@ -270,9 +261,9 @@ class LitCubeTest : public TestBase
             // Go through all renderers, all windows, and update
             RenderCommands[0].UniformValues.clear();
 
-            RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( Uniforms.ShaderMVP, SceneCamera.GetViewProjectionMatrix() * Box.GetTransformationMatrix() ) );
-            RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( Uniforms.ModelMatrix, Box.GetTransformationMatrix() ) );
-            RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( Uniforms.ModelTransposeInverseMatrix, glm::inverse ( glm::transpose ( Box.GetTransformationMatrix() ) ) ) );
+            RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( Uniforms.ShaderMVP, SceneCamera.GetViewProjectionMatrix() * Crate.GetTransformationMatrix() ) );
+            RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( Uniforms.ModelMatrix, Crate.GetTransformationMatrix() ) );
+            RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( Uniforms.ModelTransposeInverseMatrix, glm::inverse ( glm::transpose ( Crate.GetTransformationMatrix() ) ) ) );
             RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( Uniforms.ViewPosition, SceneCamera.GetPosition() ) );
             RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( Uniforms.MaterialShininess, 8.0f ) );
 
@@ -289,7 +280,7 @@ int main ( void )
 
     for ( unsigned index = 0; index < RenderersToTest.size(); ++index )
         {
-        LitCubeTest Test;
+        LitCrateTest Test;
         if ( Test.Initialize ( RenderersToTest[index], glm::ivec2 ( 0, 0 ), glm::uvec2 ( 800, 600 ) ) == false )
             return -1;
         bool ShouldQuit = false;

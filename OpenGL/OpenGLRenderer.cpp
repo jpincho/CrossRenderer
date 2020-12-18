@@ -132,6 +132,8 @@ bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
     {
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
 
+    CurrentState.SetDefaultViewportSize ( FramebufferInformation->Dimensions );
+
     glBindFramebuffer ( GL_FRAMEBUFFER, FramebufferInformation->OpenGLID );
     int BitMask = 0;
     if ( FramebufferInformation->ColorTextures.size() )
@@ -169,11 +171,11 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
     if ( DirectStateAccess.Enabled )
         {
-        glBlitNamedFramebuffer( FramebufferInformation->OpenGLID,
-            0,
-            0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
-            0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
-            GL_COLOR_BUFFER_BIT, GL_NEAREST );
+        glBlitNamedFramebuffer ( FramebufferInformation->OpenGLID,
+                                 0,
+                                 0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
+                                 0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
+                                 GL_COLOR_BUFFER_BIT, GL_NEAREST );
         }
     else
         {

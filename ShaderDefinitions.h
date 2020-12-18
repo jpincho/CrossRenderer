@@ -59,7 +59,6 @@ typedef struct
         } ShaderAttributeInformation;
     std::vector <ShaderUniformInformation> Uniforms;
     std::vector <ShaderAttributeInformation> Attributes;
-    std::string Name;
     ShaderHandle Handle;
     } ShaderInformation;
 
