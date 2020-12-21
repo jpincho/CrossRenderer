@@ -76,6 +76,9 @@ FramebufferHandle DSACreateFramebuffer ( const FramebufferDescriptor CreationPar
     GLenum FramebufferStatus;
 
     NewFramebuffer.Dimensions = CreationParameters.Dimensions;
+    NewFramebuffer.ClearDepth = CreationParameters.DefaultClearDepth;
+    NewFramebuffer.ClearColor = CreationParameters.DefaultClearColor;
+
     if ( CreationParameters.DepthEnabled )
         {
         TextureDescriptor NewTextureDescriptor;

@@ -166,8 +166,6 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
     NewScissorSettings.Enabled = false;
     CurrentState.ConfigureScissor ( NewScissorSettings );
 
-    //glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
     if ( DirectStateAccess.Enabled )
         {
