@@ -189,6 +189,7 @@ class StormtrooperTest : public TestBase
                                 CrossRenderer::ShaderBufferDataStream ( NewData.TexCoord, 0, sizeof ( glm::vec2 ), CrossRenderer::ShaderBufferComponentType::Float, 2 ) ) );
 
                     NewData.Command.State.DepthTest.Set ( CrossRenderer::DepthTestMode::Less );
+                    NewData.Command.State.Culling.Enabled = true;
                     for ( auto &MaterialIterator : Materials )
                         {
                         if ( MeshIterator.MaterialName == MaterialIterator.Name )

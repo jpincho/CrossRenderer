@@ -74,8 +74,6 @@ class GeometryShaderTest : public TestBase
         glm::vec4 NormalStartColor, NormalEndColor;
         bool ShowVertexNormals, ShowFaceNormals;
     public:
-        GeometryShaderTest ( void )
-            {}
         void Reset ( void )
             {
             SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
@@ -121,11 +119,7 @@ class GeometryShaderTest : public TestBase
             CameraController.SetCamera ( &SceneCamera );
 
             // Load the shader
-            std::string Path ( TEST_SOURCE_LOCATION );
-            Path.append ( "GeometryShader/" );
-            Path.append ( CrossRenderer::Stringify ( RendererBackend ) );
-
-            StormtrooperShader.Handle = LoadShader ( Path + "/Stormtrooper.vert", "", Path + "/Stormtrooper.frag" );
+            StormtrooperShader.Handle = LoadShader ( "Stormtrooper.vert", "", "Stormtrooper.frag" );
             if ( !StormtrooperShader.Handle )
                 return false;
 
@@ -154,7 +148,7 @@ class GeometryShaderTest : public TestBase
             GET_UNIFORM ( StormtrooperShader.Uniforms.PointLight[0], StormtrooperShader.Handle, "u_PointLightBlock[0]" );
             GET_UNIFORM ( StormtrooperShader.Uniforms.PointLight[1], StormtrooperShader.Handle, "u_PointLightBlock[1]" );
 
-            NormalsShader.Handle = LoadShader ( Path + "/Normals.vert", Path + "/Normals.geom", Path + "/Normals.frag" );
+            NormalsShader.Handle = LoadShader ( "Normals.vert", "Normals.geom", "Normals.frag" );
             if ( !NormalsShader.Handle )
                 return false;
             NormalsShader.Attributes.Position = CrossRenderer::GetShaderAttributeHandle ( NormalsShader.Handle, "a_VertexPosition" );
@@ -172,7 +166,7 @@ class GeometryShaderTest : public TestBase
 
             // Load the model
             ModelLoader StormtrooperModel;
-            if ( StormtrooperModel.Set ( "Stormtrooper/", "Stormtrooper.fbx" ) == false )
+            if ( StormtrooperModel.Set ( std::string ( TEST_SOURCE_LOCATION ) + std::string ( "Data/Stormtrooper/" ), "Stormtrooper.fbx" ) == false )
                 return false;
             if ( StormtrooperModel.Load() == false )
                 return false;
@@ -190,7 +184,7 @@ class GeometryShaderTest : public TestBase
                     CrossRenderer::TextureBindSettings Settings;
                     if ( MaterialIterator.Textures[TextureTypeIterator].empty() == true )
                         continue;
-                    if ( ! ( Settings.Handle = LoadTexture ( Path + MaterialIterator.Textures[TextureTypeIterator] ) ) )
+                    if ( ! ( Settings.Handle = LoadTexture ( std::string ( "Stormtrooper/" ) + MaterialIterator.Textures[TextureTypeIterator] ) ) )
                         return false;
                     Settings.WrapSettings = MaterialIterator.WrapSettings[TextureTypeIterator];
                     NewMaterial.Textures[TextureTypeIterator] = Settings;
@@ -229,6 +223,7 @@ class GeometryShaderTest : public TestBase
                                 CrossRenderer::ShaderBufferDataStream ( NewData.TexCoord, 0, sizeof ( glm::vec2 ), CrossRenderer::ShaderBufferComponentType::Float, 2 ) ) );
 
                     NewData.Command.State.DepthTest.Set ( CrossRenderer::DepthTestMode::Less );
+                    NewData.Command.State.Culling.Enabled = true;
                     for ( auto &MaterialIterator : Materials )
                         {
                         if ( MeshIterator.MaterialName == MaterialIterator.Name )
