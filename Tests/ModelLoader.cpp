@@ -7,6 +7,7 @@
 #include <assimp/IOStream.hpp>
 #include <list>
 #include <stdexcept>
+#include <CrossRendererConfig.h>
 
 class AssimpIOStream : public Assimp::IOStream
     {
@@ -84,7 +85,13 @@ class AssimpIOSystem : public Assimp::IOSystem
             }
         bool Exists ( const char *pFile ) const
             {
-            FILE* temp = fopen ( pFile, "rb" );
+#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
+            FILE *temp;
+            if ( fopen_s ( &temp, pFile, "rb" ) != 0 )
+                return false;
+#else
+            FILE *temp = fopen ( pFile, "rb" );
+#endif
             if ( temp == nullptr )
                 return false;
             fclose ( temp );
@@ -92,7 +99,7 @@ class AssimpIOSystem : public Assimp::IOSystem
             }
         char getOsSeparator () const
             {
-#if defined (WIN32)
+#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
             return '\\';
 #else
             return '/';
@@ -101,7 +108,13 @@ class AssimpIOSystem : public Assimp::IOSystem
         Assimp::IOStream *Open ( const char *pFile, const char *Mode = "rb" )
             {
             AssimpIOStream *NewStream = new AssimpIOStream;
-            if ( ( NewStream->File = fopen ( pFile, Mode ) ) == nullptr )
+#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
+            if ( fopen_s ( & ( NewStream->File ), pFile, "rb" ) != 0 )
+                return nullptr;
+#else
+            NewStream->File = fopen ( pFile, Mode );
+#endif
+            if ( NewStream->File == nullptr )
                 {
                 delete NewStream;
                 return nullptr;
@@ -226,7 +239,14 @@ bool ModelLoader::Set ( const std::string &NewBasePath, const std::string &NewRe
         fclose ( File );
         File = nullptr;
         }
+
+#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
+    if ( fopen_s ( &File, FullPath.c_str(), "rb" ) != 0 )
+        return nullptr;
+#else
     File = fopen ( FullPath.c_str(), "rb" );
+#endif
+
     if ( File == nullptr )
         return false;
     return true;

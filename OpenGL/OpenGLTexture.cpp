@@ -40,6 +40,8 @@ TextureHandle Create2DTexture ( const TextureDescriptor CreationParameters )
             OriginDataType = GL_FLOAT;
             InternalFormat = GL_DEPTH_COMPONENT;
             break;
+        default:
+            return TextureHandle::invalid;
         }
 
     glGenTextures ( 1, &NewTexture.OpenGLID );
@@ -102,6 +104,8 @@ TextureHandle DSACreate2DTexture ( const TextureDescriptor CreationParameters )
         case PixelFormat::DepthComponent:
             SizedInternalFormat = GL_DEPTH_COMPONENT24;
             break;
+        default:
+            return TextureHandle::invalid;
         }
 
     glCreateTextures ( GL_TEXTURE_2D, 1, &NewTexture.OpenGLID );
@@ -205,6 +209,8 @@ bool Load2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePix
             OriginPixelFormat = GL_FLOAT;
             DestinationInternalFormat = GL_DEPTH_COMPONENT;
             break;
+        default:
+            return false;
         }
 
     glBindTexture ( GL_TEXTURE_2D, info->OpenGLID );
@@ -289,6 +295,8 @@ bool UpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerLef
             OriginDataType = GL_DEPTH_COMPONENT;
             OriginPixelFormat = GL_FLOAT;
             break;
+        default:
+            return false;
         }
     glTextureSubImage2D ( info->OpenGLID,
                           0,
@@ -359,6 +367,8 @@ bool DSAUpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 Lower
             OriginDataType = GL_DEPTH_COMPONENT;
             OriginPixelFormat = GL_FLOAT;
             break;
+        default:
+            return false;
         }
     glTextureSubImage2D ( info->OpenGLID,
                           0,

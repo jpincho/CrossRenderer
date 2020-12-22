@@ -54,8 +54,9 @@ RendererBackend GetDefaultRendererBackendType ( void )
     {
 #if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT )
     return RendererBackend::OpenGLCore;
-#endif
+#else
     throw std::runtime_error ( std::string ( "No rendering backend available" ) );
+#endif
     }
 
 bool GetAvailableWindowManagerBackends ( std::vector <WindowManagerBackend> &AvailableBackends )

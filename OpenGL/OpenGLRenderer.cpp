@@ -267,10 +267,10 @@ bool RunCommand ( const RenderCommand &Command )
 
         glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
         glVertexAttribPointer ( AttributeInformation->OpenGLID,
-                                Iterator.DataStream.ComponentsPerElement,
+                                ( GLint ) Iterator.DataStream.ComponentsPerElement,
                                 Translate ( Iterator.DataStream.ComponentType ),
                                 Iterator.DataStream.NormalizeData,
-                                Iterator.DataStream.Stride,
+                                ( GLsizei ) Iterator.DataStream.Stride,
                                 ( void * ) Iterator.DataStream.StartOffset );
         }
     CheckError();
@@ -336,13 +336,13 @@ bool RunCommand ( const RenderCommand &Command )
         ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBuffer];
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, BufferToUse->OpenGLID );
         glDrawElements ( Translate ( Command.Primitive ),
-                         Command.VertexCount,
+                         ( GLint ) Command.VertexCount,
                          Translate ( Command.IndexBufferStream.ComponentType ),
                          reinterpret_cast <void *> ( Command.StartVertex * Sizes[ ( int ) Command.IndexBufferStream.ComponentType] ) );
         }
     else
         {
-        glDrawArrays ( Translate ( Command.Primitive ), Command.StartVertex, static_cast <GLsizei> ( Command.VertexCount ) );
+        glDrawArrays ( Translate ( Command.Primitive ), ( GLint ) Command.StartVertex, static_cast <GLsizei> ( Command.VertexCount ) );
         }
     return CheckError();
     }

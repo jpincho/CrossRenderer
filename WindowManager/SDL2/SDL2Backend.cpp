@@ -61,9 +61,9 @@ glm::ivec2 GetWindowPosition ( const RenderWindowHandle &Handle )
     SDL2WindowInfo *info = &Windows[Handle];
     return info->Position;
 
-    glm::ivec2 Position;
-    SDL_GetWindowPosition ( info->Window, &Position.x, &Position.y );
-    return Position;
+    //glm::ivec2 Position;
+    //SDL_GetWindowPosition ( info->Window, &Position.x, &Position.y );
+    //return Position;
     }
 
 void SetWindowSize ( const RenderWindowHandle &Handle, const glm::uvec2 &NewSize )
@@ -78,9 +78,9 @@ glm::uvec2 GetWindowSize ( const RenderWindowHandle &Handle )
     SDL2WindowInfo *info = &Windows[Handle];
     return info->Size;
 
-    glm::uvec2 Size;
-    SDL_GetWindowSize ( info->Window, ( int * ) &Size.x, ( int * ) &Size.y );
-    return Size;
+    //glm::uvec2 Size;
+    //SDL_GetWindowSize ( info->Window, ( int * ) &Size.x, ( int * ) &Size.y );
+    //return Size;
     }
 
 void SetWindowTitle ( const RenderWindowHandle &Handle, const std::string &NewTitle )
@@ -94,7 +94,7 @@ std::string GetWindowTitle ( const RenderWindowHandle &Handle )
     {
     SDL2WindowInfo *info = &Windows[Handle];
     return info->Title;
-    return SDL_GetWindowTitle ( info->Window );
+    //return SDL_GetWindowTitle ( info->Window );
     }
 
 bool SetWindowFullscreen ( const RenderWindowHandle &Handle, const bool NewState )

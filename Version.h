@@ -1,7 +1,7 @@
 #pragma once
 #include <string.h>
 #include <stdio.h>
-
+#include <CrossRendererConfig.h>
 class Version
     {
     public:
@@ -31,8 +31,8 @@ class Version
             if ( *VersionStart != ' ' ) // If there was nothing before the version numbers, assume the whole string
                 VersionStart = String;
 
-#if defined ( MSCVER )
-            sscanfs ( VersionStart, "%u.%u", &Major, &Minor );
+#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
+            sscanf_s ( VersionStart, "%u.%u", &Major, &Minor );
 #else
             sscanf ( VersionStart, "%u.%u", &Major, &Minor );
 #endif

@@ -99,7 +99,7 @@ bool BuildShaderObject ( unsigned &Out_ShaderObjectGLID, const unsigned ShaderTy
     Out_ShaderObjectGLID = glCreateShader ( ShaderType );
 
     // Loads the shader source code
-    glShaderSource ( Out_ShaderObjectGLID, Sources.size(), Sources.data(), nullptr );
+    glShaderSource ( Out_ShaderObjectGLID, ( GLsizei ) Sources.size(), Sources.data(), nullptr );
     if ( CheckError() == false )
         goto OnError;
 
