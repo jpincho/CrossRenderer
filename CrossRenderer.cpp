@@ -81,6 +81,39 @@ bool SanityCheckRenderCommand ( const RenderCommand &Command )
     bool Result = true;
     GetShaderInformation ( Command.Shader, Info );
 
+    // Find invalid uniform handles
+    for ( auto &Iterator : Command.UniformValues )
+        {
+        if ( Iterator.UniformHandle == ShaderUniformHandle::invalid )
+            {
+            LOG_ERROR ( "Invalid uniform handle" );
+            Result = false;
+            break;
+            }
+        }
+
+    // Find invalid attribute handles
+    for ( auto &Iterator : Command.ShaderBufferBindings )
+        {
+        if ( Iterator.AttributeHandle == ShaderAttributeHandle::invalid )
+            {
+            LOG_ERROR ( "Invalid attribute handle" );
+            Result = false;
+            break;
+            }
+        }
+
+    // Find invalid texture uniform handles
+    for ( auto &Iterator : Command.TextureBindings )
+        {
+        if ( Iterator.UniformHandle == ShaderUniformHandle::invalid )
+            {
+            LOG_ERROR ( "Invalid texture uniform handle" );
+            Result = false;
+            break;
+            }
+        }
+
     // Find duplicate uniform values
     auto FindUniformInfoByHandle = [&Info] ( ShaderUniformHandle Handle )->int
         {
