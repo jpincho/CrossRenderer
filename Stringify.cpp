@@ -208,7 +208,7 @@ const char *Stringify ( const PixelFormat Format )
 #define STRINGIFY(X) case PixelFormat::X: return #X;
     switch ( Format )
         {
-            STRINGIFY ( Alpha );
+            STRINGIFY ( Alpha8 );
             STRINGIFY ( AlphaBlueGreenRed8888 );
             STRINGIFY ( AlphaRedGreenBlue8888 );
             STRINGIFY ( BlueGreenRed888 );

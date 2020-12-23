@@ -18,7 +18,7 @@ TextureHandle Create2DTexture ( const TextureDescriptor CreationParameters )
     GLint InternalFormat;
     switch ( CreationParameters.TextureFormat )
         {
-        case PixelFormat::Alpha:
+        case PixelFormat::Alpha8:
             OriginDataType = GL_UNSIGNED_BYTE;
             InternalFormat = GL_ALPHA;
             break;
@@ -86,7 +86,7 @@ TextureHandle DSACreate2DTexture ( const TextureDescriptor CreationParameters )
     GLint SizedInternalFormat;
     switch ( CreationParameters.TextureFormat )
         {
-        case PixelFormat::Alpha:
+        case PixelFormat::Alpha8:
             SizedInternalFormat = GL_ALPHA8;
             break;
         case PixelFormat::RedGreenBlue888:
@@ -164,7 +164,7 @@ bool Load2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePix
     GLint DestinationInternalFormat;
     switch ( SourcePixelFormat )
         {
-        case PixelFormat::Alpha:
+        case PixelFormat::Alpha8:
             OriginDataType = GL_UNSIGNED_BYTE;
             OriginPixelFormat = GL_ALPHA;
             DestinationInternalFormat = GL_ALPHA;
@@ -259,7 +259,7 @@ bool UpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerLef
     GLenum OriginPixelFormat, OriginDataType;
     switch ( info->Format )
         {
-        case PixelFormat::Alpha:
+        case PixelFormat::Alpha8:
             OriginDataType = GL_UNSIGNED_BYTE;
             OriginPixelFormat = GL_ALPHA;
             break;
@@ -331,7 +331,7 @@ bool DSAUpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 Lower
     GLenum OriginPixelFormat, OriginDataType;
     switch ( info->Format )
         {
-        case PixelFormat::Alpha:
+        case PixelFormat::Alpha8:
             OriginDataType = GL_UNSIGNED_BYTE;
             OriginPixelFormat = GL_ALPHA;
             break;

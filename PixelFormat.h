@@ -5,7 +5,7 @@ namespace CrossRenderer
 {
 enum class PixelFormat : uint8_t
     {
-    Alpha = 0,
+    Alpha8 = 0,
     RedGreenBlue888,
     RedGreenBlue565,
     RedGreenBlueAlpha8888,
