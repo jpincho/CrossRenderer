@@ -121,6 +121,13 @@ void ProcessEvents ( void )
             {
             default:
                 continue;
+            case SDL_MOUSEMOTION:
+                {
+                NewEvent.EventType = WindowEventType::MouseMoved;
+                NewEvent.EventData.MouseMoved.X = Event.motion.x;
+                NewEvent.EventData.MouseMoved.Y = Event.motion.y;
+                break;
+                }
             case SDL_MOUSEWHEEL:
                 {
                 NewEvent.EventType = WindowEventType::MouseWheel;

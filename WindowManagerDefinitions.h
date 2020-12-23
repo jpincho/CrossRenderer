@@ -20,6 +20,7 @@ enum class WindowEventType
     ButtonPressed,
     ButtonReleased,
     MouseWheel,
+    MouseMoved,
     Quit,
     FrameStarted,
     FrameEnded,
@@ -45,6 +46,10 @@ typedef struct WindowEvent
             {
             int32_t X, Y;
             } MouseWheel;
+        struct
+            {
+            int32_t X, Y;
+            } MouseMoved;
         struct
             {
             uint32_t Data1, Data2;
