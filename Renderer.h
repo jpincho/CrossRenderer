@@ -43,8 +43,6 @@ extern void ( *GetShaderInformation ) ( const ShaderHandle Handle, ShaderInforma
 
 extern FramebufferHandle ( *CreateFramebuffer ) ( const FramebufferDescriptor CreationParameters );
 extern bool ( *DeleteFramebuffer ) ( const FramebufferHandle Handle );
-//extern bool ( *BindFramebuffer ) ( const FramebufferHandle Handle );
-//extern bool ( *UnbindFramebuffer ) ( void );
 extern glm::uvec2 ( *GetFramebufferSize ) ( const FramebufferHandle Handle );
 extern TextureHandle ( *GetColorBufferFromFramebuffer ) ( const FramebufferHandle Handle, const size_t Index );
 extern TextureHandle ( *GetDepthBufferFromFramebuffer ) ( const FramebufferHandle Handle );

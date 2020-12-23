@@ -84,7 +84,7 @@ FramebufferHandle DSACreateFramebuffer ( const FramebufferDescriptor CreationPar
         TextureDescriptor NewTextureDescriptor;
         NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
         NewTextureDescriptor.TextureFormat = CreationParameters.DepthFormat;
-        NewFramebuffer.DepthTexture = Create2DTexture ( NewTextureDescriptor );
+        NewFramebuffer.DepthTexture = DSACreate2DTexture( NewTextureDescriptor );
         if ( !NewFramebuffer.DepthTexture )
             return FramebufferHandle::invalid;
         }
@@ -93,7 +93,7 @@ FramebufferHandle DSACreateFramebuffer ( const FramebufferDescriptor CreationPar
         TextureDescriptor NewTextureDescriptor;
         NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
         NewTextureDescriptor.TextureFormat = CreationParameters.ColorAttachmentFormat;
-        TextureHandle NewTexture = Create2DTexture ( NewTextureDescriptor );
+        TextureHandle NewTexture = DSACreate2DTexture( NewTextureDescriptor );
         if ( !NewTexture )
             goto error;
         NewFramebuffer.ColorTextures.push_back ( NewTexture );
@@ -143,20 +143,6 @@ bool DeleteFramebuffer ( const FramebufferHandle Handle )
     glDeleteFramebuffers ( 1, &info->OpenGLID );
     Framebuffers.ReleaseHandle ( Handle );
     return true;
-    }
-
-bool BindFramebuffer ( const FramebufferHandle Handle )
-    {
-    FramebufferInfo *info = &Framebuffers[Handle];
-
-    glBindFramebuffer ( GL_FRAMEBUFFER, info->OpenGLID );
-    return CheckError();
-    }
-
-bool UnbindFramebuffer ( void )
-    {
-    glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
-    return CheckError();
     }
 
 glm::uvec2 GetFramebufferSize ( const FramebufferHandle Handle )

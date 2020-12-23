@@ -34,8 +34,6 @@ void ( *GetShaderInformation ) ( const ShaderHandle Handle, ShaderInformation &I
 
 FramebufferHandle ( *CreateFramebuffer ) ( const FramebufferDescriptor CreationParameters ) = 0;
 bool ( *DeleteFramebuffer ) ( const FramebufferHandle Handle ) = 0;
-bool ( *BindFramebuffer ) ( const FramebufferHandle Handle ) = 0;
-bool ( *UnbindFramebuffer ) ( void ) = 0;
 glm::uvec2 ( *GetFramebufferSize ) ( const FramebufferHandle Handle ) = 0;
 TextureHandle ( *GetColorBufferFromFramebuffer ) ( const FramebufferHandle Handle, const size_t Index ) = 0;
 TextureHandle ( *GetDepthBufferFromFramebuffer ) ( const FramebufferHandle Handle ) = 0;

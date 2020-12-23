@@ -48,5 +48,8 @@
 .vs
 out
 
+# Visual Studio Code
+build
+
 # Astyle generated files
 *.orig
