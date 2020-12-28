@@ -41,12 +41,15 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
         goto OnError;
 
     Context->MakeActive ( ActiveWindow );
-    if ( Context->GetOpenGLVersion().GreaterEqual ( 3, 0 ) )
+    if ( Context->GetOpenGLVersion().Lesser ( 3, 0 ) )
         {
-        // If necessary, create a VAO
-        glGenVertexArrays ( 1, &GeneralVAO );
-        glBindVertexArray ( GeneralVAO );
+        LOG_ERROR ( "OpenGL Core 3.0+ needed" );
+        return false;
         }
+
+    // If necessary, create a VAO
+    glGenVertexArrays ( 1, &GeneralVAO );
+    glBindVertexArray ( GeneralVAO );
 
     CurrentState.Invalidate();
 
