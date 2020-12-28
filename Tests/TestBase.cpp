@@ -125,6 +125,57 @@ CrossRenderer::TextureHandle TestBase::LoadTexture ( const std::string &ImageFil
     return Texture;
     }
 
+CrossRenderer::TextureHandle TestBase::LoadCubemapTexture ( const std::string ImageFile[6], const bool Flip )
+    {
+    glm::ivec2 ImageSize;
+    int Channels;
+    CrossRenderer::PixelFormat ImageFormat;
+    CrossRenderer::TextureHandle Result;
+    CrossRenderer::TextureDescriptor TextureDescriptor;
+
+    std::string Path ( TEST_SOURCE_LOCATION );
+    Path.append ( "Data/" );
+
+    stbi_set_flip_vertically_on_load ( Flip ? 1 : 0 );
+    stbi_uc *Images[6];
+    for ( unsigned Face = 0; Face < 6; ++Face )
+        {
+        Images[Face] = stbi_load ( ( Path + ImageFile[Face] ).c_str(), &ImageSize.x, &ImageSize.y, &Channels, 0 );
+        if ( !Images[Face] )
+            {
+            LOG_ERROR ( "Unable to load texture from '%s'", ImageFile[Face].c_str() );
+            goto End;
+            }
+        switch ( Channels )
+            {
+            case 3:
+                ImageFormat = CrossRenderer::PixelFormat::RedGreenBlue888;
+                break;
+            case 4:
+                ImageFormat = CrossRenderer::PixelFormat::RedGreenBlueAlpha8888;
+                break;
+            default:
+                goto End;
+            }
+        }
+    TextureDescriptor.Type = CrossRenderer::TextureType::TextureCubeMap;
+    TextureDescriptor.Dimensions = glm::uvec2 ( ImageSize.x, ImageSize.y );
+    TextureDescriptor.Format = ImageFormat;
+    Result = CrossRenderer::CreateTexture ( TextureDescriptor );
+    if ( !Result )
+        goto End;
+
+    void *VoidPointer[6];
+    for ( unsigned Face = 0; Face < 6; ++Face )
+        VoidPointer[Face] = Images[Face];
+    if ( CrossRenderer::LoadCubeMapTextureData ( Result, ImageFormat, VoidPointer ) == false )
+        goto End;
+End:
+    for ( unsigned Face = 0; Face < 6; ++Face )
+        stbi_image_free ( Images[Face] );
+    return Result;
+    }
+
 TestBase::TestBase ( void )
     {
     }

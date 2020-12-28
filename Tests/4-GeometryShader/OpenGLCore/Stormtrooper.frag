@@ -17,7 +17,7 @@ struct AmbientLight
 
 uniform AmbientLight u_AmbientLight;
 
-layout (std140) uniform u_PointLightBlock
+layout ( std140 ) uniform u_PointLightBlock
     {
     vec4 Position;
     vec4 Diffuse, Specular;
