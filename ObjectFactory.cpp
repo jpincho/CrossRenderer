@@ -68,7 +68,8 @@ void CreateNewRenderer ( const RendererBackend &Backend )
             ATTRIB ( CreateTexture );
             ATTRIB ( DeleteTexture );
             ATTRIB ( Load2DTextureData );
-            ATTRIB ( UpdateTextureRegion );
+            ATTRIB ( Update2DTextureRegion );
+            ATTRIB ( LoadCubeMapTextureData );
             ATTRIB ( GetTextureDimensions );
             ATTRIB ( CreateShader );
             ATTRIB ( DeleteShader );

@@ -95,7 +95,8 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
         ATTRIB ( ChangeShaderBufferContents );
         ATTRIB ( CreateTexture );
         ATTRIB ( Load2DTextureData );
-        ATTRIB ( UpdateTextureRegion );
+        ATTRIB ( Update2DTextureRegion );
+        ATTRIB ( LoadCubeMapTextureData );
         ATTRIB ( CreateFramebuffer );
 #undef ATTRIB
         }
@@ -281,7 +282,7 @@ bool RunCommand ( const RenderCommand &Command )
     for ( auto &Iterator : Command.TextureBindings )
         {
         UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.key()];
-        if ( UniformInformation->Type != ShaderUniformType::Sampler2D ) return false;
+        //if ( UniformInformation->Type != ShaderUniformType::Sampler2D ) return false;
 
         GLint DesiredSWrap = Translate ( Iterator.BindSettings.WrapSettings.Horizontal );
         GLint DesiredTWrap = Translate ( Iterator.BindSettings.WrapSettings.Vertical );

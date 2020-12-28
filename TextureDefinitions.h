@@ -26,7 +26,7 @@ enum class TextureWrapMode : uint8_t
 enum class TextureType : uint8_t
     {
     Texture2D,
-    TextureMap
+    TextureCubeMap
     };
 
 typedef struct TextureFilterSettings

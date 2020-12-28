@@ -8,4 +8,11 @@ Currently supported platforms:
 - OSX  ( through SDL2 )
 
 Currently supported graphics APIs:
-- OpenGL Core
+- OpenGL Core 3+
+	- 2D textures
+	- Cubemap textures
+	- GLSL shaders
+	- Multitexturing
+	- Framebuffers
+	- Uniform buffer objects
+

@@ -16,7 +16,8 @@ class TestBase : public CrossRenderer::EventListener
         CrossRenderer::FramebufferHandle DefaultFramebuffer;
 
         void OnEvent ( const CrossRenderer::WindowEvent &Event );
-        CrossRenderer::TextureHandle LoadTexture ( const std::string &ImageFile );
+        CrossRenderer::TextureHandle LoadTexture ( const std::string &ImageFile, const bool Flip = true );
+        CrossRenderer::TextureHandle LoadCubemapTexture ( const std::string ImageFile[6], const bool Flip = true );
         CrossRenderer::ShaderHandle LoadShader ( const std::string &VertexFile, const std::string &GeometryFile, const std::string &FragmentFile );
 
     public:

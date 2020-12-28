@@ -76,7 +76,7 @@ CrossRenderer::ShaderHandle TestBase::LoadShader ( const std::string &VertexFile
     return Shader;
     }
 
-CrossRenderer::TextureHandle TestBase::LoadTexture ( const std::string &ImageFile )
+CrossRenderer::TextureHandle TestBase::LoadTexture ( const std::string &ImageFile, const bool Flip )
     {
     glm::ivec2 ImageSize;
     int Channels;
@@ -85,10 +85,13 @@ CrossRenderer::TextureHandle TestBase::LoadTexture ( const std::string &ImageFil
     std::string Path ( TEST_SOURCE_LOCATION );
     Path.append ( "Data/" );
 
-    stbi_set_flip_vertically_on_load ( 1 );
+    stbi_set_flip_vertically_on_load ( Flip ? 1 : 0 );
     stbi_uc *Image = stbi_load ( ( Path + ImageFile ).c_str(), &ImageSize.x, &ImageSize.y, &Channels, 0 );
     if ( !Image )
+        {
+        LOG_ERROR ( "Unable to load texture from '%s'", ImageFile.c_str() );
         return CrossRenderer::TextureHandle::invalid;
+        }
     switch ( Channels )
         {
         case 3:
@@ -112,7 +115,7 @@ CrossRenderer::TextureHandle TestBase::LoadTexture ( const std::string &ImageFil
         stbi_image_free ( Image );
         return CrossRenderer::TextureHandle::invalid;
         }
-    if ( CrossRenderer::Load2DTextureData ( Texture, ImageFormat, Image, 0 ) == false )
+    if ( CrossRenderer::Load2DTextureData ( Texture, ImageFormat, Image ) == false )
         {
         stbi_image_free ( Image );
         return CrossRenderer::TextureHandle::invalid;

@@ -165,16 +165,15 @@ class ImGuiTest : public TestBase
             CrossRenderer::TextureDescriptor FontTextureDescriptor ( FontSize, CrossRenderer::PixelFormat::RedGreenBlueAlpha8888 );
 
             ImGuiFontTexture = CrossRenderer::CreateTexture ( FontTextureDescriptor );
-            CrossRenderer::Load2DTextureData ( ImGuiFontTexture, CrossRenderer::PixelFormat::RedGreenBlueAlpha8888, FontPixelData, FontSize.x );
+            CrossRenderer::Load2DTextureData ( ImGuiFontTexture, CrossRenderer::PixelFormat::RedGreenBlueAlpha8888, FontPixelData );
 
             io.Fonts->TexID = ( ImTextureID ) ImGuiFontTexture.key();
             glm::uvec2 WindowSize = CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin() );
-            io.DisplaySize.x
-                = WindowSize.x;
-            io.DisplaySize.y = WindowSize.y;
+            io.DisplaySize.x = ( float ) WindowSize.x;
+            io.DisplaySize.y = ( float ) WindowSize.y;
             glm::ivec2 MousePosition = CrossRenderer::WindowManager::GetMousePosition();
-            io.MousePos.x = MousePosition.x;
-            io.MousePos.y = MousePosition.y;
+            io.MousePos.x = ( float ) MousePosition.x;
+            io.MousePos.y = ( float ) MousePosition.y;
             uint32_t MouseButtonStatus = CrossRenderer::WindowManager::GetMouseButtonStatus();
             io.MouseDown[0] = MouseButtonStatus & 1;
             io.MouseDown[1] = MouseButtonStatus & 2;
@@ -275,8 +274,8 @@ class ImGuiTest : public TestBase
             ImGuiIO &io = ImGui::GetIO();
             glm::ivec2 MousePos = CrossRenderer::WindowManager::GetMousePosition();
             uint32_t MouseButtons = CrossRenderer::WindowManager::GetMouseButtonStatus();
-            io.MousePos.x = MousePos.x;
-            io.MousePos.y = MousePos.y;
+            io.MousePos.x = ( float ) MousePos.x;
+            io.MousePos.y = ( float ) MousePos.y;
             io.MouseDown[0] = MouseButtons & 1;
             io.MouseDown[1] = MouseButtons & 2;
 

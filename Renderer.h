@@ -28,8 +28,9 @@ extern bool ( *ChangeShaderBufferContents ) ( const ShaderBufferHandle Handle, c
 
 extern TextureHandle ( *CreateTexture ) ( const TextureDescriptor CreationParameters );
 extern bool ( *DeleteTexture ) ( const TextureHandle Handle );
-extern bool ( *Load2DTextureData ) ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data, const unsigned Pitch );
-extern bool ( *UpdateTextureRegion ) ( const TextureHandle Handle, const glm::uvec2 LowerLeft, const glm::uvec2 RegionDimensions, const void *Data );
+extern bool ( *Load2DTextureData ) ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data );
+extern bool ( *Update2DTextureRegion ) ( const TextureHandle Handle, const glm::uvec2 LowerLeft, const glm::uvec2 RegionDimensions, const PixelFormat SourcePixelFormat, const void *Data );
+extern bool ( *LoadCubeMapTextureData ) ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, void *Data[6] );
 extern glm::uvec2 ( *GetTextureDimensions ) ( const TextureHandle Handle );
 
 extern ShaderHandle ( *CreateShader ) ( const ShaderCode &NewCode );
