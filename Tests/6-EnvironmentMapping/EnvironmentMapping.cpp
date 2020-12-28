@@ -309,6 +309,10 @@ class EnvironmentMappingTest : public TestBase
             Reset();
             return true;
             }
+        void SpecificImGuiDraw ( void )
+            {
+            ImGui::ShowDemoWindow();
+            }
         void SpecificDraw ( void )
             {
             ++FrameCount;

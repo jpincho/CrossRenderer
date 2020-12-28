@@ -8,14 +8,14 @@ uniform vec3 u_ViewPosition;
 uniform samplerCube u_SkyboxTexture;
 #define REFRACTION
 void main()
-    {    
-    vec3 I = normalize(v_FragPos - u_ViewPosition);
+    {
+    vec3 I = normalize ( v_FragPos - u_ViewPosition );
 
 #if defined REFRACTION
     float ratio = 1.00 / 1.52;
-    vec3 R = refract(I, normalize(v_Normal), ratio);
+    vec3 R = refract ( I, normalize ( v_Normal ), ratio );
 #else
-    vec3 R = reflect(I, normalize(v_Normal));
+    vec3 R = reflect ( I, normalize ( v_Normal ) );
 #endif
-    FragColor = vec4(texture(u_SkyboxTexture, R).rgb, 1.0);
+    FragColor = vec4 ( texture ( u_SkyboxTexture, R ).rgb, 1.0 );
     }
