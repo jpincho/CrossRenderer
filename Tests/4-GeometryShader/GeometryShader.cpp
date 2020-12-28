@@ -258,6 +258,42 @@ class GeometryShaderTest : public TestBase
             Reset();
             return true;
             }
+        void SpecificImGuiDraw ( void )
+            {
+            ImGui::Begin ( "Options" );
+            ImGui::PushItemWidth ( 100 );
+            ImGui::SliderFloat ( "Normal length", &NormalLength, 0.0f, 2.0f );
+            ImGui::ColorPicker4 ( "Normal start color", glm::value_ptr ( NormalStartColor ) );
+            ImGui::ColorPicker4 ( "Normal end color", glm::value_ptr ( NormalEndColor ) );
+            ImGui::Checkbox ( "Show vertex normals", &ShowVertexNormals );
+            ImGui::Checkbox ( "Show face normals", &ShowFaceNormals );
+            ImGui::End();
+
+            ImGui::Begin ( "Lights" );
+            ImGui::PushItemWidth ( 100 );
+            ImGui::Text ( "Ambient" );
+            ImGui::ColorPicker3 ( "Ambient diffuse", glm::value_ptr ( AmbientLight.Color ) );
+            ImGui::SliderFloat ( "Ambient intensity", &AmbientLight.Intensity, 0.0f, 200.0f );
+            ImGui::Text ( "Light 1" );
+            ImGui::InputFloat4 ( "Light 1 position", glm::value_ptr ( LightData[0].Position ) );
+            ImGui::ColorPicker4 ( "Light 1 diffuse", glm::value_ptr ( LightData[0].Diffuse ) );
+            ImGui::ColorPicker4 ( "Light 1 specular", glm::value_ptr ( LightData[0].Specular ) );
+            ImGui::SliderFloat ( "Light 1 intensity", &LightData[0].Intensity, 0.0f, 200.0f );
+            ImGui::SliderFloat ( "Light 1 const. atten.", &LightData[0].ConstantAttenuation, 0.0f, 200.0f );
+            ImGui::SliderFloat ( "Light 1 linear atten.", &LightData[0].LinearAttenuation, 0.0f, 200.0f );
+            ImGui::SliderFloat ( "Light 1 exp. atten.", &LightData[0].ExponentialAttenuation, 0.0f, 200.0f );
+
+            ImGui::Separator();
+            ImGui::Text ( "Light 2" );
+            ImGui::InputFloat4 ( "Light 2 position", glm::value_ptr ( LightData[1].Position ) );
+            ImGui::ColorPicker4 ( "Light 2 diffuse", glm::value_ptr ( LightData[1].Diffuse ) );
+            ImGui::ColorPicker4 ( "Light 2 specular", glm::value_ptr ( LightData[1].Specular ) );
+            ImGui::SliderFloat ( "Light 2 intensity", &LightData[1].Intensity, 0.0f, 200.0f );
+            ImGui::SliderFloat ( "Light 2 const. atten.", &LightData[1].ConstantAttenuation, 0.0f, 200.0f );
+            ImGui::SliderFloat ( "Light 2 linear atten.", &LightData[1].LinearAttenuation, 0.0f, 200.0f );
+            ImGui::SliderFloat ( "Light 2 exp. atten.", &LightData[1].ExponentialAttenuation, 0.0f, 200.0f );
+            ImGui::End();
+            }
         void SpecificDraw ( void )
             {
             ++FrameCount;
