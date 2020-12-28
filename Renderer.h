@@ -26,7 +26,7 @@ extern ShaderBufferHandle ( *CreateShaderBuffer ) ( const ShaderBufferDescriptor
 extern bool ( *DeleteShaderBuffer ) ( const ShaderBufferHandle Handle );
 extern bool ( *ChangeShaderBufferContents ) ( const ShaderBufferHandle Handle, const ShaderBufferDescriptor CreationParameters );
 
-extern TextureHandle ( *Create2DTexture ) ( const TextureDescriptor CreationParameters );
+extern TextureHandle ( *CreateTexture ) ( const TextureDescriptor CreationParameters );
 extern bool ( *DeleteTexture ) ( const TextureHandle Handle );
 extern bool ( *Load2DTextureData ) ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data, const unsigned Pitch );
 extern bool ( *UpdateTextureRegion ) ( const TextureHandle Handle, const glm::uvec2 LowerLeft, const glm::uvec2 RegionDimensions, const void *Data );

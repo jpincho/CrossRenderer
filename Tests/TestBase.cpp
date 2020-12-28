@@ -103,9 +103,10 @@ CrossRenderer::TextureHandle TestBase::LoadTexture ( const std::string &ImageFil
         }
 
     CrossRenderer::TextureDescriptor TextureDescriptor;
+    TextureDescriptor.Type = CrossRenderer::TextureType::Texture2D;
     TextureDescriptor.Dimensions = glm::uvec2 ( ImageSize.x, ImageSize.y );
-    TextureDescriptor.TextureFormat = ImageFormat;
-    CrossRenderer::TextureHandle Texture = CrossRenderer::Create2DTexture ( TextureDescriptor );
+    TextureDescriptor.Format = ImageFormat;
+    CrossRenderer::TextureHandle Texture = CrossRenderer::CreateTexture ( TextureDescriptor );
     if ( !Texture )
         {
         stbi_image_free ( Image );

@@ -5,18 +5,19 @@ namespace CrossRenderer
 {
 namespace OpenGL
 {
-TextureHandle Create2DTexture ( const TextureDescriptor CreationParameters )
+TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
     {
     TextureInfo NewTexture;
     NewTexture.Dimensions = CreationParameters.Dimensions;
-    NewTexture.Format = CreationParameters.TextureFormat;
+    NewTexture.Format = CreationParameters.Format;
+    NewTexture.Type = CreationParameters.Type;
     NewTexture.GLSWrap = Translate ( CreationParameters.WrapSettings.Horizontal );
     NewTexture.GLTWrap = Translate ( CreationParameters.WrapSettings.Vertical );
     NewTexture.GLMinFilter = Translate ( CreationParameters.FilterSettings.MinFilter );
     NewTexture.GLMagFilter = Translate ( CreationParameters.FilterSettings.MagFilter );
     GLenum OriginDataType;
     GLint InternalFormat;
-    switch ( CreationParameters.TextureFormat )
+    switch ( NewTexture.Format )
         {
         case PixelFormat::Alpha8:
             OriginDataType = GL_UNSIGNED_BYTE;
@@ -49,19 +50,28 @@ TextureHandle Create2DTexture ( const TextureDescriptor CreationParameters )
         {
         return TextureHandle::invalid;
         }
-    glBindTexture ( GL_TEXTURE_2D, NewTexture.OpenGLID );
-    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
-    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, NewTexture.GLTWrap );
-    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, NewTexture.GLMinFilter );
-    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
-    glTexImage2D ( GL_TEXTURE_2D,
-                   0,
-                   InternalFormat,
-                   ( GLint ) CreationParameters.Dimensions.x, ( GLint ) CreationParameters.Dimensions.y,
-                   0,
-                   InternalFormat,
-                   OriginDataType,
-                   nullptr );
+    switch ( NewTexture.Type )
+        {
+        case TextureType::Texture2D:
+            {
+            glBindTexture ( GL_TEXTURE_2D, NewTexture.OpenGLID );
+            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
+            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, NewTexture.GLTWrap );
+            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, NewTexture.GLMinFilter );
+            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
+            glTexImage2D ( GL_TEXTURE_2D,
+                           0,
+                           InternalFormat,
+                           ( GLint ) NewTexture.Dimensions.x, ( GLint ) NewTexture.Dimensions.y,
+                           0,
+                           InternalFormat,
+                           OriginDataType,
+                           nullptr );
+            break;
+            }
+        default:
+            return TextureHandle::invalid;
+        }
 
     if ( CheckError() == false )
         {
@@ -74,17 +84,18 @@ TextureHandle Create2DTexture ( const TextureDescriptor CreationParameters )
     return NewHandle;
     }
 
-TextureHandle DSACreate2DTexture ( const TextureDescriptor CreationParameters )
+TextureHandle DSACreateTexture ( const TextureDescriptor CreationParameters )
     {
     TextureInfo NewTexture;
     NewTexture.Dimensions = CreationParameters.Dimensions;
-    NewTexture.Format = CreationParameters.TextureFormat;
+    NewTexture.Format = CreationParameters.Format;
+    NewTexture.Type = CreationParameters.Type;
     NewTexture.GLSWrap = Translate ( CreationParameters.WrapSettings.Horizontal );
     NewTexture.GLTWrap = Translate ( CreationParameters.WrapSettings.Vertical );
     NewTexture.GLMinFilter = Translate ( CreationParameters.FilterSettings.MinFilter );
     NewTexture.GLMagFilter = Translate ( CreationParameters.FilterSettings.MagFilter );
     GLint SizedInternalFormat;
-    switch ( CreationParameters.TextureFormat )
+    switch ( NewTexture.Format )
         {
         case PixelFormat::Alpha8:
             SizedInternalFormat = GL_ALPHA8;
@@ -108,16 +119,25 @@ TextureHandle DSACreate2DTexture ( const TextureDescriptor CreationParameters )
             return TextureHandle::invalid;
         }
 
-    glCreateTextures ( GL_TEXTURE_2D, 1, &NewTexture.OpenGLID );
-    if ( CheckError() == false )
+    switch ( NewTexture.Type )
         {
-        return TextureHandle::invalid;
+        case TextureType::Texture2D:
+            {
+            glCreateTextures ( GL_TEXTURE_2D, 1, &NewTexture.OpenGLID );
+            if ( CheckError() == false )
+                {
+                return TextureHandle::invalid;
+                }
+            glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
+            glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_WRAP_T, NewTexture.GLTWrap );
+            glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_MIN_FILTER, NewTexture.GLMinFilter );
+            glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
+            glTextureStorage2D ( NewTexture.OpenGLID, 1, SizedInternalFormat, NewTexture.Dimensions.x, NewTexture.Dimensions.y );
+            break;
+            }
+        default:
+            return TextureHandle::invalid;
         }
-    glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
-    glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_WRAP_T, NewTexture.GLTWrap );
-    glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_MIN_FILTER, NewTexture.GLMinFilter );
-    glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
-    glTextureStorage2D ( NewTexture.OpenGLID, 1, SizedInternalFormat, CreationParameters.Dimensions.x, CreationParameters.Dimensions.y );
 
     if ( CheckError() == false )
         {
@@ -132,16 +152,16 @@ TextureHandle DSACreate2DTexture ( const TextureDescriptor CreationParameters )
 
 bool DeleteTexture ( const TextureHandle Handle )
     {
-    TextureInfo *info = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle];
 
-    glDeleteTextures ( 1, &info->OpenGLID );
+    glDeleteTextures ( 1, &TextureInformation->OpenGLID );
     Textures.ReleaseHandle ( Handle );
     return true;
     }
 
 bool Load2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data, const unsigned Pitch )
     {
-    TextureInfo *info = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle];
 
     uint8_t alignment = 1;
     uint8_t alignment_mask;
@@ -213,17 +233,24 @@ bool Load2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePix
             return false;
         }
 
-    glBindTexture ( GL_TEXTURE_2D, info->OpenGLID );
-    // ******** Loads the texture into OpenGL ********
-    glTexImage2D ( GL_TEXTURE_2D,
-                   0,
-                   DestinationInternalFormat,
-                   info->Dimensions.x, info->Dimensions.y,
-                   0,
-                   OriginPixelFormat,
-                   OriginDataType,
-                   Data );
-
+    switch ( TextureInformation->Type )
+        {
+        case TextureType::Texture2D:
+            {
+            glBindTexture ( GL_TEXTURE_2D, TextureInformation->OpenGLID );
+            glTexImage2D ( GL_TEXTURE_2D,
+                           0,
+                           DestinationInternalFormat,
+                           TextureInformation->Dimensions.x, TextureInformation->Dimensions.y,
+                           0,
+                           OriginPixelFormat,
+                           OriginDataType,
+                           Data );
+            break;
+            }
+        default:
+            return false;
+        }
 
     if ( CheckError() == false )
         return false;
@@ -233,16 +260,16 @@ bool Load2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePix
 
 bool DSALoad2DTextureData ( const TextureHandle Handle, const PixelFormat, const void *Data, const unsigned )
     {
-    TextureInfo *info = &Textures[Handle];
-    return DSAUpdateTextureRegion ( Handle, glm::uvec2 ( 0, 0 ), info->Dimensions, Data );
+    TextureInfo *TextureInformation = &Textures[Handle];
+    return DSAUpdateTextureRegion ( Handle, glm::uvec2 ( 0, 0 ), TextureInformation->Dimensions, Data );
     }
 
 bool UpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerLeft, const glm::uvec2 RegionDimensions, const void *Data )
     {
-    TextureInfo *info = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle];
 
-    if ( ( LowerLeft.x + RegionDimensions.x > info->Dimensions.x ) ||
-            ( LowerLeft.y + RegionDimensions.y > info->Dimensions.y ) )
+    if ( ( LowerLeft.x + RegionDimensions.x > TextureInformation->Dimensions.x ) ||
+            ( LowerLeft.y + RegionDimensions.y > TextureInformation->Dimensions.y ) )
         return false;
 
     uint8_t alignment = 1;
@@ -257,7 +284,7 @@ bool UpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerLef
     // OriginPixelFormat - GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
     // OriginDataType - GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT, GL_UNSIGNED_BYTE_3_3_2, GL_UNSIGNED_BYTE_2_3_3_REV, GL_UNSIGNED_SHORT_5_6_5, GL_UNSIGNED_SHORT_5_6_5_REV, GL_UNSIGNED_SHORT_4_4_4_4, GL_UNSIGNED_SHORT_4_4_4_4_REV, GL_UNSIGNED_SHORT_5_5_5_1, GL_UNSIGNED_SHORT_1_5_5_5_REV, GL_UNSIGNED_INT_8_8_8_8, GL_UNSIGNED_INT_8_8_8_8_REV, GL_UNSIGNED_INT_10_10_10_2, and GL_UNSIGNED_INT_2_10_10_10_REV.
     GLenum OriginPixelFormat, OriginDataType;
-    switch ( info->Format )
+    switch ( TextureInformation->Format )
         {
         case PixelFormat::Alpha8:
             OriginDataType = GL_UNSIGNED_BYTE;
@@ -298,23 +325,32 @@ bool UpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerLef
         default:
             return false;
         }
-    glTextureSubImage2D ( info->OpenGLID,
-                          0,
-                          LowerLeft.x,
-                          LowerLeft.y,
-                          ( int ) RegionDimensions.x, ( int ) RegionDimensions.y,
-                          OriginPixelFormat,
-                          OriginDataType,
-                          Data );
+    switch ( TextureInformation->Type )
+        {
+        case TextureType::Texture2D:
+            {
+            glBindTexture ( GL_TEXTURE_2D, TextureInformation->OpenGLID );
+            glTexSubImage2D ( GL_TEXTURE_2D,
+                              0,
+                              LowerLeft.x, LowerLeft.y,
+                              ( int ) RegionDimensions.x, ( int ) RegionDimensions.y,
+                              OriginPixelFormat,
+                              OriginDataType,
+                              Data );
+            break;
+            }
+        default:
+            return false;
+        }
     return true;
     }
 
 bool DSAUpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerLeft, const glm::uvec2 RegionDimensions, const void *Data )
     {
-    TextureInfo *info = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle];
 
-    if ( ( LowerLeft.x + RegionDimensions.x > info->Dimensions.x ) ||
-            ( LowerLeft.y + RegionDimensions.y > info->Dimensions.y ) )
+    if ( ( LowerLeft.x + RegionDimensions.x > TextureInformation->Dimensions.x ) ||
+            ( LowerLeft.y + RegionDimensions.y > TextureInformation->Dimensions.y ) )
         return false;
 
     uint8_t alignment = 1;
@@ -329,7 +365,7 @@ bool DSAUpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 Lower
     // OriginPixelFormat - GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
     // OriginDataType - GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT, GL_UNSIGNED_BYTE_3_3_2, GL_UNSIGNED_BYTE_2_3_3_REV, GL_UNSIGNED_SHORT_5_6_5, GL_UNSIGNED_SHORT_5_6_5_REV, GL_UNSIGNED_SHORT_4_4_4_4, GL_UNSIGNED_SHORT_4_4_4_4_REV, GL_UNSIGNED_SHORT_5_5_5_1, GL_UNSIGNED_SHORT_1_5_5_5_REV, GL_UNSIGNED_INT_8_8_8_8, GL_UNSIGNED_INT_8_8_8_8_REV, GL_UNSIGNED_INT_10_10_10_2, and GL_UNSIGNED_INT_2_10_10_10_REV.
     GLenum OriginPixelFormat, OriginDataType;
-    switch ( info->Format )
+    switch ( TextureInformation->Format )
         {
         case PixelFormat::Alpha8:
             OriginDataType = GL_UNSIGNED_BYTE;
@@ -370,21 +406,30 @@ bool DSAUpdateTextureRegion ( const TextureHandle Handle, const glm::uvec2 Lower
         default:
             return false;
         }
-    glTextureSubImage2D ( info->OpenGLID,
-                          0,
-                          LowerLeft.x,
-                          LowerLeft.y,
-                          ( int ) RegionDimensions.x, ( int ) RegionDimensions.y,
-                          OriginPixelFormat,
-                          OriginDataType,
-                          Data );
+    switch ( TextureInformation->Type )
+        {
+        case TextureType::Texture2D:
+            {
+            glTextureSubImage2D ( TextureInformation->OpenGLID,
+                                  0,
+                                  LowerLeft.x, LowerLeft.y,
+                                  ( int ) RegionDimensions.x, ( int ) RegionDimensions.y,
+                                  OriginPixelFormat,
+                                  OriginDataType,
+                                  Data );
+            break;
+            }
+        default:
+            return false;
+        }
+
     return true;
     }
 
 glm::uvec2 GetTextureDimensions ( const TextureHandle Handle )
     {
-    TextureInfo *info = &Textures[Handle];
-    return info->Dimensions;
+    TextureInfo *TextureInformation = &Textures[Handle];
+    return TextureInformation->Dimensions;
     }
 }
 }

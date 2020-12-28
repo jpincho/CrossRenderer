@@ -5,8 +5,8 @@ namespace CrossRenderer
 {
 namespace OpenGL
 {
-TextureHandle Create2DTexture ( const TextureDescriptor CreationParameters );
-TextureHandle DSACreate2DTexture ( const TextureDescriptor CreationParameters );
+TextureHandle CreateTexture ( const TextureDescriptor CreationParameters );
+TextureHandle DSACreateTexture ( const TextureDescriptor CreationParameters );
 bool DeleteTexture ( const TextureHandle Handle );
 bool Load2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data, const unsigned Pitch );
 bool DSALoad2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data, const unsigned Pitch );

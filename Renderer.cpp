@@ -17,7 +17,7 @@ ShaderBufferHandle ( *CreateShaderBuffer ) ( const ShaderBufferDescriptor Creati
 bool ( *DeleteShaderBuffer ) ( const ShaderBufferHandle Handle ) = 0;
 bool ( *ChangeShaderBufferContents ) ( const ShaderBufferHandle Handle, const ShaderBufferDescriptor CreationParameters ) = 0;
 
-TextureHandle ( *Create2DTexture ) ( const TextureDescriptor CreationParameters ) = 0;
+TextureHandle ( *CreateTexture ) ( const TextureDescriptor CreationParameters ) = 0;
 bool ( *DeleteTexture ) ( const TextureHandle Handle ) = 0;
 bool ( *Load2DTextureData ) ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data, const unsigned Pitch ) = 0;
 bool ( *UpdateTextureRegion ) ( const TextureHandle Handle, const glm::uvec2 LowerLeft, const glm::uvec2 RegionDimensions, const void *Data ) = 0;

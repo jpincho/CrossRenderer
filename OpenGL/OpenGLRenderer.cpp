@@ -90,7 +90,7 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 #define ATTRIB(x) CrossRenderer::x = CrossRenderer::OpenGL::DSA##x
         ATTRIB ( CreateShaderBuffer );
         ATTRIB ( ChangeShaderBufferContents );
-        ATTRIB ( Create2DTexture );
+        ATTRIB ( CreateTexture );
         ATTRIB ( Load2DTextureData );
         ATTRIB ( UpdateTextureRegion );
         ATTRIB ( CreateFramebuffer );

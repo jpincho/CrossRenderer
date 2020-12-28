@@ -164,7 +164,7 @@ class ImGuiTest : public TestBase
             io.Fonts->GetTexDataAsRGBA32 ( &FontPixelData, &FontSize.x, &FontSize.y, &BytesPerPixel );
             CrossRenderer::TextureDescriptor FontTextureDescriptor ( FontSize, CrossRenderer::PixelFormat::RedGreenBlueAlpha8888 );
 
-            ImGuiFontTexture = CrossRenderer::Create2DTexture ( FontTextureDescriptor );
+            ImGuiFontTexture = CrossRenderer::CreateTexture ( FontTextureDescriptor );
             CrossRenderer::Load2DTextureData ( ImGuiFontTexture, CrossRenderer::PixelFormat::RedGreenBlueAlpha8888, FontPixelData, FontSize.x );
 
             io.Fonts->TexID = ( ImTextureID ) ImGuiFontTexture.key();

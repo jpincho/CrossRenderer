@@ -48,6 +48,7 @@ typedef struct TextureInfo
     unsigned OpenGLID;
     glm::uvec2 Dimensions;
     int GLMinFilter, GLMagFilter, GLSWrap, GLTWrap;
+    TextureType Type;
     PixelFormat Format;
     } TextureInfo;
 

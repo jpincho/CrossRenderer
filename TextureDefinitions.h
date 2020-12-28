@@ -23,6 +23,12 @@ enum class TextureWrapMode : uint8_t
     ClampToEdge
     };
 
+enum class TextureType : uint8_t
+    {
+    Texture2D,
+    TextureMap
+    };
+
 typedef struct TextureFilterSettings
     {
     TextureFilterSettings ( void )
@@ -64,11 +70,13 @@ typedef struct TextureDescriptor
     TextureDescriptor ( void ) = default;
     TextureDescriptor ( glm::uvec2 NewDimensions, PixelFormat NewTextureFormat )
         {
-        TextureFormat = NewTextureFormat;
+        Format = NewTextureFormat;
         Dimensions = NewDimensions;
         Pitch = NewDimensions.x;
+        Type = TextureType::Texture2D;
         }
-    PixelFormat TextureFormat;
+    PixelFormat Format;
+    TextureType Type;
     glm::uvec2 Dimensions;
     TextureFilterSettings FilterSettings;
     TextureWrapSettings WrapSettings;

@@ -20,8 +20,9 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
         {
         TextureDescriptor NewTextureDescriptor;
         NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
-        NewTextureDescriptor.TextureFormat = CreationParameters.DepthFormat;
-        NewFramebuffer.DepthTexture = Create2DTexture ( NewTextureDescriptor );
+        NewTextureDescriptor.Format = CreationParameters.DepthFormat;
+        NewTextureDescriptor.Type = TextureType::Texture2D;
+        NewFramebuffer.DepthTexture = CreateTexture ( NewTextureDescriptor );
         if ( !NewFramebuffer.DepthTexture )
             return FramebufferHandle::invalid;
         }
@@ -29,8 +30,9 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
         {
         TextureDescriptor NewTextureDescriptor;
         NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
-        NewTextureDescriptor.TextureFormat = CreationParameters.ColorAttachmentFormat;
-        TextureHandle NewTexture = Create2DTexture ( NewTextureDescriptor );
+        NewTextureDescriptor.Format = CreationParameters.ColorAttachmentFormat;
+        NewTextureDescriptor.Type = TextureType::Texture2D;
+        TextureHandle NewTexture = CreateTexture ( NewTextureDescriptor );
         if ( !NewTexture )
             goto error;
         NewFramebuffer.ColorTextures.push_back ( NewTexture );
@@ -83,8 +85,9 @@ FramebufferHandle DSACreateFramebuffer ( const FramebufferDescriptor CreationPar
         {
         TextureDescriptor NewTextureDescriptor;
         NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
-        NewTextureDescriptor.TextureFormat = CreationParameters.DepthFormat;
-        NewFramebuffer.DepthTexture = DSACreate2DTexture( NewTextureDescriptor );
+        NewTextureDescriptor.Format = CreationParameters.DepthFormat;
+        NewTextureDescriptor.Type = TextureType::Texture2D;
+        NewFramebuffer.DepthTexture = CreateTexture ( NewTextureDescriptor );
         if ( !NewFramebuffer.DepthTexture )
             return FramebufferHandle::invalid;
         }
@@ -92,8 +95,9 @@ FramebufferHandle DSACreateFramebuffer ( const FramebufferDescriptor CreationPar
         {
         TextureDescriptor NewTextureDescriptor;
         NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
-        NewTextureDescriptor.TextureFormat = CreationParameters.ColorAttachmentFormat;
-        TextureHandle NewTexture = DSACreate2DTexture( NewTextureDescriptor );
+        NewTextureDescriptor.Format = CreationParameters.ColorAttachmentFormat;
+        NewTextureDescriptor.Type = TextureType::Texture2D;
+        TextureHandle NewTexture = CreateTexture ( NewTextureDescriptor );
         if ( !NewTexture )
             goto error;
         NewFramebuffer.ColorTextures.push_back ( NewTexture );
