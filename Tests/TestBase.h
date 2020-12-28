@@ -5,6 +5,7 @@
 #include "../WindowManager.h"
 #include "../Stringify.h"
 #include <Logger/Logger.h>
+#include <imgui/imgui.h>
 
 class TestBase : public CrossRenderer::EventListener
     {
@@ -29,4 +30,16 @@ class TestBase : public CrossRenderer::EventListener
         virtual bool SpecificInitialize ( void ) = 0;
         virtual void SpecificDraw ( void );
         virtual void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event );
+        virtual void SpecificImGuiDraw ( void );
+
+    private:
+        CrossRenderer::TextureHandle ImGuiFontTexture;
+        CrossRenderer::ShaderHandle ImGuiShader;
+        CrossRenderer::ShaderAttributeHandle ImGuiPositionShaderAttribute, ImGuiColorShaderAttribute, ImGuiTexCoordShaderAttribute;
+        CrossRenderer::ShaderUniformHandle ImGuiMVPMatrixUniform, ImGuiTextureUniform;
+        std::vector <CrossRenderer::ShaderBufferHandle> ImGuiBuffers;
+
+        bool InitializeImGui ( void );
+        bool ImGuiProcessEvent( const CrossRenderer::WindowEvent& Event );
+        void RenderImGui ( void );
     };
