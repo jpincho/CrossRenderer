@@ -17,8 +17,7 @@ class EnvironmentMappingTest : public TestBase
             struct
                 {
                 CrossRenderer::ShaderUniformHandle MVP, ModelMatrix, ModelTransposeInverseMatrix;
-                CrossRenderer::ShaderUniformHandle ViewPosition;
-                CrossRenderer::ShaderUniformHandle Texture;
+                CrossRenderer::ShaderUniformHandle ViewPosition, UseRefraction, RefractionFactor, Texture;
                 } Uniforms;
             } CrateData;
 
@@ -29,16 +28,19 @@ class EnvironmentMappingTest : public TestBase
             CrossRenderer::ShaderHandle Shader;
             struct
                 {
-                CrossRenderer::ShaderUniformHandle ViewMatrix, ProjectionMatrix;
-                CrossRenderer::ShaderUniformHandle Texture;
+                CrossRenderer::ShaderUniformHandle ViewMatrix, ProjectionMatrix, Texture;
                 } Uniforms;
             } SkyboxData;
 
-        CrossRenderer::TextureHandle SkyboxTexture;
+        std::vector <std::pair <std::string, CrossRenderer::TextureHandle>> Skyboxes;
+        int ActiveSkyboxIndex;
+
         struct
             {
             uint32_t Reset;
             } Keys;
+        bool UseRefraction;
+        float RefractionFactor;
 
     public:
         void Reset ( void )
@@ -48,6 +50,9 @@ class EnvironmentMappingTest : public TestBase
 
             CrateData.Crate.SetPosition ( glm::vec3 ( 0, 0, 0 ) );
             CrateData.Crate.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
+            UseRefraction = false;
+            RefractionFactor = 1.0f / 1.52f;
+            ActiveSkyboxIndex = 0;
             }
 
         void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
@@ -143,6 +148,8 @@ class EnvironmentMappingTest : public TestBase
             GET_UNIFORM ( CrateData.Uniforms.Texture, CrateData.Shader, "u_SkyboxTexture" );
             GET_UNIFORM ( CrateData.Uniforms.ModelMatrix, CrateData.Shader, "u_ModelMatrix" );
             GET_UNIFORM ( CrateData.Uniforms.ModelTransposeInverseMatrix, CrateData.Shader, "u_ModelTransposeInverse" );
+            GET_UNIFORM ( CrateData.Uniforms.UseRefraction, CrateData.Shader, "u_UseRefraction" );
+            GET_UNIFORM ( CrateData.Uniforms.RefractionFactor, CrateData.Shader, "u_RefractionFactor" );
 #undef GET_UNIFORM
             PositionStream.BufferHandle = CrateData.VertexBuffer;
             PositionStream.Stride = sizeof ( Vertex );
@@ -177,7 +184,7 @@ class EnvironmentMappingTest : public TestBase
 
             CrateData.RenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair (
                         CrateData.Uniforms.Texture,
-                        CrossRenderer::TextureBindSettings ( SkyboxTexture ) ) );
+                        CrossRenderer::TextureBindSettings ( Skyboxes[ActiveSkyboxIndex].second ) ) );
 
             CrateData.RenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
             CrateData.RenderCommand.StartVertex = 0;
@@ -243,11 +250,14 @@ class EnvironmentMappingTest : public TestBase
             if ( !SkyboxData.Shader )
                 return false;
 
-            // Load the texture
-            std::string Textures[6] = { "Skybox/right.jpg", "Skybox/left.jpg", "Skybox/top.jpg", "Skybox/bottom.jpg", "Skybox/front.jpg", "Skybox/back.jpg"};
-            if ( ! ( SkyboxTexture = LoadCubemapTexture ( Textures, false ) ) )
+            // Load the skyboxes
+            ActiveSkyboxIndex = 0;
+            LoadSkybox ( "default", "Skybox/default" );
+            LoadSkybox ( "Storforsen", "Skybox/Storforsen" );
+            LoadSkybox ( "Yokohama3", "Skybox/Yokohama3" );
+            LoadSkybox ( "Lycksele3", "Skybox/Lycksele3" );
+            if ( Skyboxes.size() == 0 )
                 return false;
-
             // Configure the draw command
             CrossRenderer::ShaderBufferDataStream PositionStream;
             CrossRenderer::ShaderAttributeHandle PositionShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( SkyboxData.Shader, "a_Position" );
@@ -277,7 +287,7 @@ class EnvironmentMappingTest : public TestBase
 
             SkyboxData.RenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair (
                         SkyboxData.Uniforms.Texture,
-                        CrossRenderer::TextureBindSettings ( SkyboxTexture ) ) );
+                        CrossRenderer::TextureBindSettings ( Skyboxes[ActiveSkyboxIndex].second ) ) );
 
             SkyboxData.RenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
             SkyboxData.RenderCommand.StartVertex = 0;
@@ -286,6 +296,23 @@ class EnvironmentMappingTest : public TestBase
             SkyboxData.RenderCommand.State.DepthTest.Enabled = true;
             SkyboxData.RenderCommand.State.DepthTest.Mode = CrossRenderer::DepthTestMode::LessOrEqual;
 
+            return true;
+            }
+        bool LoadSkybox ( const char* Name, const char* Path )
+            {
+            std::string Textures[6] =
+                {
+                std::string ( Path ) + std::string ( "/posx.jpg" ),
+                std::string ( Path ) + std::string ( "/negx.jpg" ),
+                std::string ( Path ) + std::string ( "/posy.jpg" ),
+                std::string ( Path ) + std::string ( "/negy.jpg" ),
+                std::string ( Path ) + std::string ( "/posz.jpg" ),
+                std::string ( Path ) + std::string ( "/negz.jpg" )
+                };
+            CrossRenderer::TextureHandle CubemapTexture;
+            if ( ! ( CubemapTexture = LoadCubemapTexture ( Textures, false ) ) )
+                return false;
+            Skyboxes.push_back ( std::pair <std::string, CrossRenderer::TextureHandle> ( Name, CubemapTexture ) );
             return true;
             }
 
@@ -311,7 +338,16 @@ class EnvironmentMappingTest : public TestBase
             }
         void SpecificImGuiDraw ( void )
             {
-            ImGui::ShowDemoWindow();
+            ImGui::Begin ( "Options" );
+            ImGui::Checkbox ( "Use refraction", &UseRefraction );
+            if ( UseRefraction )
+                ImGui::InputFloat ( "Refraction factor", &RefractionFactor );
+
+            std::vector <const char *> SkyboxNames;
+            for ( unsigned Index = 0; Index < Skyboxes.size(); ++Index )
+                SkyboxNames.push_back ( Skyboxes[Index].first.c_str() );
+            ImGui::Combo ( "Active skybox", &ActiveSkyboxIndex, SkyboxNames.data(), SkyboxNames.size() );
+            ImGui::End();
             }
         void SpecificDraw ( void )
             {
@@ -323,12 +359,16 @@ class EnvironmentMappingTest : public TestBase
             RenderCommands.push_back ( CrateData.RenderCommand );
             RenderCommands.push_back ( SkyboxData.RenderCommand );
 
+            RenderCommands[0].TextureBindings[0].BindSettings.Handle = Skyboxes[ActiveSkyboxIndex].second;
             RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( CrateData.Uniforms.MVP, SceneCamera.GetViewProjectionMatrix() * CrateData.Crate.GetTransformationMatrix() ) );
             RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( CrateData.Uniforms.ModelMatrix, CrateData.Crate.GetTransformationMatrix() ) );
             RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( CrateData.Uniforms.ModelTransposeInverseMatrix, glm::inverse ( glm::transpose ( CrateData.Crate.GetTransformationMatrix() ) ) ) );
             RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( CrateData.Uniforms.ViewPosition, SceneCamera.GetPosition() ) );
+            RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( CrateData.Uniforms.UseRefraction, ( int ) UseRefraction ) );
+            RenderCommands[0].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( CrateData.Uniforms.RefractionFactor, RefractionFactor ) );
             CrossRenderer::SanityCheckRenderCommand ( RenderCommands[0] );
 
+            RenderCommands[1].TextureBindings[0].BindSettings.Handle = Skyboxes[ActiveSkyboxIndex].second;
             RenderCommands[1].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( SkyboxData.Uniforms.ProjectionMatrix, SceneCamera.GetProjectionMatrix() ) );
             RenderCommands[1].UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( SkyboxData.Uniforms.ViewMatrix, glm::mat4 ( glm::mat3 ( SceneCamera.GetViewMatrix() ) ) ) );
             CrossRenderer::SanityCheckRenderCommand ( RenderCommands[1] );

@@ -6,16 +6,17 @@ in vec3 v_FragPos;
 
 uniform vec3 u_ViewPosition;
 uniform samplerCube u_SkyboxTexture;
-#define REFRACTION
+uniform int u_UseRefraction;
+uniform float u_RefractionFactor;
+
 void main()
     {
     vec3 I = normalize ( v_FragPos - u_ViewPosition );
+    vec3 R;
+    if ( u_UseRefraction )
+        R = refract ( I, normalize ( v_Normal ), u_RefractionFactor );
+    else
+        R = reflect ( I, normalize ( v_Normal ) );
 
-#if defined REFRACTION
-    float ratio = 1.00 / 1.52;
-    vec3 R = refract ( I, normalize ( v_Normal ), ratio );
-#else
-    vec3 R = reflect ( I, normalize ( v_Normal ) );
-#endif
     FragColor = vec4 ( texture ( u_SkyboxTexture, R ).rgb, 1.0 );
     }

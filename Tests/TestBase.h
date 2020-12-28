@@ -40,6 +40,6 @@ class TestBase : public CrossRenderer::EventListener
         std::vector <CrossRenderer::ShaderBufferHandle> ImGuiBuffers;
 
         bool InitializeImGui ( void );
-        bool ImGuiProcessEvent( const CrossRenderer::WindowEvent& Event );
+        bool ImGuiProcessEvent ( const CrossRenderer::WindowEvent& Event );
         void RenderImGui ( void );
     };

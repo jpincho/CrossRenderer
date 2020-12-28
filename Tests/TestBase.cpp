@@ -6,7 +6,7 @@
 void TestBase::OnEvent ( const CrossRenderer::WindowEvent &Event )
     {
     ImGuiIO& io = ImGui::GetIO();
-    if (ImGuiProcessEvent( Event ) == true )
+    if ( ImGuiProcessEvent ( Event ) == true )
         return;
 
     switch ( Event.EventType )
