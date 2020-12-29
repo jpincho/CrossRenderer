@@ -43,6 +43,11 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
     {
     ShaderInformation Info;
     bool Result = true;
+    if ( !Command.Shader )
+        {
+        LOG_ERROR( "Invalid shader handle" );
+        return false;
+        }
     GetShaderInformation ( Command.Shader, Info );
 
     // Find invalid uniform handles
@@ -177,6 +182,17 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         LOG_ERROR ( "Missing binding for attribute '%s'. Type '%s'", Info.Attributes[Iterator].Name.c_str(), CrossRenderer::Stringify ( Info.Attributes[Iterator].Type ) );
         Result = false;
         }
+
+    // Find missing textures
+    for ( auto &Iterator : Command.TextureBindings )
+        {
+        if ( !Iterator.BindSettings.Handle )
+            {
+            LOG_ERROR( "Missing texture handle for binding '%s'.", Info.Uniforms[Iterator.UniformHandle.key()].Name.c_str() );
+            Result = false;
+            }
+        }
+
     return Result;
     }
 }
