@@ -14,7 +14,7 @@ class GeometryShaderTest : public TestBase
             CrossRenderer::ShaderHandle Handle;
             struct
                 {
-                CrossRenderer::ShaderUniformHandle ShaderMVP, ModelMatrix, ModelTransposeInverseMatrix;
+                CrossRenderer::ShaderUniformHandle ViewMatrix, ProjectionMatrix, ModelMatrix, ModelTransposeInverseMatrix;
                 CrossRenderer::ShaderUniformHandle ViewPosition;
                 CrossRenderer::ShaderUniformHandle MaterialShininess, MaterialDiffuseTexture, MaterialSpecularTexture;
                 CrossRenderer::ShaderUniformHandle PointLight[2];
@@ -33,20 +33,14 @@ class GeometryShaderTest : public TestBase
             CrossRenderer::ShaderHandle Handle;
             struct
                 {
-                CrossRenderer::ShaderUniformHandle ShaderMVP, ModelTransposeInverseMatrix, NormalLength, StartNormalColor, EndNormalColor, ShowVertexNormals, ShowFaceNormals;
+                CrossRenderer::ShaderUniformHandle ViewMatrix, ProjectionMatrix, ModelMatrix;
+                CrossRenderer::ShaderUniformHandle NormalLength, StartNormalColor, EndNormalColor, ShowVertexNormals, ShowFaceNormals;
                 } Uniforms;
             struct
                 {
                 CrossRenderer::ShaderAttributeHandle Position, Normal;
                 } Attributes;
             } NormalsShader;
-        typedef struct
-            {
-            CrossRenderer::ShaderBufferHandle Vertex, Normal, TexCoord, Index;
-            Material MeshMaterial;
-            size_t VertexCount;
-            CrossRenderer::RenderCommand Command;
-            } MeshRenderData;
 
         struct
             {
@@ -66,13 +60,13 @@ class GeometryShaderTest : public TestBase
             glm::vec3 Color;
             float Intensity;
             } AmbientLight;
-        std::vector <Material> Materials;
-        std::vector <MeshRenderData> MeshRenderDataArray;
         MovableObject Stormtrooper;
+        ModelData StormtrooperModelData;
 
         float NormalLength;
         glm::vec4 NormalStartColor, NormalEndColor;
         bool ShowVertexNormals, ShowFaceNormals;
+        std::vector <CrossRenderer::RenderCommand> NormalRenderCommands;
     public:
         void Reset ( void )
             {
@@ -115,7 +109,7 @@ class GeometryShaderTest : public TestBase
             }
         bool SpecificInitialize ( void )
             {
-            CameraController.Initialize ();
+            CameraController.Initialize();
             CameraController.SetCamera ( &SceneCamera );
 
             // Load the shader
@@ -134,13 +128,14 @@ class GeometryShaderTest : public TestBase
                     LOG_ERROR ( "Uniform %s not found", NAME );\
                     return false;\
                     }
-            GET_UNIFORM ( StormtrooperShader.Uniforms.ShaderMVP, StormtrooperShader.Handle, "u_MVPMatrix" );
+            GET_UNIFORM ( StormtrooperShader.Uniforms.ViewMatrix, StormtrooperShader.Handle, "u_ViewMatrix" );
+            GET_UNIFORM ( StormtrooperShader.Uniforms.ProjectionMatrix, StormtrooperShader.Handle, "u_ProjectionMatrix" );
             GET_UNIFORM ( StormtrooperShader.Uniforms.ViewPosition, StormtrooperShader.Handle, "u_ViewPosition" );
+            GET_UNIFORM ( StormtrooperShader.Uniforms.ModelMatrix, StormtrooperShader.Handle, "u_ModelMatrix" );
+            GET_UNIFORM ( StormtrooperShader.Uniforms.ModelTransposeInverseMatrix, StormtrooperShader.Handle, "u_ModelTransposeInverse" );
             GET_UNIFORM ( StormtrooperShader.Uniforms.MaterialShininess, StormtrooperShader.Handle, "u_Shininess" );
             GET_UNIFORM ( StormtrooperShader.Uniforms.MaterialDiffuseTexture, StormtrooperShader.Handle, "u_DiffuseTexture" );
             GET_UNIFORM ( StormtrooperShader.Uniforms.MaterialSpecularTexture, StormtrooperShader.Handle, "u_SpecularTexture" );
-            GET_UNIFORM ( StormtrooperShader.Uniforms.ModelMatrix, StormtrooperShader.Handle, "u_ModelMatrix" );
-            GET_UNIFORM ( StormtrooperShader.Uniforms.ModelTransposeInverseMatrix, StormtrooperShader.Handle, "u_ModelTransposeInverse" );
 
             GET_UNIFORM ( StormtrooperShader.Uniforms.AmbientLight.Color, StormtrooperShader.Handle, "u_AmbientLight.Color" );
             GET_UNIFORM ( StormtrooperShader.Uniforms.AmbientLight.Intensity, StormtrooperShader.Handle, "u_AmbientLight.Intensity" );
@@ -154,7 +149,10 @@ class GeometryShaderTest : public TestBase
             NormalsShader.Attributes.Position = CrossRenderer::GetShaderAttributeHandle ( NormalsShader.Handle, "a_VertexPosition" );
             NormalsShader.Attributes.Normal = CrossRenderer::GetShaderAttributeHandle ( NormalsShader.Handle, "a_Normal" );
 
-            GET_UNIFORM ( NormalsShader.Uniforms.ShaderMVP, NormalsShader.Handle, "u_MVPMatrix" );
+            GET_UNIFORM ( NormalsShader.Uniforms.ViewMatrix, NormalsShader.Handle, "u_ViewMatrix" );
+            GET_UNIFORM ( NormalsShader.Uniforms.ProjectionMatrix, NormalsShader.Handle, "u_ProjectionMatrix" );
+            GET_UNIFORM ( NormalsShader.Uniforms.ModelMatrix, NormalsShader.Handle, "u_ModelMatrix" );
+
             GET_UNIFORM ( NormalsShader.Uniforms.NormalLength, NormalsShader.Handle, "u_NormalLength" );
             GET_UNIFORM ( NormalsShader.Uniforms.StartNormalColor, NormalsShader.Handle, "u_StartNormalColor" );
             GET_UNIFORM ( NormalsShader.Uniforms.EndNormalColor, NormalsShader.Handle, "u_EndNormalColor" );
@@ -165,88 +163,62 @@ class GeometryShaderTest : public TestBase
             Light1Buffer = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( &LightData[1], sizeof ( LightData[1] ) ) );
 
             // Load the model
-            ModelLoader StormtrooperModel;
-            if ( StormtrooperModel.Set ( std::string ( TEST_SOURCE_LOCATION ) + std::string ( "Data/Stormtrooper/" ), "Stormtrooper.fbx" ) == false )
+            if ( LoadModel ( "Stormtrooper/", "Stormtrooper.fbx", StormtrooperModelData.Materials, StormtrooperModelData.Meshes ) == false )
                 return false;
-            if ( StormtrooperModel.Load() == false )
-                return false;
-
-            for ( auto &MaterialIterator : StormtrooperModel.Materials )
+            for ( auto &MeshIterator : StormtrooperModelData.Meshes )
                 {
-                Material NewMaterial;
-                NewMaterial.Name = MaterialIterator.Name;
-                NewMaterial.Diffuse = MaterialIterator.Diffuse;
-                NewMaterial.Specular = MaterialIterator.Specular;
-                NewMaterial.Emissive = MaterialIterator.Emissive;
-                NewMaterial.Shininess = MaterialIterator.Shininess;
-                for ( auto TextureTypeIterator = 0; TextureTypeIterator < ( int ) Material::MaterialTextureType::COUNT; ++TextureTypeIterator )
-                    {
-                    CrossRenderer::TextureBindSettings Settings;
-                    if ( MaterialIterator.Textures[TextureTypeIterator].empty() == true )
-                        continue;
-                    if ( ! ( Settings.Handle = LoadTexture ( std::string ( "Stormtrooper/" ) + MaterialIterator.Textures[TextureTypeIterator] ) ) )
-                        return false;
-                    Settings.WrapSettings = MaterialIterator.WrapSettings[TextureTypeIterator];
-                    NewMaterial.Textures[TextureTypeIterator] = Settings;
-                    }
-                Materials.push_back ( NewMaterial );
+                CrossRenderer::RenderCommand NewCommand;
+                NewCommand.IndexBuffer = MeshIterator.Index;
+                NewCommand.IndexBufferStream.BufferHandle = MeshIterator.Index;
+                NewCommand.IndexBufferStream.ComponentsPerElement = 1;
+                NewCommand.IndexBufferStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Unsigned32;
+                NewCommand.IndexBufferStream.NormalizeData = false;
+                NewCommand.IndexBufferStream.StartOffset = 0;
+                NewCommand.IndexBufferStream.Stride = sizeof ( uint32_t );
+
+                NewCommand.State.DepthTest.Set ( CrossRenderer::DepthTestMode::Less );
+                NewCommand.State.Culling.Enabled = true;
+
+                NewCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
+                NewCommand.Shader = StormtrooperShader.Handle;
+                NewCommand.StartVertex = 0;
+                NewCommand.VertexCount = MeshIterator.VertexCount;
+                NewCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( StormtrooperShader.Attributes.Position, CrossRenderer::ShaderBufferDataStream ( MeshIterator.Vertex, 0, sizeof ( glm::vec3 ), CrossRenderer::ShaderBufferComponentType::Float, 3 ) ) );
+                NewCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( StormtrooperShader.Attributes.Normal, CrossRenderer::ShaderBufferDataStream ( MeshIterator.Normal, 0, sizeof ( glm::vec3 ), CrossRenderer::ShaderBufferComponentType::Float, 3 ) ) );
+                NewCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( StormtrooperShader.Attributes.TextureCoord, CrossRenderer::ShaderBufferDataStream ( MeshIterator.TexCoord, 0, sizeof ( glm::vec2 ), CrossRenderer::ShaderBufferComponentType::Float, 2 ) ) );
+
+                NewCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( StormtrooperShader.Uniforms.MaterialDiffuseTexture, CrossRenderer::TextureBindSettings ( MeshIterator.MeshMaterial.Textures[ ( int ) Material::MaterialTextureType::Diffuse] ) ) );
+                NewCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( StormtrooperShader.Uniforms.MaterialSpecularTexture, CrossRenderer::TextureBindSettings ( MeshIterator.MeshMaterial.Textures[ ( int ) Material::MaterialTextureType::Specular] ) ) );
+
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.MaterialShininess, MeshIterator.MeshMaterial.Shininess ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.PointLight[0], Light0Buffer ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.PointLight[1], Light1Buffer ) );
+
+                StormtrooperModelData.RenderCommands.push_back ( NewCommand );
                 }
-
-            for ( auto &ModelIterator : StormtrooperModel.Models )
+            // Create the commands for the normals
+            for ( auto &MeshIterator : StormtrooperModelData.Meshes )
                 {
-                for ( auto &MeshIterator : ModelIterator.Meshes )
-                    {
-                    MeshRenderData NewData;
-                    NewData.Index = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( MeshIterator.Indices.data(), MeshIterator.Indices.size() * sizeof ( uint32_t ) ) );
-                    NewData.Vertex = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( MeshIterator.Vertices.data(), MeshIterator.Vertices.size() * sizeof ( glm::vec3 ) ) );
-                    NewData.Normal = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( MeshIterator.Normals.data(), MeshIterator.Normals.size() * sizeof ( glm::vec3 ) ) );
-                    NewData.TexCoord = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( MeshIterator.TexCoords.data(), MeshIterator.TexCoords.size() * sizeof ( glm::uvec2 ) ) );
-                    NewData.VertexCount = MeshIterator.Indices.size();
+                CrossRenderer::RenderCommand NewCommand;
+                NewCommand.IndexBuffer = MeshIterator.Index;
+                NewCommand.IndexBufferStream.BufferHandle = MeshIterator.Index;
+                NewCommand.IndexBufferStream.ComponentsPerElement = 1;
+                NewCommand.IndexBufferStream.ComponentType = CrossRenderer::ShaderBufferComponentType::Unsigned32;
+                NewCommand.IndexBufferStream.NormalizeData = false;
+                NewCommand.IndexBufferStream.StartOffset = 0;
+                NewCommand.IndexBufferStream.Stride = sizeof ( uint32_t );
 
-                    NewData.Command.Shader = StormtrooperShader.Handle;
-                    NewData.Command.Primitive = CrossRenderer::PrimitiveType::TriangleList;
-                    NewData.Command.IndexBuffer = NewData.Index;
-                    NewData.Command.StartVertex = 0;
-                    NewData.Command.VertexCount = MeshIterator.Indices.size();
-                    NewData.Command.IndexBufferStream = CrossRenderer::ShaderBufferDataStream ( NewData.Index, 0, sizeof ( uint32_t ), CrossRenderer::ShaderBufferComponentType::Unsigned32, 1 );
-                    NewData.Command.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.PointLight[0], Light0Buffer ) );
-                    NewData.Command.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.PointLight[1], Light1Buffer ) );
+                NewCommand.State.DepthTest.Set ( CrossRenderer::DepthTestMode::Less );
+                NewCommand.State.Culling.Enabled = true;
 
-                    NewData.Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
-                                StormtrooperShader.Attributes.Position,
-                                CrossRenderer::ShaderBufferDataStream ( NewData.Vertex, 0, sizeof ( glm::vec3 ), CrossRenderer::ShaderBufferComponentType::Float, 3 ) ) );
-                    NewData.Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
-                                StormtrooperShader.Attributes.Normal,
-                                CrossRenderer::ShaderBufferDataStream ( NewData.Normal, 0, sizeof ( glm::vec3 ), CrossRenderer::ShaderBufferComponentType::Float, 3 ) ) );
-                    NewData.Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
-                                StormtrooperShader.Attributes.TextureCoord,
-                                CrossRenderer::ShaderBufferDataStream ( NewData.TexCoord, 0, sizeof ( glm::vec2 ), CrossRenderer::ShaderBufferComponentType::Float, 2 ) ) );
+                NewCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
+                NewCommand.Shader = NormalsShader.Handle;
+                NewCommand.StartVertex = 0;
+                NewCommand.VertexCount = MeshIterator.VertexCount;
+                NewCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( NormalsShader.Attributes.Position, CrossRenderer::ShaderBufferDataStream ( MeshIterator.Vertex, 0, sizeof ( glm::vec3 ), CrossRenderer::ShaderBufferComponentType::Float, 3 ) ) );
+                NewCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( NormalsShader.Attributes.Normal, CrossRenderer::ShaderBufferDataStream ( MeshIterator.Normal, 0, sizeof ( glm::vec3 ), CrossRenderer::ShaderBufferComponentType::Float, 3 ) ) );
 
-                    NewData.Command.State.DepthTest.Set ( CrossRenderer::DepthTestMode::Less );
-                    NewData.Command.State.Culling.Enabled = true;
-                    for ( auto &MaterialIterator : Materials )
-                        {
-                        if ( MeshIterator.MaterialName == MaterialIterator.Name )
-                            {
-                            NewData.MeshMaterial = MaterialIterator;
-                            NewData.Command.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.MaterialShininess, MaterialIterator.Shininess ) );
-                            if ( MaterialIterator.Textures[ ( int ) Material::MaterialTextureType::Diffuse].Handle )
-                                {
-                                NewData.Command.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair (
-                                            StormtrooperShader.Uniforms.MaterialDiffuseTexture,
-                                            MaterialIterator.Textures[ ( int ) Material::MaterialTextureType::Diffuse] ) );
-                                }
-                            if ( MaterialIterator.Textures[ ( int ) Material::MaterialTextureType::Specular].Handle )
-                                {
-                                NewData.Command.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair (
-                                            StormtrooperShader.Uniforms.MaterialSpecularTexture,
-                                            MaterialIterator.Textures[ ( int ) Material::MaterialTextureType::Specular] ) );
-                                }
-                            break;
-                            }
-                        }
-                    MeshRenderDataArray.push_back ( NewData );
-                    }
+                NormalRenderCommands.push_back ( NewCommand );
                 }
             Camera::PerspectiveParameters NewParameters;
             NewParameters.AspectRatio = 1.0f;
@@ -303,44 +275,35 @@ class GeometryShaderTest : public TestBase
 
             RenderCommands.clear();
             CameraController.Update ( TimeDelta );
-            for ( auto &MeshIterator : MeshRenderDataArray )
+            for ( auto NewCommand : StormtrooperModelData.RenderCommands )
                 {
-                CrossRenderer::RenderCommand NewCommand;
-                NewCommand = MeshIterator.Command;
-                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.ShaderMVP, SceneCamera.GetViewProjectionMatrix() * Stormtrooper.GetTransformationMatrix() ) );
                 NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.ModelMatrix, Stormtrooper.GetTransformationMatrix() ) );
                 NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.ModelTransposeInverseMatrix, glm::inverse ( glm::transpose ( Stormtrooper.GetTransformationMatrix() ) ) ) );
+
                 NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.ViewPosition, SceneCamera.GetPosition() ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.ViewMatrix, SceneCamera.GetViewMatrix() ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.ProjectionMatrix, SceneCamera.GetProjectionMatrix() ) );
 
                 NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.AmbientLight.Color, AmbientLight.Color ) );
                 NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.AmbientLight.Intensity, AmbientLight.Intensity ) );
                 assert ( CrossRenderer::SanityCheckRenderCommand ( NewCommand ) == true );
 
                 RenderCommands.push_back ( NewCommand );
+                }
+            for ( auto NewCommand : NormalRenderCommands )
+                {
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.ModelMatrix, Stormtrooper.GetTransformationMatrix() ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.ViewMatrix, SceneCamera.GetViewMatrix() ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.ProjectionMatrix, SceneCamera.GetProjectionMatrix() ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.NormalLength, NormalLength ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.StartNormalColor, NormalStartColor ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.EndNormalColor, NormalEndColor ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.ShowVertexNormals, ShowVertexNormals ? 1 : 0 ) );
+                NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.ShowFaceNormals, ShowFaceNormals ? 1 : 0 ) );
 
-                CrossRenderer::RenderCommand NewNormalsCommand;
-                NewNormalsCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.ShaderMVP, SceneCamera.GetViewProjectionMatrix() * Stormtrooper.GetTransformationMatrix() ) );
-                NewNormalsCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.NormalLength, NormalLength ) );
-                NewNormalsCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.StartNormalColor, NormalStartColor ) );
-                NewNormalsCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.EndNormalColor, NormalEndColor ) );
-                NewNormalsCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.ShowVertexNormals, ShowVertexNormals ? 1 : 0 ) );
-                NewNormalsCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( NormalsShader.Uniforms.ShowFaceNormals, ShowFaceNormals ? 1 : 0 ) );
+                assert ( CrossRenderer::SanityCheckRenderCommand ( NewCommand ) == true );
 
-                NewNormalsCommand.Shader = NormalsShader.Handle;
-                NewNormalsCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
-                NewNormalsCommand.IndexBuffer = NewCommand.IndexBuffer;
-                NewNormalsCommand.StartVertex = 0;
-                NewNormalsCommand.VertexCount = NewCommand.VertexCount;
-                NewNormalsCommand.IndexBufferStream = NewCommand.IndexBufferStream;
-
-                NewNormalsCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
-                            NormalsShader.Attributes.Position,
-                            CrossRenderer::ShaderBufferDataStream ( MeshIterator.Vertex, 0, sizeof ( glm::vec3 ), CrossRenderer::ShaderBufferComponentType::Float, 3 ) ) );
-                NewNormalsCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair (
-                            NormalsShader.Attributes.Normal,
-                            CrossRenderer::ShaderBufferDataStream ( MeshIterator.Normal, 0, sizeof ( glm::vec3 ), CrossRenderer::ShaderBufferComponentType::Float, 3 ) ) );
-                NewNormalsCommand.State.DepthTest.Set ( CrossRenderer::DepthTestMode::Less );
-                RenderCommands.push_back ( NewNormalsCommand );
+                RenderCommands.push_back ( NewCommand );
                 }
             }
     };

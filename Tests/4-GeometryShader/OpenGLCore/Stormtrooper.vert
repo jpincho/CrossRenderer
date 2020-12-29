@@ -9,12 +9,13 @@ out vec3 v_FragPos;
 
 uniform mat4 u_ModelMatrix;
 uniform mat4 u_ModelTransposeInverse;
-uniform mat4 u_MVPMatrix;
+uniform mat4 u_ProjectionMatrix;
+uniform mat4 u_ViewMatrix;
 
 void main()
     {
     v_FragPos = vec3 ( u_ModelMatrix * vec4 ( a_VertexPosition, 1.0f ) );
     v_Normal = mat3 ( u_ModelTransposeInverse ) * a_Normal;
-    gl_Position = u_MVPMatrix * vec4 ( a_VertexPosition, 1.0 );
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4 ( a_VertexPosition, 1.0 );
     v_TexCoord = a_TexCoord;
     }
