@@ -2,6 +2,7 @@
 #include "CrossRendererConfig.h"
 #include "../CrossRenderer.h"
 #include "LoadFileContents.h"
+#include "ModelLoader.h"
 #include "../WindowManager.h"
 #include "../Stringify.h"
 #include <Logger/Logger.h>
@@ -12,6 +13,18 @@ class TestBase : public CrossRenderer::EventListener
     protected:
         bool ShouldQuit = false;
         bool TestResult = false;
+        typedef struct
+            {
+            CrossRenderer::ShaderBufferHandle Vertex, Normal, TexCoord, Index;
+            Material MeshMaterial;
+            size_t VertexCount;
+            } MeshRenderData;
+        typedef struct
+            {
+            std::vector <Material> Materials;
+            std::vector <MeshRenderData> Meshes;
+            std::vector <CrossRenderer::RenderCommand> RenderCommands;
+            } ModelData;
         std::vector <CrossRenderer::RenderCommand> RenderCommands;
         CrossRenderer::RendererBackend RendererBackend;
         CrossRenderer::FramebufferHandle DefaultFramebuffer;
@@ -20,6 +33,7 @@ class TestBase : public CrossRenderer::EventListener
         CrossRenderer::TextureHandle LoadTexture ( const std::string &ImageFile, const bool Flip = true );
         CrossRenderer::TextureHandle LoadCubemapTexture ( const std::string ImageFile[6], const bool Flip = true );
         CrossRenderer::ShaderHandle LoadShader ( const std::string &VertexFile, const std::string &GeometryFile, const std::string &FragmentFile );
+        bool LoadModel ( const std::string Path, const std::string Filename, std::vector <Material> &Materials, std::vector <MeshRenderData> &MeshRenderDataArray );
 
     public:
         TestBase ( void );

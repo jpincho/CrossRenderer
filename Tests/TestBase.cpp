@@ -188,6 +188,60 @@ End:
     return Result;
     }
 
+bool TestBase::LoadModel ( const std::string Path, const std::string Filename, std::vector <Material> &Materials, std::vector <MeshRenderData> &MeshRenderDataArray )
+    {
+    ModelLoader LoadedModel;
+    if ( LoadedModel.Set ( std::string ( TEST_SOURCE_LOCATION ) + std::string ( "/Data/" ) + Path, Filename ) == false )
+        return false;
+    if ( LoadedModel.Load() == false )
+        return false;
+
+    for ( auto &MaterialIterator : LoadedModel.Materials )
+        {
+        Material NewMaterial;
+        NewMaterial.Name = MaterialIterator.Name;
+        NewMaterial.Diffuse = MaterialIterator.Diffuse;
+        NewMaterial.Specular = MaterialIterator.Specular;
+        NewMaterial.Emissive = MaterialIterator.Emissive;
+        NewMaterial.Shininess = MaterialIterator.Shininess;
+        for ( auto TextureTypeIterator = 0; TextureTypeIterator < ( int ) Material::MaterialTextureType::COUNT; ++TextureTypeIterator )
+            {
+            CrossRenderer::TextureBindSettings Settings;
+            if ( MaterialIterator.Textures[TextureTypeIterator].empty() == true )
+                continue;
+            if ( ! ( Settings.Handle = LoadTexture ( Path + MaterialIterator.Textures[TextureTypeIterator] ) ) )
+                return false;
+            Settings.WrapSettings = MaterialIterator.WrapSettings[TextureTypeIterator];
+            NewMaterial.Textures[TextureTypeIterator] = Settings;
+            }
+        Materials.push_back ( NewMaterial );
+        }
+
+    for ( auto &ModelIterator : LoadedModel.Models )
+        {
+        for ( auto &MeshIterator : ModelIterator.Meshes )
+            {
+            MeshRenderData NewData;
+            NewData.Index = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( MeshIterator.Indices.data(), MeshIterator.Indices.size() * sizeof ( uint32_t ) ) );
+            NewData.Vertex = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( MeshIterator.Vertices.data(), MeshIterator.Vertices.size() * sizeof ( glm::vec3 ) ) );
+            NewData.Normal = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( MeshIterator.Normals.data(), MeshIterator.Normals.size() * sizeof ( glm::vec3 ) ) );
+            NewData.TexCoord = CrossRenderer::CreateShaderBuffer ( CrossRenderer::ShaderBufferDescriptor ( MeshIterator.TexCoords.data(), MeshIterator.TexCoords.size() * sizeof ( glm::uvec2 ) ) );
+            NewData.VertexCount = MeshIterator.Indices.size();
+
+            for ( auto &MaterialIterator : Materials )
+                {
+                if ( MeshIterator.MaterialName == MaterialIterator.Name )
+                    {
+                    NewData.MeshMaterial = MaterialIterator;
+                    break;
+                    }
+                }
+            MeshRenderDataArray.push_back ( NewData );
+            }
+        }
+    return true;
+    }
+
 TestBase::TestBase ( void )
     {
     }

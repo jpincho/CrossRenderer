@@ -45,7 +45,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
     bool Result = true;
     if ( !Command.Shader )
         {
-        LOG_ERROR( "Invalid shader handle" );
+        LOG_ERROR ( "Invalid shader handle" );
         return false;
         }
     GetShaderInformation ( Command.Shader, Info );
@@ -188,7 +188,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         {
         if ( !Iterator.BindSettings.Handle )
             {
-            LOG_ERROR( "Missing texture handle for binding '%s'.", Info.Uniforms[Iterator.UniformHandle.key()].Name.c_str() );
+            LOG_ERROR ( "Missing texture handle for binding '%s'.", Info.Uniforms[Iterator.UniformHandle.key()].Name.c_str() );
             Result = false;
             }
         }

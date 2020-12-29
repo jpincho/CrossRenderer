@@ -40,17 +40,6 @@ typedef struct ShaderBufferDataStream
         ComponentsPerElement = NewComponentsPerElement;
         NormalizeData = ShouldNormalizeData;
         }
-    ShaderBufferDataStream ( const ShaderBufferHandle NewBufferHandle, const ShaderBufferComponentType NewComponentType, const size_t NewComponentsPerElement, const bool ShouldNormalizeData = false )
-        {
-        static size_t Sizes[] = {sizeof ( float ), sizeof ( uint8_t ), sizeof ( uint16_t ), sizeof ( uint32_t ) };
-
-        BufferHandle = NewBufferHandle;
-        StartOffset = 0;
-        Stride = Sizes[ ( int ) NewComponentType ];
-        ComponentType = NewComponentType;
-        ComponentsPerElement = NewComponentsPerElement;
-        NormalizeData = ShouldNormalizeData;
-        }
     ShaderBufferHandle BufferHandle;
     size_t StartOffset;
     size_t Stride;
