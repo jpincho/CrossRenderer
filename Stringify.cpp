@@ -197,6 +197,7 @@ const char *Stringify ( const ShaderUniformType Type )
             STRINGIFY ( Matrix3 );
             STRINGIFY ( Matrix4 );
             STRINGIFY ( Sampler2D );
+            STRINGIFY ( Block );
             STRINGIFY ( Unknown );
         default:
             throw std::runtime_error ( "Unhandled shader uniform type" );
