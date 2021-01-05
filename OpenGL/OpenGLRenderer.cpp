@@ -137,6 +137,9 @@ bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
 
     CurrentState.SetDefaultViewportSize ( FramebufferInformation->Dimensions );
+    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings() );
+    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings() );
+    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings() );
 
     glBindFramebuffer ( GL_FRAMEBUFFER, FramebufferInformation->OpenGLID );
     int BitMask = 0;
@@ -161,14 +164,9 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
     Context->MakeActive ( WindowHandle );
     glm::uvec2 WindowSize = WindowManager::GetWindowSize ( WindowHandle );
     CurrentState.SetDefaultViewportSize ( WindowSize );
-
-    ViewportSettings NewSettings;
-    NewSettings.Set ( glm::uvec2 ( 0, 0 ), WindowSize );
-    CurrentState.ConfigureViewport ( NewSettings );
-
-    ScissorSettings NewScissorSettings;
-    NewScissorSettings.Enabled = false;
-    CurrentState.ConfigureScissor ( NewScissorSettings );
+    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings() );
+    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings() );
+    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings() );
 
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
     if ( DirectStateAccess.Enabled )
@@ -195,9 +193,9 @@ bool StartFrame ( const RenderWindowHandle &Handle )
     {
     ActiveWindow = Handle;
     CurrentState.SetDefaultViewportSize ( WindowManager::GetWindowSize ( Handle ) );
-    ViewportSettings NewSettings;
-    NewSettings.Set ( glm::uvec2 ( 0, 0 ), WindowManager::GetWindowSize ( Handle ) );
-    CurrentState.ConfigureViewport ( NewSettings );
+    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings() );
+    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings() );
+    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings() );
 
     Context->MakeActive ( Handle );
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -206,6 +204,9 @@ bool StartFrame ( const RenderWindowHandle &Handle )
 
 bool EndFrame ( const RenderWindowHandle &Handle )
     {
+    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings() );
+    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings() );
+    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings() );
     Context->SwapWindowBuffer ( Handle );
     return true;
     }

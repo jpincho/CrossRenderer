@@ -263,6 +263,7 @@ bool TestBase::Initialize ( const CrossRenderer::RendererBackend NewRendererBack
 
     CrossRenderer::FramebufferDescriptor NewFramebufferDescriptor ( NewWindowSize );
     DefaultFramebuffer = CrossRenderer::CreateFramebuffer ( NewFramebufferDescriptor );
+    UseOwnFramebuffer = true;
     if ( SpecificInitialize() == false )
         {
         TestResult = false;
@@ -285,15 +286,19 @@ bool TestBase::GetResult ( void ) const
 
 bool TestBase::RunFrame ( void )
     {
-    CrossRenderer::StartRenderToFramebuffer ( DefaultFramebuffer );
-    //CrossRenderer::StartFrame ( *CrossRenderer::WindowManager::WindowList.begin() );
+    bool OwnFramebuffer = UseOwnFramebuffer;
+    if ( OwnFramebuffer )
+        CrossRenderer::StartRenderToFramebuffer ( DefaultFramebuffer );
+    else
+        CrossRenderer::StartFrame ( *CrossRenderer::WindowManager::WindowList.begin() );
     SpecificDraw();
     for ( auto &CommandIterator : RenderCommands )
         {
         CrossRenderer::RunCommand ( CommandIterator );
         }
     RenderImGui();
-    CrossRenderer::DisplayFramebuffer ( DefaultFramebuffer, *CrossRenderer::WindowManager::WindowList.begin() );
+    if ( OwnFramebuffer )
+        CrossRenderer::DisplayFramebuffer ( DefaultFramebuffer, *CrossRenderer::WindowManager::WindowList.begin() );
     CrossRenderer::EndFrame ( *CrossRenderer::WindowManager::WindowList.begin() );
     CrossRenderer::WindowManager::ProcessEvents();
     if ( CrossRenderer::WindowManager::WindowList.size() == 0 )
@@ -457,9 +462,9 @@ bool TestBase::ImGuiProcessEvent ( const CrossRenderer::WindowEvent& Event )
 
 void TestBase::RenderImGui ( void )
     {
-    for ( auto Iterator : ImGuiBuffers )
-        CrossRenderer::DeleteShaderBuffer ( Iterator );
-    ImGuiBuffers.clear();
+    //for ( auto Iterator : ImGuiBuffers )
+    //CrossRenderer::DeleteShaderBuffer ( Iterator );
+    //ImGuiBuffers.clear();
 
     ImGuiIO& io = ImGui::GetIO();
     glm::ivec2 MousePos = CrossRenderer::WindowManager::GetMousePosition();
@@ -473,8 +478,8 @@ void TestBase::RenderImGui ( void )
 
     ImGui::NewFrame();
     SpecificImGuiDraw();
-    ImGui::Render();
     ImGui::EndFrame();
+    ImGui::Render();
 
     ImDrawData* draw_data = ImGui::GetDrawData();
     int fb_width = ( int ) ( draw_data->DisplaySize.x * draw_data->FramebufferScale.x );
@@ -513,15 +518,22 @@ void TestBase::RenderImGui ( void )
                 CrossRenderer::ShaderBufferComponentType::Unsigned8,
                 4,
                 true );
-        ImGuiBuffers.push_back ( DataBufferHandle );
-        ImGuiBuffers.push_back ( IndexBufferHandle );
+        //ImGuiBuffers.push_back ( DataBufferHandle );
+        //ImGuiBuffers.push_back ( IndexBufferHandle );
+        CrossRenderer::RenderCommand Command;
+        Command.Shader = ImGuiShader;
+        Command.Primitive = CrossRenderer::PrimitiveType::TriangleList;
+        Command.IndexBuffer = IndexBufferHandle;
+        Command.IndexBufferStream = IndexBufferStream;
+        Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiPositionShaderAttribute, VertexStream ) );
+        Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiTexCoordShaderAttribute, TexCoordStream ) );
+        Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiColorShaderAttribute, ColorStream ) );
+
+        Command.State.Blending.Set ( CrossRenderer::BlendMode::SourceAlpha, CrossRenderer::BlendMode::OneMinusSourceAlpha );
+
         for ( int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++ )
             {
             const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-            CrossRenderer::RenderCommand Command;
-
-            Command.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( ImGuiTextureUniform,
-                                                CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( ( intptr_t ) pcmd->TextureId ) ) ) );
 
             ImVec2 clip_off = draw_data->DisplayPos;         // (0,0) unless using multi-viewports
             ImVec2 clip_scale = draw_data->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
@@ -530,29 +542,25 @@ void TestBase::RenderImGui ( void )
             clip_rect.y = ( pcmd->ClipRect.y - clip_off.y ) * clip_scale.y;
             clip_rect.z = ( pcmd->ClipRect.z - clip_off.x ) * clip_scale.x;
             clip_rect.w = ( pcmd->ClipRect.w - clip_off.y ) * clip_scale.y;
-            Command.State.Scissor.Set ( glm::uvec2 ( clip_rect.x, fb_height - clip_rect.w ), glm::uvec2 ( clip_rect.z - clip_rect.x, clip_rect.w - clip_rect.y ) );
-
-            Command.Shader = ImGuiShader;
-            Command.Primitive = CrossRenderer::PrimitiveType::TriangleList;
-            Command.IndexBuffer = IndexBufferHandle;
-            Command.IndexBufferStream = IndexBufferStream;
-            Command.StartVertex = IndexOffset;
-            Command.VertexCount = pcmd->ElemCount;
-            Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiPositionShaderAttribute, VertexStream ) );
-            Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiTexCoordShaderAttribute, TexCoordStream ) );
-            Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiColorShaderAttribute, ColorStream ) );
-
-            Command.State.Blending.Set ( CrossRenderer::BlendMode::SourceAlpha, CrossRenderer::BlendMode::OneMinusSourceAlpha );
 
             float L = draw_data->DisplayPos.x;
             float R = draw_data->DisplayPos.x + draw_data->DisplaySize.x;
             float T = draw_data->DisplayPos.y;
             float B = draw_data->DisplayPos.y + draw_data->DisplaySize.y;
 
+            Command.TextureBindings.clear();
+            Command.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( ImGuiTextureUniform,
+                                                CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( ( intptr_t ) pcmd->TextureId ) ) ) );
+            Command.State.Scissor.Set ( glm::uvec2 ( clip_rect.x, fb_height - clip_rect.w ), glm::uvec2 ( clip_rect.z - clip_rect.x, clip_rect.w - clip_rect.y ) );
+            Command.StartVertex = IndexOffset;
+            Command.VertexCount = pcmd->ElemCount;
+            Command.UniformValues.clear();
             Command.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( ImGuiMVPMatrixUniform, glm::ortho ( L, R, B, T ) ) );
             assert ( CrossRenderer::SanityCheckRenderCommand ( Command ) );
             CrossRenderer::RunCommand ( Command );
             IndexOffset += pcmd->ElemCount;
             }
+        CrossRenderer::DeleteShaderBuffer ( DataBufferHandle );
+        CrossRenderer::DeleteShaderBuffer ( IndexBufferHandle );
         }
     }

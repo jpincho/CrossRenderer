@@ -154,7 +154,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         {
         if ( !Iterator.BindSettings.Handle )
             {
-            LOG_ERROR( "Missing texture handle for binding '%s'.", Info.Uniforms[Iterator.UniformHandle.key()].Name.c_str() );
+            LOG_ERROR ( "Missing texture handle for binding '%s'.", Info.Uniforms[Iterator.UniformHandle.key()].Name.c_str() );
             Result = false;
             }
         }

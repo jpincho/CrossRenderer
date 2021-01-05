@@ -28,6 +28,7 @@ class TestBase : public CrossRenderer::EventListener
         std::vector <CrossRenderer::RenderCommand> RenderCommands;
         CrossRenderer::RendererBackend RendererBackend;
         CrossRenderer::FramebufferHandle DefaultFramebuffer;
+        bool UseOwnFramebuffer;
 
         void OnEvent ( const CrossRenderer::WindowEvent &Event );
         CrossRenderer::TextureHandle LoadTexture ( const std::string &ImageFile, const bool Flip = true );
