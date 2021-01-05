@@ -28,6 +28,7 @@ glm::ivec2 GetMousePosition ( void );
 uint32_t GetMouseButtonStatus ( void );
 std::string GetErrorDescription ( void );
 SDL_Window *GetWindowHandle ( const RenderWindowHandle &Handle );
+void *GetPlatformWindowHandle ( const RenderWindowHandle &Handle );
 
 WindowManagerBackend GetBackendType ( void );
 }

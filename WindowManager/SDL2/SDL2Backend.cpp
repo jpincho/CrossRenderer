@@ -1,5 +1,6 @@
 #include "SDL2Backend.h"
 #include <SDL.h>
+#include <SDL_syswm.h>
 #include <Logger/Logger.h>
 #include <unordered_map>
 
@@ -18,7 +19,7 @@ typedef struct SDL2WindowInfo
     } SDL2WindowInfo;
 
 static VectorizedContainer <SDL2WindowInfo, RenderWindowTag> Windows;
-std::unordered_map <SDL_Window*, RenderWindowHandle> HWNDToHandleMap;
+std::unordered_map <SDL_Window *, RenderWindowHandle> HWNDToHandleMap;
 
 RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
     {
@@ -37,7 +38,7 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
     NewWindow.Title = Descriptor.Title;
     RenderWindowHandle NewHandle = Windows.GetNewHandle();
     Windows[NewHandle] = NewWindow;
-    HWNDToHandleMap.insert ( std::pair <SDL_Window*, RenderWindowHandle> ( NewWindow.Window, NewHandle ) );
+    HWNDToHandleMap.insert ( std::pair <SDL_Window *, RenderWindowHandle> ( NewWindow.Window, NewHandle ) );
     WindowManager::WindowList.insert ( NewHandle );
     return NewHandle;
     }
@@ -169,7 +170,7 @@ void ProcessEvents ( void )
                     std::unordered_map<SDL_Window *, RenderWindowHandle>::iterator HandleIterator = HWNDToHandleMap.find ( window );
                     if ( HandleIterator == HWNDToHandleMap.end() )
                         {
-//                        LOG_ERROR ( "Message '%s' for unknown window handle '%X'", StringifyWindowsMessage ( msg.message ), msg.hwnd );
+                        //                        LOG_ERROR ( "Message '%s' for unknown window handle '%X'", StringifyWindowsMessage ( msg.message ), msg.hwnd );
                         continue;
                         }
                     CachedHandle.first = HandleIterator->first;
@@ -258,6 +259,25 @@ SDL_Window *GetWindowHandle ( const RenderWindowHandle &Handle )
     return Windows[Handle].Window;
     }
 
+void *GetPlatformWindowHandle ( const RenderWindowHandle &Handle )
+    {
+    SDL2WindowInfo *WindowInformation = &Windows[Handle];
+    SDL_SysWMinfo info;
+    SDL_VERSION ( &info.version );
+
+    if ( SDL_GetWindowWMInfo ( WindowInformation->Window, &info ) )
+        {
+        switch ( info.subsystem )
+            {
+            case SDL_SYSWM_WINDOWS:
+                info.info.win.window;
+            default:
+                break;
+            }
+
+        }
+    return nullptr;
+    }
 }
 }
 }

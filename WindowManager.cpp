@@ -24,6 +24,7 @@ const char * ( *GetKeyName ) ( const uint32_t KeyCode );
 glm::ivec2 ( *GetMousePosition ) ( void );
 uint32_t ( *GetMouseButtonStatus ) ( void );
 std::string ( *GetErrorDescription ) ( void );
+void * ( *GetPlatformWindowHandle ) ( const RenderWindowHandle &Handle );
 std::unordered_set<RenderWindowHandle> WindowList;
 
 typedef std::unordered_set <void ( * ) ( const WindowEvent & ) > TWindowEventListeners;

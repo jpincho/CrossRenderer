@@ -26,7 +26,7 @@ extern const char * ( *GetKeyName ) ( const uint32_t KeyCode );
 extern glm::ivec2 ( *GetMousePosition ) ( void );
 extern uint32_t ( *GetMouseButtonStatus ) ( void );
 extern std::string ( *GetErrorDescription ) ( void );
-
+extern void * ( *GetPlatformWindowHandle ) ( const RenderWindowHandle &Handle );
 extern std::unordered_set<RenderWindowHandle> WindowList;
 WindowManagerBackend GetType ( void );
 
