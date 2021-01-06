@@ -87,8 +87,6 @@ const char *StringifyOpenGL ( GLenum Value )
 #define STRINGIFY(X) case X: return #X;
             STRINGIFY ( GL_FRAMEBUFFER_UNDEFINED );
             STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT );
-            STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS );
-//STRINGIFY(GL_FRAMEBUFFER_INCOMPLETE_FORMATS);
             STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT );
             STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER );
             STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER );
@@ -96,6 +94,7 @@ const char *StringifyOpenGL ( GLenum Value )
             STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE );
             STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS );
             STRINGIFY ( GL_FRAMEBUFFER_COMPLETE );
+
             STRINGIFY ( GL_NO_ERROR );
             STRINGIFY ( GL_INVALID_ENUM );
             STRINGIFY ( GL_INVALID_VALUE );
@@ -105,7 +104,7 @@ const char *StringifyOpenGL ( GLenum Value )
             STRINGIFY ( GL_OUT_OF_MEMORY );
             STRINGIFY ( GL_TABLE_TOO_LARGE );
         default:
-            return ( "Unknown opengl enum" );
+            throw std::runtime_error( "Unhandled OpenGL enum" );
         }
 #undef STRINGIFY
     }
