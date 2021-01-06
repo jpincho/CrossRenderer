@@ -26,14 +26,8 @@ struct
     GLint SizedFormat;
     } PixelFormatData[] =
     {
-        {GL_UNSIGNED_BYTE, GL_ALPHA, GL_ALPHA8},// Alpha8
         {GL_UNSIGNED_BYTE, GL_RGB, GL_RGB8},// RedGreenBlue888
-        {GL_UNSIGNED_BYTE, GL_RGB, GL_UNSIGNED_SHORT_5_6_5},// RedGreenBlue565
         {GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA8},// RedGreenBlueAlpha8888
-        {GL_UNSIGNED_BYTE, GL_RGB, GL_RGB8},// BlueGreenRed888
-        {GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA8},// BlueGreenRedAlpha8888
-        {GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA8},// AlphaRedGreenBlue8888
-        {GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA8},// AlphaBlueGreenRed8888
         {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24}// DepthComponent
     };
 

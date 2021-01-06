@@ -104,7 +104,7 @@ const char *StringifyOpenGL ( GLenum Value )
             STRINGIFY ( GL_OUT_OF_MEMORY );
             STRINGIFY ( GL_TABLE_TOO_LARGE );
         default:
-            throw std::runtime_error( "Unhandled OpenGL enum" );
+            throw std::runtime_error ( "Unhandled OpenGL enum" );
         }
 #undef STRINGIFY
     }
