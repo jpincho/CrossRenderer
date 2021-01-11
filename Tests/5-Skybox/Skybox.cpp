@@ -6,7 +6,6 @@ class SkyboxTest : public TestBase
     protected:
         Camera SceneCamera;
         CameraInput CameraController;
-        uint32_t FrameCount = 0;
 
         struct
             {
@@ -194,7 +193,6 @@ class SkyboxTest : public TestBase
             }
         void SpecificDraw ( void )
             {
-            ++FrameCount;
             const float TimeDelta = 1.0f / 60;
             CameraController.Update ( TimeDelta );
 
