@@ -27,11 +27,6 @@ class StormtrooperTest : public TestBase
                 CrossRenderer::ShaderAttributeHandle Position, Normal, TextureCoord;
                 } Attributes;
             } StormtrooperShader;
-
-        struct
-            {
-            uint32_t Reset;
-            } Keys;
         struct
             {
             glm::vec4 Position;
@@ -75,14 +70,6 @@ class StormtrooperTest : public TestBase
 
             AmbientLight.Color = glm::vec3 ( 1, 1, 1 );
             AmbientLight.Intensity = 0.6f;
-            }
-
-        void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
-            {
-            if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) && ( Event.EventData.KeyReleased.Key == Keys.Reset ) )
-                {
-                Reset();
-                }
             }
         bool SpecificInitialize ( void )
             {
@@ -164,7 +151,6 @@ class StormtrooperTest : public TestBase
             NewParameters.Near = 1.0;
             NewParameters.FOV = glm::pi<float>() / 2;
             SceneCamera.SetPerspectiveParameters ( NewParameters );
-            Keys.Reset = CrossRenderer::WindowManager::GetKeyCode ( "r" );
             Reset();
             return true;
             }

@@ -33,11 +33,6 @@ class EnvironmentMappingTest : public TestBase
 
         std::vector <std::pair <std::string, CrossRenderer::TextureHandle>> Skyboxes;
         int ActiveSkyboxIndex;
-
-        struct
-            {
-            uint32_t Reset;
-            } Keys;
         bool UseRefraction;
         float RefractionFactor;
 
@@ -52,14 +47,6 @@ class EnvironmentMappingTest : public TestBase
             UseRefraction = false;
             RefractionFactor = 1.0f / 1.52f;
             ActiveSkyboxIndex = 0;
-            }
-
-        void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
-            {
-            if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) && ( Event.EventData.KeyReleased.Key == Keys.Reset ) )
-                {
-                Reset();
-                }
             }
         bool CreateCrate ( void )
             {
@@ -331,7 +318,6 @@ class EnvironmentMappingTest : public TestBase
             NewParameters.Near = 1.0;
             NewParameters.FOV = glm::pi<float>() / 2;
             SceneCamera.SetPerspectiveParameters ( NewParameters );
-            Keys.Reset = CrossRenderer::WindowManager::GetKeyCode ( "r" );
             Reset();
             return true;
             }

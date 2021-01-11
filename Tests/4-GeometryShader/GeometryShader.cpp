@@ -40,11 +40,6 @@ class GeometryShaderTest : public TestBase
                 CrossRenderer::ShaderAttributeHandle Position, Normal;
                 } Attributes;
             } NormalsShader;
-
-        struct
-            {
-            uint32_t Reset;
-            } Keys;
         struct
             {
             glm::vec4 Position;
@@ -98,13 +93,6 @@ class GeometryShaderTest : public TestBase
             NormalEndColor = glm::vec4 ( 0, 1, 0, 1 );
             ShowVertexNormals = true;
             ShowFaceNormals = true;
-            }
-        void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
-            {
-            if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) && ( Event.EventData.KeyReleased.Key == Keys.Reset ) )
-                {
-                Reset();
-                }
             }
         bool SpecificInitialize ( void )
             {
@@ -225,7 +213,6 @@ class GeometryShaderTest : public TestBase
             NewParameters.Near = 1.0;
             NewParameters.FOV = glm::pi<float>() / 2;
             SceneCamera.SetPerspectiveParameters ( NewParameters );
-            Keys.Reset = CrossRenderer::WindowManager::GetKeyCode ( "r" );
             Reset();
             return true;
             }

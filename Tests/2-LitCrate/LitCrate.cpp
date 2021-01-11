@@ -18,11 +18,6 @@ class LitCrateTest : public TestBase
             CrossRenderer::ShaderUniformHandle MaterialShininess, MaterialDiffuseTexture, MaterialSpecularTexture;
             CrossRenderer::ShaderUniformHandle PointLight[2];
             } Uniforms;
-
-        struct
-            {
-            uint32_t Reset;
-            } Keys;
         struct
             {
             glm::vec4 Position;
@@ -59,13 +54,6 @@ class LitCrateTest : public TestBase
             LightData[1].ExponentialAttenuation = 0.01f;
             }
 
-        void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
-            {
-            if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) && ( Event.EventData.KeyReleased.Key == Keys.Reset ) )
-                {
-                Reset();
-                }
-            }
         bool SpecificInitialize ( void )
             {
             CameraController.Initialize ();
@@ -235,7 +223,6 @@ class LitCrateTest : public TestBase
             NewParameters.Near = 1.0;
             NewParameters.FOV = glm::pi<float>() / 2;
             SceneCamera.SetPerspectiveParameters ( NewParameters );
-            Keys.Reset = CrossRenderer::WindowManager::GetKeyCode ( "r" );
             Reset();
             return true;
             }

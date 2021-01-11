@@ -27,6 +27,10 @@ void TestBase::OnEvent ( const CrossRenderer::WindowEvent &Event )
             }
         case CrossRenderer::WindowEventType::KeyPressed:
             {
+            if ( Event.EventData.KeyReleased.Key == CrossRenderer::WindowManager::GetKeyCode ( "r" ) )
+                {
+                Reset();
+                }
             if ( Event.EventData.KeyPressed.Key == CrossRenderer::WindowManager::GetKeyCode ( "Escape" ) )
                 {
                 TestResult = false;
@@ -304,6 +308,11 @@ bool TestBase::RunFrame ( void )
     if ( CrossRenderer::WindowManager::WindowList.size() == 0 )
         ShouldQuit = true;
     return !ShouldQuit;
+    }
+
+void TestBase::Reset ( void )
+    {
+
     }
 
 void TestBase::SpecificDraw ( void )

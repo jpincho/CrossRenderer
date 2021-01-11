@@ -42,6 +42,7 @@ class TestBase : public CrossRenderer::EventListener
         bool Shutdown ( void );
         bool GetResult ( void ) const;
         bool RunFrame ( void );
+        virtual void Reset ( void );
         virtual bool SpecificInitialize ( void ) = 0;
         virtual void SpecificDraw ( void );
         virtual void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event );
