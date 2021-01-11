@@ -1,12 +1,9 @@
 #include "../TestBase.h"
-#include "../CameraInput.h"
 #include "../Material.h"
 #include "../ModelLoader.h"
 class StormtrooperTest : public TestBase
     {
     protected:
-        Camera SceneCamera;
-        CameraInput CameraController;
         CrossRenderer::ShaderBufferHandle Light0Buffer, Light1Buffer;
         struct
             {
@@ -47,8 +44,6 @@ class StormtrooperTest : public TestBase
     public:
         void Reset ( void )
             {
-            SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
-            SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
             Stormtrooper.SetPosition ( glm::vec3 ( 0, 0, 0 ) );
             Stormtrooper.Rotate ( glm::vec3 ( 1, 0, 0 ), -glm::pi<float>() / 2 );
 
@@ -73,9 +68,6 @@ class StormtrooperTest : public TestBase
             }
         bool SpecificInitialize ( void )
             {
-            CameraController.Initialize();
-            CameraController.SetCamera ( &SceneCamera );
-
             // Load the shader
             StormtrooperShader.Handle = LoadShader ( "Stormtrooper.vert", "", "Stormtrooper.frag" );
             if ( !StormtrooperShader.Handle )
@@ -145,12 +137,6 @@ class StormtrooperTest : public TestBase
                 StormtrooperModelData.RenderCommands.push_back ( NewCommand );
                 }
 
-            Camera::PerspectiveParameters NewParameters;
-            NewParameters.AspectRatio = 1.0f;
-            NewParameters.Far = 1000;
-            NewParameters.Near = 1.0;
-            NewParameters.FOV = glm::pi<float>() / 2;
-            SceneCamera.SetPerspectiveParameters ( NewParameters );
             Reset();
             return true;
             }
@@ -183,12 +169,10 @@ class StormtrooperTest : public TestBase
             }
         void SpecificDraw ( void )
             {
-            const float TimeDelta = 1.0f / 60;
             CrossRenderer::ChangeShaderBufferContents ( Light0Buffer, CrossRenderer::ShaderBufferDescriptor ( &LightData[0], sizeof ( LightData[0] ) ) );
             CrossRenderer::ChangeShaderBufferContents ( Light1Buffer, CrossRenderer::ShaderBufferDescriptor ( &LightData[1], sizeof ( LightData[1] ) ) );
 
             RenderCommands.clear();
-            CameraController.Update ( TimeDelta );
             for ( auto NewCommand : StormtrooperModelData.RenderCommands )
                 {
                 NewCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( StormtrooperShader.Uniforms.ModelMatrix, Stormtrooper.GetTransformationMatrix() ) );

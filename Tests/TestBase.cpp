@@ -29,6 +29,9 @@ void TestBase::OnEvent ( const CrossRenderer::WindowEvent &Event )
             {
             if ( Event.EventData.KeyReleased.Key == CrossRenderer::WindowManager::GetKeyCode ( "r" ) )
                 {
+                SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
+                SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
+
                 Reset();
                 }
             if ( Event.EventData.KeyPressed.Key == CrossRenderer::WindowManager::GetKeyCode ( "Escape" ) )
@@ -268,6 +271,19 @@ bool TestBase::Initialize ( const CrossRenderer::RendererBackend NewRendererBack
     CrossRenderer::FramebufferDescriptor NewFramebufferDescriptor ( NewWindowSize );
     DefaultFramebuffer = CrossRenderer::CreateFramebuffer ( NewFramebufferDescriptor );
     UseOwnFramebuffer = true;
+
+    Camera::PerspectiveParameters NewParameters;
+    NewParameters.AspectRatio = 1.0f;
+    NewParameters.Far = 1000;
+    NewParameters.Near = 1.0;
+    NewParameters.FOV = glm::pi<float>() / 2;
+    SceneCamera.SetPerspectiveParameters ( NewParameters );
+    SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
+    SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
+
+    CameraController.Initialize();
+    CameraController.SetCamera ( &SceneCamera );
+
     if ( SpecificInitialize() == false )
         {
         TestResult = false;
@@ -290,6 +306,9 @@ bool TestBase::GetResult ( void ) const
 
 bool TestBase::RunFrame ( void )
     {
+    const float TimeDelta = 1.0f / 60;
+    CameraController.Update ( TimeDelta );
+
     bool OwnFramebuffer = UseOwnFramebuffer;
     if ( OwnFramebuffer )
         CrossRenderer::StartRenderToFramebuffer ( DefaultFramebuffer );
@@ -487,6 +506,22 @@ void TestBase::RenderImGui ( void )
 
     ImGui::NewFrame();
     SpecificImGuiDraw();
+
+    ImGui::Begin ( "Camera" );
+    glm::vec3 Position = SceneCamera.GetPosition();
+    glm::quat Orientation = SceneCamera.GetOrientation();
+    Camera::PerspectiveParameters Params = SceneCamera.GetPerspectiveParameters();
+    if ( ImGui::InputFloat3 ( "Position", glm::value_ptr ( Position ) ) )
+        SceneCamera.SetPosition ( Position );
+    if ( ImGui::InputFloat4 ( "Orientation", glm::value_ptr ( Orientation ) ) )
+        SceneCamera.SetOrientation ( Orientation );
+    if ( ( ImGui::SliderAngle ( "FOV", &Params.FOV, 1, 179 ) ) ||
+            ( ImGui::InputFloat ( "Near plane", &Params.Near ) ) ||
+            ( ImGui::InputFloat ( "Far plane", &Params.Far ) ) )
+        SceneCamera.SetPerspectiveParameters ( Params );
+    ImGui::End();
+
+
     ImGui::EndFrame();
     ImGui::Render();
 
