@@ -197,6 +197,8 @@ const char *Stringify ( const ShaderUniformType Type )
             STRINGIFY ( Matrix3 );
             STRINGIFY ( Matrix4 );
             STRINGIFY ( Sampler2D );
+            STRINGIFY ( Sampler3D );
+            STRINGIFY ( SamplerCube );
             STRINGIFY ( Block );
             STRINGIFY ( Unknown );
         default:
