@@ -109,7 +109,7 @@ class AssimpIOSystem : public Assimp::IOSystem
             {
             AssimpIOStream *NewStream = new AssimpIOStream;
 #if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
-            if ( fopen_s ( & ( NewStream->File ), pFile, "rb" ) != 0 )
+            if ( fopen_s ( & ( NewStream->File ), pFile, Mode ) != 0 )
                 return nullptr;
 #else
             NewStream->File = fopen ( pFile, Mode );
