@@ -111,12 +111,6 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
                 break;
                 }
             }
-        if ( Command.UniformValues[Iterator].UniformValue.Type != Info.Uniforms[Index].Type )
-            {
-            LOG_ERROR ( "Wrong value type for uniform '%s'", Info.Uniforms[Index].Name.c_str() );
-            Result = false;
-            continue;
-            }
         }
 
     // Find duplicate attribute bindings

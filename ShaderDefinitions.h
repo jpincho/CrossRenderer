@@ -2,6 +2,7 @@
 #include "GLMHeaders.h"
 #include "HandleTemplate.h"
 #include "ShaderBufferDefinitions.h"
+#include <stdexcept>
 
 namespace CrossRenderer
 {
@@ -92,12 +93,10 @@ typedef struct ShaderUniformValue
 
         ShaderBufferHandle BlockValue;
         };
-    ShaderUniformType Type;
 #define CONSTRUCTOR(TYPENAME, TYPE)\
     ShaderUniformValue ( const TYPE Value )\
         {\
         TYPENAME##Value = Value;\
-        Type = ShaderUniformType::TYPENAME;\
         }
 
     CONSTRUCTOR ( Bool, bool )
@@ -129,9 +128,10 @@ typedef struct ShaderUniformValue
 
     ShaderUniformValue ( void )
         {
-        Type = ShaderUniformType::Unknown;
+        IntegerValue = 0xBABEBABE;
         }
-    bool operator == ( const ShaderUniformValue &Other ) const
+    bool operator == ( const ShaderUniformValue &Other ) const = delete;
+    bool Equals ( const ShaderUniformValue &Other, const ShaderUniformType Type )
         {
         switch ( Type )
             {
@@ -176,7 +176,7 @@ typedef struct ShaderUniformValue
             case ShaderUniformType::Block:
                 return BlockValue == Other.BlockValue;
             default:
-                return true;
+                throw std::runtime_error ( "Unhandled uniform type" );
             }
         }
     } ShaderUniformValue;
