@@ -57,8 +57,12 @@ ShaderUniformType TranslateOpenGLUniformType ( GLenum Type )
             return ShaderUniformType::Matrix4;
         case GL_SAMPLER_2D:
             return ShaderUniformType::Sampler2D;
+        case GL_SAMPLER_3D:
+            return ShaderUniformType::Sampler3D;
+        case GL_SAMPLER_CUBE:
+            return ShaderUniformType::SamplerCube;
         default:
-            return ShaderUniformType::Unknown;
+            throw std::runtime_error ( "Unhandled shader uniform type" );
         }
     }
 

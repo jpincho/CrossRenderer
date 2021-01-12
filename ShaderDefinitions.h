@@ -34,6 +34,8 @@ enum class ShaderUniformType
     Matrix4,
 
     Sampler2D,
+    Sampler3D,
+    SamplerCube,
     Block,
     Unknown
     };
