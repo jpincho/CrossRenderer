@@ -13,24 +13,19 @@ VectorizedContainer <FramebufferInfo, FramebufferTag> Framebuffers;
 
 void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, GLchar const* message, void const*  )
     {
+#define STRINGIFY(X) case GL_DEBUG_##X: return #X;
     auto const src_str = [source]()
         {
         switch ( source )
             {
-            case GL_DEBUG_SOURCE_API:
-                return "API";
-            case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-                return "WINDOW SYSTEM";
-            case GL_DEBUG_SOURCE_SHADER_COMPILER:
-                return "SHADER COMPILER";
-            case GL_DEBUG_SOURCE_THIRD_PARTY:
-                return "THIRD PARTY";
-            case GL_DEBUG_SOURCE_APPLICATION:
-                return "APPLICATION";
-            case GL_DEBUG_SOURCE_OTHER:
-                return "OTHER";
+                STRINGIFY(SOURCE_API);
+                STRINGIFY(SOURCE_WINDOW_SYSTEM);
+                STRINGIFY(SOURCE_SHADER_COMPILER);
+                STRINGIFY(SOURCE_THIRD_PARTY);
+                STRINGIFY(SOURCE_APPLICATION);
+                STRINGIFY(SOURCE_OTHER);
             default:
-                return "";
+                return "UNKNOWN SOURCE";
             }
         }
     ();
@@ -39,22 +34,15 @@ void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum sever
         {
         switch ( type )
             {
-            case GL_DEBUG_TYPE_ERROR:
-                return "ERROR";
-            case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-                return "DEPRECATED_BEHAVIOR";
-            case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-                return "UNDEFINED_BEHAVIOR";
-            case GL_DEBUG_TYPE_PORTABILITY:
-                return "PORTABILITY";
-            case GL_DEBUG_TYPE_PERFORMANCE:
-                return "PERFORMANCE";
-            case GL_DEBUG_TYPE_MARKER:
-                return "MARKER";
-            case GL_DEBUG_TYPE_OTHER:
-                return "OTHER";
+                STRINGIFY(TYPE_ERROR);
+                STRINGIFY(TYPE_DEPRECATED_BEHAVIOR);
+                STRINGIFY(TYPE_UNDEFINED_BEHAVIOR);
+                STRINGIFY(TYPE_PORTABILITY);
+                STRINGIFY(TYPE_PERFORMANCE);
+                STRINGIFY(TYPE_MARKER);
+                STRINGIFY(TYPE_OTHER);
             default:
-                return "";
+                return "UNKNOWN TYPE";
             }
         }
     ();
@@ -63,16 +51,12 @@ void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum sever
         {
         switch ( severity )
             {
-            case GL_DEBUG_SEVERITY_NOTIFICATION:
-                return "NOTIFICATION";
-            case GL_DEBUG_SEVERITY_LOW:
-                return "LOW";
-            case GL_DEBUG_SEVERITY_MEDIUM:
-                return "MEDIUM";
-            case GL_DEBUG_SEVERITY_HIGH:
-                return "HIGH";
+                STRINGIFY(SEVERITY_NOTIFICATION);
+                STRINGIFY(SEVERITY_LOW);
+                STRINGIFY(SEVERITY_MEDIUM);
+                STRINGIFY(SEVERITY_HIGH);
             default:
-                return "";
+                return "UNKNOWN SEVERITY";
             }
         }
     ();
