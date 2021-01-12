@@ -3,7 +3,6 @@
 class EnvironmentMappingTest : public TestBase
     {
     protected:
-
         struct
             {
             MovableObject Crate;
@@ -309,14 +308,13 @@ class EnvironmentMappingTest : public TestBase
         void SpecificImGuiDraw ( void )
             {
             ImGui::Begin ( "Options" );
-            ImGui::Checkbox ( "Use refraction", &UseRefraction );
-            if ( UseRefraction )
-                ImGui::InputFloat ( "Refraction factor", &RefractionFactor );
-
             std::vector <const char *> SkyboxNames;
             for ( unsigned Index = 0; Index < Skyboxes.size(); ++Index )
                 SkyboxNames.push_back ( Skyboxes[Index].first.c_str() );
-            ImGui::Combo ( "Active skybox", &ActiveSkyboxIndex, SkyboxNames.data(), SkyboxNames.size() );
+            ImGui::Combo ( "Active skybox", &ActiveSkyboxIndex, SkyboxNames.data(), ( int ) SkyboxNames.size() );
+            ImGui::Checkbox ( "Use refraction", &UseRefraction );
+            if ( UseRefraction )
+                ImGui::InputFloat ( "Refraction factor", &RefractionFactor );
             ImGui::End();
             }
         void SpecificDraw ( void )
