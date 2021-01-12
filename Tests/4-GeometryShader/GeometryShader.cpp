@@ -7,7 +7,6 @@ class GeometryShaderTest : public TestBase
     protected:
         Camera SceneCamera;
         CameraInput CameraController;
-        uint32_t FrameCount = 0;
         CrossRenderer::ShaderBufferHandle Light0Buffer, Light1Buffer;
         struct
             {
@@ -268,7 +267,6 @@ class GeometryShaderTest : public TestBase
             }
         void SpecificDraw ( void )
             {
-            ++FrameCount;
             const float TimeDelta = 1.0f / 60;
             CrossRenderer::ChangeShaderBufferContents ( Light0Buffer, CrossRenderer::ShaderBufferDescriptor ( &LightData[0], sizeof ( LightData[0] ) ) );
             CrossRenderer::ChangeShaderBufferContents ( Light1Buffer, CrossRenderer::ShaderBufferDescriptor ( &LightData[1], sizeof ( LightData[1] ) ) );
