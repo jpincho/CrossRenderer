@@ -1,10 +1,11 @@
 #include <vector>
 #include "CrossRendererConfig.h"
 #include "../CrossRenderer.h"
-#include "LoadFileContents.h"
-#include "ModelLoader.h"
 #include "../WindowManager.h"
 #include "../Stringify.h"
+#include "LoadFileContents.h"
+#include "ModelLoader.h"
+#include "CameraInput.h"
 #include <Logger/Logger.h>
 #include <imgui/imgui.h>
 
@@ -29,6 +30,8 @@ class TestBase : public CrossRenderer::EventListener
         CrossRenderer::RendererBackend RendererBackend;
         CrossRenderer::FramebufferHandle DefaultFramebuffer;
         bool UseOwnFramebuffer;
+        Camera SceneCamera;
+        CameraInput CameraController;
 
         void OnEvent ( const CrossRenderer::WindowEvent &Event );
         CrossRenderer::TextureHandle LoadTexture ( const std::string &ImageFile, const bool Flip = true );

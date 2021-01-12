@@ -1,11 +1,8 @@
 #include "../TestBase.h"
-#include "../CameraInput.h"
 
 class LitCrateTest : public TestBase
     {
     protected:
-        Camera SceneCamera;
-        CameraInput CameraController;
         uint32_t FrameCount = 0;
         bool ShouldMoveLight = true, ShouldRotateCube = false;
         MovableObject Crate;
@@ -31,9 +28,6 @@ class LitCrateTest : public TestBase
     public:
         void Reset ( void )
             {
-            SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
-            SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
-
             Crate.SetPosition ( glm::vec3 ( 0, 0, 0 ) );
             Crate.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
 
@@ -56,8 +50,6 @@ class LitCrateTest : public TestBase
 
         bool SpecificInitialize ( void )
             {
-            CameraController.Initialize ();
-            CameraController.SetCamera ( &SceneCamera );
             // Create the quad
             typedef struct
                 {
@@ -217,12 +209,6 @@ class LitCrateTest : public TestBase
             CrateRenderCommand.State.DepthTest.Enabled = true;
             RenderCommands.push_back ( CrateRenderCommand );
 
-            Camera::PerspectiveParameters NewParameters;
-            NewParameters.AspectRatio = 1.0f;
-            NewParameters.Far = 1000;
-            NewParameters.Near = 1.0;
-            NewParameters.FOV = glm::pi<float>() / 2;
-            SceneCamera.SetPerspectiveParameters ( NewParameters );
             Reset();
             return true;
             }
@@ -232,8 +218,6 @@ class LitCrateTest : public TestBase
             const float TimeDelta = 1.0f / 60;
             CrossRenderer::ChangeShaderBufferContents ( Light0Buffer, CrossRenderer::ShaderBufferDescriptor ( &LightData[0], sizeof ( LightData[0] ) ) );
             CrossRenderer::ChangeShaderBufferContents ( Light1Buffer, CrossRenderer::ShaderBufferDescriptor ( &LightData[1], sizeof ( LightData[1] ) ) );
-
-            CameraController.Update ( TimeDelta );
 
             // The test itself
             if ( ShouldRotateCube )

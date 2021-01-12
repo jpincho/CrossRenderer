@@ -1,11 +1,8 @@
 #include "../TestBase.h"
-#include "../CameraInput.h"
 
 class EnvironmentMappingTest : public TestBase
     {
     protected:
-        Camera SceneCamera;
-        CameraInput CameraController;
 
         struct
             {
@@ -39,9 +36,6 @@ class EnvironmentMappingTest : public TestBase
     public:
         void Reset ( void )
             {
-            SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
-            SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
-
             CrateData.Crate.SetPosition ( glm::vec3 ( 0, 0, 0 ) );
             CrateData.Crate.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
             UseRefraction = false;
@@ -304,20 +298,11 @@ class EnvironmentMappingTest : public TestBase
 
         bool SpecificInitialize ( void )
             {
-            CameraController.Initialize ();
-            CameraController.SetCamera ( &SceneCamera );
-
             if ( CreateSkybox() == false )
                 return false;
             if ( CreateCrate() == false )
                 return false;
 
-            Camera::PerspectiveParameters NewParameters;
-            NewParameters.AspectRatio = 1.0f;
-            NewParameters.Far = 1000;
-            NewParameters.Near = 1.0;
-            NewParameters.FOV = glm::pi<float>() / 2;
-            SceneCamera.SetPerspectiveParameters ( NewParameters );
             Reset();
             return true;
             }
@@ -336,9 +321,6 @@ class EnvironmentMappingTest : public TestBase
             }
         void SpecificDraw ( void )
             {
-            const float TimeDelta = 1.0f / 60;
-            CameraController.Update ( TimeDelta );
-
             RenderCommands.clear();
             RenderCommands.push_back ( CrateData.RenderCommand );
             RenderCommands.push_back ( SkyboxData.RenderCommand );

@@ -1,12 +1,8 @@
 #include "../TestBase.h"
-#include "../CameraInput.h"
 
 class SkyboxTest : public TestBase
     {
     protected:
-        Camera SceneCamera;
-        CameraInput CameraController;
-
         struct
             {
             CrossRenderer::RenderCommand RenderCommand;
@@ -23,8 +19,6 @@ class SkyboxTest : public TestBase
     public:
         void Reset ( void )
             {
-            SceneCamera.SetPosition ( glm::vec3 ( 0.0f, 0.0f, 3.0f ) );
-            SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
             ActiveSkyboxIndex = 0;
             }
         bool CreateSkybox ( void )
@@ -151,18 +145,9 @@ class SkyboxTest : public TestBase
 
         bool SpecificInitialize ( void )
             {
-            CameraController.Initialize ();
-            CameraController.SetCamera ( &SceneCamera );
-
             if ( CreateSkybox() == false )
                 return false;
 
-            Camera::PerspectiveParameters NewParameters;
-            NewParameters.AspectRatio = 1.0f;
-            NewParameters.Far = 1000;
-            NewParameters.Near = 1.0;
-            NewParameters.FOV = glm::pi<float>() / 2;
-            SceneCamera.SetPerspectiveParameters ( NewParameters );
             Reset();
             return true;
             }
@@ -172,14 +157,11 @@ class SkyboxTest : public TestBase
             std::vector <const char *> SkyboxNames;
             for ( unsigned Index = 0; Index < Skyboxes.size(); ++Index )
                 SkyboxNames.push_back ( Skyboxes[Index].first.c_str() );
-            ImGui::Combo ( "Active skybox", &ActiveSkyboxIndex, SkyboxNames.data(), SkyboxNames.size() );
+            ImGui::Combo ( "Active skybox", &ActiveSkyboxIndex, SkyboxNames.data(), ( int ) SkyboxNames.size() );
             ImGui::End();
             }
         void SpecificDraw ( void )
             {
-            const float TimeDelta = 1.0f / 60;
-            CameraController.Update ( TimeDelta );
-
             RenderCommands.clear();
             RenderCommands.push_back ( SkyboxData.RenderCommand );
 
