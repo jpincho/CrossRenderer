@@ -308,33 +308,33 @@ bool DSASetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHa
 
     switch ( Uniform->Type )
         {
-#define CASE_TYPE(TYPENAME,FUNCTION,DSAFUNCTION)\
+#define CASE_TYPE(TYPENAME,FUNCTION)\
         case ShaderUniformType::TYPENAME:\
             {\
-            DSAFUNCTION ( info->OpenGLID, Uniform->OpenGLID, Value.TYPENAME##Value );\
+            FUNCTION ( info->OpenGLID, Uniform->OpenGLID, Value.TYPENAME##Value );\
             break;\
             }
-#define CASE_TYPE_VEC(TYPENAME,FUNCTION,DSAFUNCTION)\
+#define CASE_TYPE_VEC(TYPENAME,FUNCTION)\
         case ShaderUniformType::TYPENAME:\
             {\
-            DSAFUNCTION ( info->OpenGLID, Uniform->OpenGLID, 1, glm::value_ptr(Value.TYPENAME##Value) );\
+            FUNCTION ( info->OpenGLID, Uniform->OpenGLID, 1, glm::value_ptr(Value.TYPENAME##Value) );\
             break;\
             }
 
-            CASE_TYPE ( Float, glUniform1f, glProgramUniform1f )
-            CASE_TYPE_VEC ( Float2, glUniform2fv, glProgramUniform2fv )
-            CASE_TYPE_VEC ( Float3, glUniform3fv, glProgramUniform3fv )
-            CASE_TYPE_VEC ( Float4, glUniform4fv, glProgramUniform4fv )
+            CASE_TYPE ( Float, glProgramUniform1f )
+            CASE_TYPE_VEC ( Float2, glProgramUniform2fv )
+            CASE_TYPE_VEC ( Float3, glProgramUniform3fv )
+            CASE_TYPE_VEC ( Float4, glProgramUniform4fv )
 
-            CASE_TYPE ( Integer, glUniform1i, glProgramUniform1i )
-            CASE_TYPE_VEC ( Integer2, glUniform2iv, glProgramUniform2iv )
-            CASE_TYPE_VEC ( Integer3, glUniform3iv, glProgramUniform3iv )
-            CASE_TYPE_VEC ( Integer4, glUniform4iv, glProgramUniform4iv )
+            CASE_TYPE ( Integer, glProgramUniform1i )
+            CASE_TYPE_VEC ( Integer2, glProgramUniform2iv )
+            CASE_TYPE_VEC ( Integer3, glProgramUniform3iv )
+            CASE_TYPE_VEC ( Integer4, glProgramUniform4iv )
 
-            CASE_TYPE ( UnsignedInteger, glUniform1ui, glProgramUniform1ui )
-            CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv, glProgramUniform2uiv )
-            CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv, glProgramUniform3uiv )
-            CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv, glProgramUniform4uiv )
+            CASE_TYPE ( UnsignedInteger, glProgramUniform1ui )
+            CASE_TYPE_VEC ( UnsignedInteger2, glProgramUniform2uiv )
+            CASE_TYPE_VEC ( UnsignedInteger3, glProgramUniform3uiv )
+            CASE_TYPE_VEC ( UnsignedInteger4, glProgramUniform4uiv )
 #undef CASE_TYPE
 #undef CASE_TYPE_VEC
 
@@ -354,7 +354,7 @@ bool DSASetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHa
             break;
             }
         default:
-            throw std::runtime_error ( "Unknown uniform type" );
+            throw std::runtime_error ( "Unhandled shader uniform type" );
         }
     return CheckError();
     }
@@ -369,33 +369,33 @@ bool SetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHandl
 
     switch ( Uniform->Type )
         {
-#define CASE_TYPE(TYPENAME,FUNCTION,DSAFUNCTION)\
+#define CASE_TYPE(TYPENAME,FUNCTION)\
         case ShaderUniformType::TYPENAME:\
             {\
             FUNCTION ( Uniform->OpenGLID, Value.TYPENAME##Value );\
             break;\
             }
-#define CASE_TYPE_VEC(TYPENAME,FUNCTION,DSAFUNCTION)\
+#define CASE_TYPE_VEC(TYPENAME,FUNCTION)\
         case ShaderUniformType::TYPENAME:\
             {\
             FUNCTION ( Uniform->OpenGLID, 1, glm::value_ptr(Value.TYPENAME##Value) );\
             break;\
             }
 
-            CASE_TYPE ( Float, glUniform1f, glProgramUniform1f )
-            CASE_TYPE_VEC ( Float2, glUniform2fv, glProgramUniform2fv )
-            CASE_TYPE_VEC ( Float3, glUniform3fv, glProgramUniform3fv )
-            CASE_TYPE_VEC ( Float4, glUniform4fv, glProgramUniform4fv )
+            CASE_TYPE ( Float, glUniform1f )
+            CASE_TYPE_VEC ( Float2, glUniform2fv )
+            CASE_TYPE_VEC ( Float3, glUniform3fv )
+            CASE_TYPE_VEC ( Float4, glUniform4fv )
 
-            CASE_TYPE ( Integer, glUniform1i, glProgramUniform1i )
-            CASE_TYPE_VEC ( Integer2, glUniform2iv, glProgramUniform2iv )
-            CASE_TYPE_VEC ( Integer3, glUniform3iv, glProgramUniform3iv )
-            CASE_TYPE_VEC ( Integer4, glUniform4iv, glProgramUniform4iv )
+            CASE_TYPE ( Integer, glUniform1i )
+            CASE_TYPE_VEC ( Integer2, glUniform2iv )
+            CASE_TYPE_VEC ( Integer3, glUniform3iv )
+            CASE_TYPE_VEC ( Integer4, glUniform4iv )
 
-            CASE_TYPE ( UnsignedInteger, glUniform1ui, glProgramUniform1ui )
-            CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv, glProgramUniform2uiv )
-            CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv, glProgramUniform3uiv )
-            CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv, glProgramUniform4uiv )
+            CASE_TYPE ( UnsignedInteger, glUniform1ui )
+            CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv )
+            CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv )
+            CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv )
 #undef CASE_TYPE
 #undef CASE_TYPE_VEC
 
@@ -415,7 +415,7 @@ bool SetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHandl
             break;
             }
         default:
-            throw std::runtime_error ( "Unknown uniform type" );
+            throw std::runtime_error ( "Unhandled shader uniform type" );
         }
     return CheckError();
     }
