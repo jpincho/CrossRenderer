@@ -240,10 +240,8 @@ bool RunCommand ( const RenderCommand &Command )
             return false;
         UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.key()];
 
-        if ( UniformInformation->Type != Iterator.UniformValue.Type )
-            return false;
-        //        if ( UniformInformation->CurrentValue == Iterator.UniformValue )
-        //            continue;
+        if ( UniformInformation->CurrentValue.Equals ( Iterator.UniformValue, UniformInformation->Type ) == true )
+            continue;
         if ( DirectStateAccess.Enabled )
             DSASetShaderUniformValue ( Command.Shader, Iterator.UniformHandle, Iterator.UniformValue );
         else

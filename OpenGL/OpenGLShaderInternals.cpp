@@ -302,11 +302,6 @@ bool DSASetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHa
         return false;
     UniformInfo *Uniform = &info->Uniforms[UniformHandle.key()];
 
-    if ( Value.Type != Uniform->Type )
-        {
-        LOG_ERROR ( "Mismatching type for uniform '%s'", Uniform->Name.c_str() );
-        return false;
-        }
     switch ( Uniform->Type )
         {
 #define CASE_TYPE(TYPENAME,FUNCTION,DSAFUNCTION)\
@@ -368,11 +363,6 @@ bool SetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHandl
         return false;
     UniformInfo *Uniform = &info->Uniforms[UniformHandle.key()];
 
-    if ( Value.Type != Uniform->Type )
-        {
-        LOG_ERROR ( "Mismatching type for uniform '%s'", Uniform->Name.c_str() );
-        return false;
-        }
     switch ( Uniform->Type )
         {
 #define CASE_TYPE(TYPENAME,FUNCTION,DSAFUNCTION)\
