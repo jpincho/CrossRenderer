@@ -310,7 +310,7 @@ void TestBase::SpecificDraw ( void )
     {
     }
 
-void TestBase::SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
+void TestBase::SpecificOnEvent ( const CrossRenderer::WindowEvent & )
     {
     }
 
