@@ -20,12 +20,6 @@ class SkyboxTest : public TestBase
 
         std::vector <std::pair <std::string, CrossRenderer::TextureHandle>> Skyboxes;
         int ActiveSkyboxIndex;
-
-        struct
-            {
-            uint32_t Reset;
-            } Keys;
-
     public:
         void Reset ( void )
             {
@@ -33,15 +27,6 @@ class SkyboxTest : public TestBase
             SceneCamera.SetOrientation ( glm::vec3 ( 0, 1, 0 ), 0 );
             ActiveSkyboxIndex = 0;
             }
-
-        void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
-            {
-            if ( ( Event.EventType == CrossRenderer::WindowEventType::KeyReleased ) && ( Event.EventData.KeyReleased.Key == Keys.Reset ) )
-                {
-                Reset();
-                }
-            }
-
         bool CreateSkybox ( void )
             {
             // Initialize the skybox
@@ -178,7 +163,6 @@ class SkyboxTest : public TestBase
             NewParameters.Near = 1.0;
             NewParameters.FOV = glm::pi<float>() / 2;
             SceneCamera.SetPerspectiveParameters ( NewParameters );
-            Keys.Reset = CrossRenderer::WindowManager::GetKeyCode ( "r" );
             Reset();
             return true;
             }
