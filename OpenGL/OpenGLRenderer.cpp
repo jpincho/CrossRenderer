@@ -2,7 +2,6 @@
 #include "OpenGLContext.h"
 #include "OpenGLInternals.h"
 #include "OpenGLStateCache.h"
-#include "OpenGLShaderInternals.h"
 #include "../WindowManager/WindowManager.h"
 #include <Logger/Logger.h>
 #include "../Renderer.h"

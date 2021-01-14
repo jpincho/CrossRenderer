@@ -1,12 +1,18 @@
 #include "OpenGLShader.h"
 #include "OpenGLInternals.h"
-#include "OpenGLShaderInternals.h"
 #include <Logger/Logger.h>
 
 namespace CrossRenderer
 {
 namespace OpenGL
 {
+ShaderUniformType TranslateOpenGLUniformType ( GLenum Type );
+std::string GetInfoLog ( bool IsProgram, GLuint GLID );
+bool BuildShaderObject ( unsigned &Out_ShaderObjectGLID, const unsigned ShaderType, const std::string &ShaderString );
+bool CompileShader ( const GLuint OpenGLID, const ShaderCode &NewCode );
+bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &Uniforms, std::vector <AttributeInfo> &Attributes );
+bool SetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHandle UniformHandle, const ShaderUniformValue &Value );
+
 ShaderHandle CreateShader ( const ShaderCode &NewCode )
     {
     ShaderInfo NewShader;
