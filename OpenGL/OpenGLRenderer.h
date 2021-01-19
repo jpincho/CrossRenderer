@@ -6,6 +6,8 @@
 #include "OpenGLShaderBuffer.h"
 #include "OpenGLTexture.h"
 
+#include "OpenGLDSATexture.h"
+
 namespace CrossRenderer
 {
 namespace OpenGL
