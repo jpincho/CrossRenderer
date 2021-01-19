@@ -43,13 +43,10 @@ typedef struct ShaderBufferInfo
     void *MappedPointer;
     } ShaderBufferInfo;
 
-typedef struct TextureInfo
+typedef struct TextureInfo : public TextureDescriptor
     {
     unsigned OpenGLID;
-    glm::uvec2 Dimensions;
     int GLMinFilter, GLMagFilter, GLSWrap, GLTWrap;
-    TextureType Type;
-    PixelFormat Format;
     } TextureInfo;
 
 typedef struct FramebufferInfo

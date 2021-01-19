@@ -74,6 +74,7 @@ typedef struct TextureDescriptor
         Dimensions = NewDimensions;
         Pitch = NewDimensions.x;
         Type = TextureType::Texture2D;
+        Mipmapped = true;
         }
     PixelFormat Format;
     TextureType Type;
@@ -81,6 +82,7 @@ typedef struct TextureDescriptor
     TextureFilterSettings FilterSettings;
     TextureWrapSettings WrapSettings;
     size_t Pitch;
+    bool Mipmapped;
     } TextureDescriptor;
 
 typedef struct TextureBindSettings

@@ -130,6 +130,11 @@ bool Update2DTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerL
                       PixelFormatData[ ( int ) SourcePixelFormat].Format,
                       PixelFormatData[ ( int ) SourcePixelFormat].DataType,
                       Data );
+    if ( !CheckError() )
+        return false;
+    if ( TextureInformation->Mipmapped )
+        glGenerateMipmap ( GL_TEXTURE_2D );
+
     return true;
     }
 
@@ -150,6 +155,9 @@ bool LoadCubeMapTextureData ( const TextureHandle Handle, const PixelFormat Sour
 
     if ( CheckError() == false )
         return false;
+    if ( TextureInformation->Mipmapped )
+        glGenerateMipmap ( GL_TEXTURE_CUBE_MAP );
+
     glBindTexture ( GL_TEXTURE_CUBE_MAP, 0 );
     return true;
     }
