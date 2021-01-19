@@ -20,9 +20,7 @@ struct
 TextureHandle DSACreateTexture ( const TextureDescriptor CreationParameters )
     {
     TextureInfo NewTexture;
-    NewTexture.Dimensions = CreationParameters.Dimensions;
-    NewTexture.Format = CreationParameters.Format;
-    NewTexture.Type = CreationParameters.Type;
+    NewTexture = CreationParameters;
     NewTexture.GLSWrap = Translate ( CreationParameters.WrapSettings.Horizontal );
     NewTexture.GLTWrap = Translate ( CreationParameters.WrapSettings.Vertical );
     NewTexture.GLMinFilter = Translate ( CreationParameters.FilterSettings.MinFilter );
