@@ -19,7 +19,7 @@ typedef struct SDL2WindowInfo
     } SDL2WindowInfo;
 
 static VectorizedContainer <SDL2WindowInfo, RenderWindowTag> Windows;
-std::unordered_map <SDL_Window *, RenderWindowHandle> HWNDToHandleMap;
+std::unordered_map <SDL_Window *, RenderWindowHandle> SDL_WindowToHandleMap;
 
 RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
     {
@@ -38,7 +38,7 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
     NewWindow.Title = Descriptor.Title;
     RenderWindowHandle NewHandle = Windows.GetNewHandle();
     Windows[NewHandle] = NewWindow;
-    HWNDToHandleMap.insert ( std::pair <SDL_Window *, RenderWindowHandle> ( NewWindow.Window, NewHandle ) );
+    SDL_WindowToHandleMap.insert ( std::pair <SDL_Window *, RenderWindowHandle> ( NewWindow.Window, NewHandle ) );
     WindowManager::WindowList.insert ( NewHandle );
     return NewHandle;
     }
@@ -167,8 +167,8 @@ void ProcessEvents ( void )
                 static std::pair <SDL_Window *, RenderWindowHandle> CachedHandle ( 0, RenderWindowHandle() );
                 if ( window != CachedHandle.first )
                     {
-                    std::unordered_map<SDL_Window *, RenderWindowHandle>::iterator HandleIterator = HWNDToHandleMap.find ( window );
-                    if ( HandleIterator == HWNDToHandleMap.end() )
+                    std::unordered_map<SDL_Window *, RenderWindowHandle>::iterator HandleIterator = SDL_WindowToHandleMap.find ( window );
+                    if ( HandleIterator == SDL_WindowToHandleMap.end() )
                         {
                         //                        LOG_ERROR ( "Message '%s' for unknown window handle '%X'", StringifyWindowsMessage ( msg.message ), msg.hwnd );
                         continue;
@@ -186,7 +186,7 @@ void ProcessEvents ( void )
                         {
                         SDL_DestroyWindow ( window );
                         NewEvent.EventType = WindowEventType::WindowClosed;
-                        HWNDToHandleMap.erase ( HWNDToHandleMap.find ( window ) );
+                        SDL_WindowToHandleMap.erase ( SDL_WindowToHandleMap.find ( window ) );
                         Windows.ReleaseHandle ( NewEvent.OwnerHandle );
                         WindowList.erase ( NewEvent.OwnerHandle );
                         break;
