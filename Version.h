@@ -36,7 +36,7 @@ class Version
             if ( *VersionStart != ' ' ) // If there was nothing before the version numbers, assume the whole string
                 VersionStart = String;
 
-#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
+#if defined ( CROSS_RENDERER_COMPILER_MSVC )
             sscanf_s ( VersionStart, "%u.%u", &Major, &Minor );
 #else
             sscanf ( VersionStart, "%u.%u", &Major, &Minor );
