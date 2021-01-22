@@ -29,14 +29,15 @@ const char *Stringify ( const WindowEventType Value )
             STRINGIFY ( ButtonPressed );
             STRINGIFY ( ButtonReleased );
             STRINGIFY ( MouseWheel );
+            STRINGIFY ( MouseMoved );
             STRINGIFY ( Quit );
             STRINGIFY ( FrameStarted );
             STRINGIFY ( FrameEnded );
             STRINGIFY ( TextInput );
-        default:
-            throw std::runtime_error ( "Unhandled window event type" );
+            STRINGIFY ( EVENTCOUNT );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled window event type" );
     }
 
 const char *Stringify ( const WindowManagerBackend Value )
@@ -45,10 +46,9 @@ const char *Stringify ( const WindowManagerBackend Value )
     switch ( Value )
         {
             STRINGIFY ( SDL2 );
-        default:
-            throw std::runtime_error ( "Unhandled window manager backend type" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled window manager backend type" );
     }
 
 const char *Stringify ( const PrimitiveType Value )
@@ -61,10 +61,9 @@ const char *Stringify ( const PrimitiveType Value )
             STRINGIFY ( LineStrip );
             STRINGIFY ( TriangleList );
             STRINGIFY ( TriangleStrip );
-        default:
-            throw std::runtime_error ( "Unhandled primitive type" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled primitive type" );
     }
 
 const char *Stringify ( const BlendMode Value )
@@ -84,10 +83,9 @@ const char *Stringify ( const BlendMode Value )
             STRINGIFY ( OneMinusDestinationColor );
             STRINGIFY ( SourceAlphaSaturate );
             STRINGIFY ( BlendModeLast );
-        default:
-            throw std::runtime_error ( "Unhandled blend mode" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled blend mode" );
     }
 
 const char *Stringify ( const StencilFunction Value )
@@ -103,10 +101,9 @@ const char *Stringify ( const StencilFunction Value )
             STRINGIFY ( Equal );
             STRINGIFY ( NotEqual );
             STRINGIFY ( Always );
-        default:
-            throw std::runtime_error ( "Unhandled stencil function" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled stencil function" );
     }
 
 const char *Stringify ( const StencilFailAction Value )
@@ -120,10 +117,9 @@ const char *Stringify ( const StencilFailAction Value )
             STRINGIFY ( Increment );
             STRINGIFY ( Decrement );
             STRINGIFY ( Invert );
-        default:
-            throw std::runtime_error ( "Unhandled stencil fail action" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled stencil fail action" );
     }
 
 const char *Stringify ( const CullingMode Value )
@@ -134,10 +130,9 @@ const char *Stringify ( const CullingMode Value )
             STRINGIFY ( Front );
             STRINGIFY ( Back );
             STRINGIFY ( FrontAndBack );
-        default:
-            throw std::runtime_error ( "Unhandled culling mode" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled culling mode" );
     }
 
 const char *Stringify ( const CullingFaceWinding Value )
@@ -147,10 +142,9 @@ const char *Stringify ( const CullingFaceWinding Value )
         {
             STRINGIFY ( Clockwise );
             STRINGIFY ( CounterClockwise );
-        default:
-            throw std::runtime_error ( "Unhandled culling face winding" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled culling face winding" );
     }
 
 const char *Stringify ( const DepthTestMode Value )
@@ -166,10 +160,9 @@ const char *Stringify ( const DepthTestMode Value )
             STRINGIFY ( Equal );
             STRINGIFY ( NotEqual );
             STRINGIFY ( Always );
-        default:
-            throw std::runtime_error ( "Unhandled depth test mode" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled depth test mode" );
     }
 
 const char *Stringify ( const ShaderUniformType Type )
@@ -201,10 +194,9 @@ const char *Stringify ( const ShaderUniformType Type )
             STRINGIFY ( SamplerCube );
             STRINGIFY ( Block );
             STRINGIFY ( Unknown );
-        default:
-            throw std::runtime_error ( "Unhandled shader uniform type" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled shader uniform type" );
     }
 const char *Stringify ( const PixelFormat Format )
     {
@@ -214,9 +206,8 @@ const char *Stringify ( const PixelFormat Format )
             STRINGIFY ( DepthComponent );
             STRINGIFY ( RedGreenBlue888 );
             STRINGIFY ( RedGreenBlueAlpha8888 );
-        default:
-            throw std::runtime_error ( "Unhandled pixel format" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled pixel format" );
     }
 }
