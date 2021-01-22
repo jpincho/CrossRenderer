@@ -7,9 +7,17 @@ function ( target_warning_options target )
         set ( AS_ERRORS_STRING "-Werror" )
     elseif ( MSVC )
         set ( DISABLED_WARNINGS_STRING "/W0" )
-        set ( DEFAULT_WARNINGS_STRING "" )
+        set ( DEFAULT_WARNINGS_STRING "/W3" )
         set ( HIGH_WARNINGS_STRING "/W4" )
         set ( AS_ERRORS_STRING "/WX" )
+        # CMake appends /W3 by default, and having /W3 followed by /W4 will result in 
+        # cl : Command line warning D9025 : overriding '/W3' with '/W4'.  Since this is
+        # a command line warning and not a compiler warning, it cannot be suppressed except
+        # by fixing the command line.
+        string(REGEX REPLACE " /W[0-4]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+        string(REGEX REPLACE " /W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" CACHE STRING "CMAKE_C_FLAGS" FORCE )
+        set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "CMAKE_CXX_FLAGS" FORCE )
     endif()
     cmake_parse_arguments ( PARSE_ARGV 0 "WARNING_OPTION" "DISABLED;DEFAULT;HIGH;AS_ERRORS" "" "" )
     if ( WARNING_OPTION_DISABLED )
