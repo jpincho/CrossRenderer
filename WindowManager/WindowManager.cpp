@@ -24,24 +24,23 @@ const char * ( *GetKeyName ) ( const uint32_t KeyCode );
 glm::ivec2 ( *GetMousePosition ) ( void );
 uint32_t ( *GetMouseButtonStatus ) ( void );
 std::string ( *GetErrorDescription ) ( void );
-void * ( *GetPlatformWindowHandle ) ( const RenderWindowHandle &Handle );
 std::unordered_set<RenderWindowHandle> WindowList;
 
 typedef std::unordered_set <void ( * ) ( const WindowEvent & ) > TWindowEventListeners;
-typedef std::unordered_set <EventListener*> TClassWindowEventListeners;
-TWindowEventListeners WindowEventListeners[ ( int ) WindowEventType::EVENTCOUNT];
+typedef std::unordered_set <EventListener *> TClassWindowEventListeners;
+TWindowEventListeners WindowEventListeners;
 TClassWindowEventListeners ClassEventListeners;
 
 void AddEventListener ( void ( *Function ) ( const WindowEvent & ) )
     {
-    for ( int EventType = 0; EventType < ( int ) WindowEventType::EVENTCOUNT; ++EventType )
-        AddEventListener ( ( WindowEventType ) EventType, Function );
+    WindowEventListeners.insert ( Function );
     }
 
 void DeleteEventListener ( void ( *Function ) ( const WindowEvent & ) )
     {
-    for ( int EventType = 0; EventType < ( int ) WindowEventType::EVENTCOUNT; ++EventType )
-        DeleteEventListener ( ( WindowEventType ) EventType, Function );
+    TWindowEventListeners::iterator FindResult = WindowEventListeners.find ( Function );
+    if ( FindResult != WindowEventListeners.end() )
+        WindowEventListeners.erase ( FindResult );
     }
 
 void AddEventListener ( EventListener *Listener )
@@ -54,22 +53,10 @@ void DeleteEventListener ( EventListener *Listener )
     ClassEventListeners.erase ( Listener );
     }
 
-void AddEventListener ( WindowEventType EventToListen, void ( *Function ) ( const WindowEvent & ) )
-    {
-    WindowEventListeners[ ( int ) EventToListen].insert ( Function );
-    }
-
-void DeleteEventListener ( WindowEventType EventToListen, void ( *Function ) ( const WindowEvent & ) )
-    {
-    WindowEventListeners[ ( int ) EventToListen].erase ( Function );
-    }
-
 void SendWindowEvent ( const WindowEvent &NewEvent )
     {
-    for ( auto Iterator : WindowEventListeners[ ( int ) NewEvent.EventType] )
-        {
+    for ( auto Iterator : WindowEventListeners )
         Iterator ( NewEvent );
-        }
     for ( auto &Iterator : ClassEventListeners )
         Iterator->OnEvent ( NewEvent );
     }

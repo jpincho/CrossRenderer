@@ -39,8 +39,7 @@ enum class WindowEventType
     Quit,
     FrameStarted,
     FrameEnded,
-    TextInput,
-    EVENTCOUNT
+    TextInput
     };
 
 typedef struct WindowEvent

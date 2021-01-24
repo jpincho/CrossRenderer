@@ -34,7 +34,6 @@ const char *Stringify ( const WindowEventType Value )
             STRINGIFY ( FrameStarted );
             STRINGIFY ( FrameEnded );
             STRINGIFY ( TextInput );
-            STRINGIFY ( EVENTCOUNT );
         }
 #undef STRINGIFY
     throw std::runtime_error ( "Unhandled window event type" );
