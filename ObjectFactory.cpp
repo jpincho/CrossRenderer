@@ -7,6 +7,9 @@
 #if defined (CROSS_RENDERER_SDL2_BACKEND_SUPPORT)
 #include "WindowManager/SDL2/SDL2Backend.h"
 #endif
+#if defined (CROSS_RENDERER_WINDOWS_BACKEND_SUPPORT)
+#include "WindowManager/Windows/WindowsBackend.h"
+#endif
 #if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT)
 #include "OpenGL/OpenGLRenderer.h"
 #endif
@@ -30,8 +33,8 @@ void CreateNewWindowManager ( const WindowManagerBackend &Backend )
             ATTRIB ( GetWindowSize );
             ATTRIB ( SetWindowTitle );
             ATTRIB ( GetWindowTitle );
-            ATTRIB ( SetWindowFullscreen );
-            ATTRIB ( IsWindowFullscreen );
+            ATTRIB ( SetWindowState );
+            ATTRIB ( GetWindowState );
             ATTRIB ( ProcessEvents );
             ATTRIB ( GetKeyCode );
             ATTRIB ( GetKeyScanCode );
@@ -39,7 +42,29 @@ void CreateNewWindowManager ( const WindowManagerBackend &Backend )
             ATTRIB ( GetMousePosition );
             ATTRIB ( GetMouseButtonStatus );
             ATTRIB ( GetErrorDescription );
-            ATTRIB ( GetPlatformWindowHandle );
+#undef ATTRIB
+            break;
+#endif
+#if defined (CROSS_RENDERER_WINDOWS_BACKEND_SUPPORT)
+        case WindowManagerBackend::Windows:
+#define ATTRIB(x) WindowManager::x = WindowManager::Windows::x
+            ATTRIB ( CreateNewWindow );
+            ATTRIB ( DestroyWindow );
+            ATTRIB ( SetWindowPosition );
+            ATTRIB ( GetWindowPosition );
+            ATTRIB ( SetWindowSize );
+            ATTRIB ( GetWindowSize );
+            ATTRIB ( SetWindowTitle );
+            ATTRIB ( GetWindowTitle );
+            ATTRIB ( SetWindowState );
+            ATTRIB ( GetWindowState );
+            ATTRIB ( ProcessEvents );
+            ATTRIB ( GetKeyCode );
+            ATTRIB ( GetKeyScanCode );
+            ATTRIB ( GetKeyName );
+            ATTRIB ( GetMousePosition );
+            ATTRIB ( GetMouseButtonStatus );
+            ATTRIB ( GetErrorDescription );
 #undef ATTRIB
             break;
 #endif

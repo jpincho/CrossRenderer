@@ -1,12 +1,12 @@
 #pragma once
 #include "../WindowManager.h"
-#include <SDL.h>
+#include <windows.h>
 
 namespace CrossRenderer
 {
 namespace WindowManager
 {
-namespace SDL2
+namespace Windows
 {
 RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor );
 bool DestroyWindow ( const RenderWindowHandle &Handle );
@@ -27,7 +27,7 @@ const char *GetKeyName ( const uint32_t KeyCode );
 glm::ivec2 GetMousePosition ( void );
 uint32_t GetMouseButtonStatus ( void );
 std::string GetErrorDescription ( void );
-SDL_Window *GetWindowHandle ( const RenderWindowHandle &Handle );
+HWND GetWindowHandle ( const RenderWindowHandle &Handle );
 
 WindowManagerBackend GetBackendType ( void );
 }

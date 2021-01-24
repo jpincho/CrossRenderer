@@ -65,6 +65,17 @@ if ( SDL2_FOUND )
     endif()
 endif()
 
+# Windows
+if ( CROSS_RENDERER_HOST_PLATFORM_WINDOWS )
+    option ( CROSS_RENDERER_WINDOWS_BACKEND_SUPPORT "Build native Windows backend support" TRUE )
+    if ( CROSS_RENDERER_WINDOWS_BACKEND_SUPPORT )
+        message ( STATUS "${PROJECT_NAME} - Building with Windows backend support")
+        file ( GLOB CROSS_RENDERER_WINDOWS_SOURCES "WindowManager/Windows/*" )
+        list ( APPEND CROSS_RENDERER_SOURCE_FILES ${CROSS_RENDERER_WINDOWS_SOURCES} )
+        source_group ( "WindowManager/Windows" FILES ${CROSS_RENDERER_WINDOWS_SOURCES} )
+    endif()
+endif()
+
 # OpenGL backend
 set ( OpenGL_GL_PREFERENCE GLVND )
 find_package ( OpenGL QUIET )
@@ -82,6 +93,22 @@ if ( OPENGL_FOUND )
         target_include_directories ( GLAD PUBLIC ${CMAKE_CURRENT_LIST_DIR}/OpenGL/glad_core/include )
         list ( APPEND CROSS_RENDERER_LIBRARIES GLAD )
         target_warning_options ( GLAD DISABLED )
+
+        if ( CROSS_RENDERER_WINDOWS_BACKEND_SUPPORT )
+            list ( APPEND CROSS_RENDERER_LIBRARIES OPENGL32 )
+
+            # GLAD WGL
+            file ( GLOB_RECURSE GLAD_WGL_SOURCES "OpenGL/WGL/glad_wgl/*")
+            add_library ( GLAD_WGL ${GLAD_WGL_SOURCES} )
+            target_include_directories ( GLAD_WGL PUBLIC ${CMAKE_CURRENT_LIST_DIR}/OpenGL/WGL/glad_wgl/include ${CMAKE_CURRENT_LIST_DIR}/OpenGL/glad_core/include )
+            list ( APPEND CROSS_RENDERER_LIBRARIES GLAD_WGL )
+            target_warning_options ( GLAD_WGL DISABLED )
+
+            # WGL
+            file ( GLOB CROSS_RENDERER_WGL_SOURCES "OpenGL/WGL/*.cpp" "OpenGL/WGL/*.h" )
+            list ( APPEND CROSS_RENDERER_SOURCE_FILES ${CROSS_RENDERER_WGL_SOURCES} )
+            source_group ( "OpenGL" FILES ${CROSS_RENDERER_WGL_SOURCES} )
+        endif()
 
         if ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
             # SDL2 + OpenGL

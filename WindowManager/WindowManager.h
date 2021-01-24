@@ -15,8 +15,8 @@ extern void ( *SetWindowSize ) ( const RenderWindowHandle &Handle, const glm::uv
 extern glm::uvec2 ( *GetWindowSize ) ( const RenderWindowHandle &Handle );
 extern void ( *SetWindowTitle ) ( const RenderWindowHandle &Handle, const std::string &NewTitle );
 extern std::string ( *GetWindowTitle ) ( const RenderWindowHandle &Handle );
-extern bool ( *SetWindowFullscreen ) ( const RenderWindowHandle &Handle, const bool NewState );
-extern bool ( *IsWindowFullscreen ) ( const RenderWindowHandle &Handle );
+extern bool ( *SetWindowState ) ( const RenderWindowHandle &Handle, const WindowState NewState );
+extern WindowState ( *GetWindowState ) ( const RenderWindowHandle &Handle );
 
 extern void ( *ProcessEvents ) ( void );
 

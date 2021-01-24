@@ -42,6 +42,13 @@ enum class WindowEventType
     TextInput
     };
 
+enum class WindowState
+    {
+    Minimized,
+    Normal,
+    Maximized
+    };
+
 typedef struct WindowEvent
     {
     WindowEventType EventType;
@@ -94,6 +101,7 @@ class EventListener
 
 enum class WindowManagerBackend
     {
-    SDL2
+    SDL2,
+    Windows
     };
 }

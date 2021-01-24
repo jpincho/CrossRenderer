@@ -7,6 +7,9 @@
 
 namespace CrossRenderer
 {
+static std::vector <WindowManagerBackend> AvailableWindowManagerBackends;
+static std::vector <RendererBackend> AvailableRendererBackends;
+
 bool Initialize ( void )
     {
     RendererConfiguration NewConfiguration;
@@ -43,35 +46,42 @@ bool Shutdown ( void )
 
 bool GetAvailableRendererBackends ( std::vector <RendererBackend> &AvailableBackends )
     {
-    AvailableBackends.clear ();
+    if ( AvailableRendererBackends.size() == 0 )
+        {
 #if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT )
-    AvailableBackends.push_back ( RendererBackend::OpenGLCore );
+        AvailableRendererBackends.push_back ( RendererBackend::OpenGLCore );
 #endif
-    return ( AvailableBackends.size() != 0 );
+        }
+    AvailableBackends = AvailableRendererBackends;
+    return ( AvailableRendererBackends.size() != 0 );
     }
 
 RendererBackend GetDefaultRendererBackendType ( void )
     {
-#if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT )
-    return RendererBackend::OpenGLCore;
-#else
-    throw std::runtime_error ( std::string ( "No rendering backend available" ) );
-#endif
+    if ( ( AvailableRendererBackends.size() == 0 ) && ( GetAvailableRendererBackends ( AvailableRendererBackends ) == false ) )
+        throw std::runtime_error ( std::string ( "No rendering backend available" ) );
+    return AvailableRendererBackends[0];
     }
 
 bool GetAvailableWindowManagerBackends ( std::vector <WindowManagerBackend> &AvailableBackends )
     {
-    AvailableBackends.clear ();
-#if defined ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
-    AvailableBackends.push_back ( WindowManagerBackend::SDL2 );
+    if ( AvailableWindowManagerBackends.size() == 0 )
+        {
+#if defined ( CROSS_RENDERER_WINDOWS_BACKEND_SUPPORT )
+        AvailableWindowManagerBackends.push_back ( WindowManagerBackend::Windows );
 #endif
-    return ( AvailableBackends.size() != 0 );
+#if defined ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
+        AvailableWindowManagerBackends.push_back ( WindowManagerBackend::SDL2 );
+#endif
+        }
+    AvailableBackends = AvailableWindowManagerBackends;
+    return ( AvailableWindowManagerBackends.size() != 0 );
     }
 
 WindowManagerBackend GetDefaultWindowManagerBackendType ( void )
     {
-#if defined ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
-    return WindowManagerBackend::SDL2;
-#endif
+    if ( ( AvailableWindowManagerBackends.size() == 0 ) && ( GetAvailableWindowManagerBackends ( AvailableWindowManagerBackends ) == false ) )
+        throw std::runtime_error ( std::string ( "No window manager backend available" ) );
+    return AvailableWindowManagerBackends[0];
     }
 }
