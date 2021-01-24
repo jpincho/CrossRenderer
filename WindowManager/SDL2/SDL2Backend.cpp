@@ -98,16 +98,33 @@ std::string GetWindowTitle ( const RenderWindowHandle &Handle )
     //return SDL_GetWindowTitle ( info->Window );
     }
 
-bool SetWindowFullscreen ( const RenderWindowHandle &Handle, const bool NewState )
+bool SetWindowState ( const RenderWindowHandle &Handle, const WindowState NewState )
     {
     SDL2WindowInfo *info = &Windows[Handle];
-    return ( SDL_SetWindowFullscreen ( info->Window, NewState ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0 ) == 0 );
+    switch ( NewState )
+        {
+        case WindowState::Minimized:
+            SDL_MinimizeWindow ( info->Window );
+            break;
+        case WindowState::Normal:
+            SDL_RestoreWindow ( info->Window );
+            break;
+        case WindowState::Maximized:
+            SDL_MaximizeWindow ( info->Window );
+            break;
+        }
+    return true;
     }
-bool IsWindowFullscreen ( const RenderWindowHandle &Handle )
+
+WindowState GetWindowState ( const RenderWindowHandle &Handle )
     {
     SDL2WindowInfo *info = &Windows[Handle];
     uint32_t Flags = SDL_GetWindowFlags ( info->Window );
-    return ( ( Flags & ( SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP ) ) != 0 );
+    if ( Flags & SDL_WINDOW_MAXIMIZED )
+        return WindowState::Maximized;
+    if ( Flags & SDL_WINDOW_MINIMIZED )
+        return WindowState::Minimized;
+    return WindowState::Normal;
     }
 
 void ProcessEvents ( void )
@@ -257,34 +274,6 @@ std::string GetErrorDescription ( void )
 SDL_Window *GetWindowHandle ( const RenderWindowHandle &Handle )
     {
     return Windows[Handle].Window;
-    }
-
-void *GetPlatformWindowHandle ( const RenderWindowHandle &Handle )
-    {
-    SDL2WindowInfo *WindowInformation = &Windows[Handle];
-    SDL_SysWMinfo info;
-    SDL_VERSION ( &info.version );
-
-    if ( SDL_GetWindowWMInfo ( WindowInformation->Window, &info ) )
-        {
-        switch ( info.subsystem )
-            {
-#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
-            case SDL_SYSWM_WINDOWS:
-                return info.info.win.window;
-#endif
-#if defined ( CROSS_RENDERER_TARGET_PLATFORM_LINUX )
-            case SDL_SYSWM_X11:
-                return ( void* ) info.info.x11.window;
-            case SDL_SYSWM_WAYLAND:
-                return info.info.wl.surface;
-#endif
-            default:
-                break;
-            }
-
-        }
-    return nullptr;
     }
 }
 }

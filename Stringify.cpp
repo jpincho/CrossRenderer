@@ -9,10 +9,9 @@ const char *Stringify ( const RendererBackend Value )
     switch ( Value )
         {
             STRINGIFY ( OpenGLCore );
-        default:
-            throw std::runtime_error ( "Unhandled graphics API" );
         }
 #undef STRINGIFY
+    throw std::runtime_error ( "Unhandled graphics API" );
     }
 
 const char *Stringify ( const WindowEventType Value )
@@ -45,9 +44,23 @@ const char *Stringify ( const WindowManagerBackend Value )
     switch ( Value )
         {
             STRINGIFY ( SDL2 );
+            STRINGIFY ( Windows );
         }
 #undef STRINGIFY
     throw std::runtime_error ( "Unhandled window manager backend type" );
+    }
+
+const char* Stringify ( const WindowState Value )
+    {
+#define STRINGIFY(X) case WindowState::X: return #X;
+    switch ( Value )
+        {
+            STRINGIFY ( Minimized );
+            STRINGIFY ( Normal );
+            STRINGIFY ( Maximized );
+        }
+#undef STRINGIFY
+    throw std::runtime_error ( "Unhandled window staete" );
     }
 
 const char *Stringify ( const PrimitiveType Value )

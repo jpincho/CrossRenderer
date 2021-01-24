@@ -13,8 +13,8 @@ void ( *SetWindowSize ) ( const RenderWindowHandle &Handle, const glm::uvec2 &Ne
 glm::uvec2 ( *GetWindowSize ) ( const RenderWindowHandle &Handle );
 void ( *SetWindowTitle ) ( const RenderWindowHandle &Handle, const std::string &NewTitle );
 std::string ( *GetWindowTitle ) ( const RenderWindowHandle &Handle );
-bool ( *SetWindowFullscreen ) ( const RenderWindowHandle &Handle, const bool NewState );
-bool ( *IsWindowFullscreen ) ( const RenderWindowHandle &Handle );
+bool ( *SetWindowState ) ( const RenderWindowHandle &Handle, const WindowState NewState );
+WindowState ( *GetWindowState ) ( const RenderWindowHandle &Handle );
 
 void ( *ProcessEvents ) ( void );
 

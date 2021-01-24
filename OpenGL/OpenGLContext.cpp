@@ -1,9 +1,12 @@
 #include <CrossRendererConfig.h>
-#include <glad/glad.h>
 #if defined ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
 #include "SDL2/SDL2GLContext.h"
 #endif
-#include "../Logger.h"
+#if defined ( CROSS_RENDERER_WINDOWS_BACKEND_SUPPORT )
+#include "WGL/WGLContext.h"
+#endif
+#include <glad/glad.h>
+#include <Logger/Logger.h>
 
 namespace CrossRenderer
 {
@@ -13,6 +16,10 @@ OpenGLContextInterface *GetOpenGLContext ( const WindowManagerBackend DesiredTyp
     {
     switch ( DesiredType )
         {
+#if defined ( CROSS_RENDERER_WINDOWS_BACKEND_SUPPORT )
+        case WindowManagerBackend::Windows:
+            return new WGLContext;
+#endif
 #if defined ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
         case WindowManagerBackend::SDL2:
             return new SDL2OpenGLContext;
