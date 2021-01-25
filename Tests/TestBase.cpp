@@ -267,7 +267,7 @@ bool TestBase::Initialize ( const CrossRenderer::RendererBackend NewRendererBack
     CrossRenderer::RendererConfiguration NewConfiguration;
     NewConfiguration.DesiredRendererBackend = NewRendererBackend;
     NewConfiguration.InitialWindowConfigurations.push_back ( CrossRenderer::RenderWindowDescriptor ( NewWindowPosition, NewWindowSize ) );
-    NewConfiguration.DesiredWindowBackend = CrossRenderer::WindowManagerBackend::SDL2;
+    NewConfiguration.DesiredWindowBackend = CrossRenderer::GetDefaultWindowManagerBackendType ();
     if ( CrossRenderer::Initialize ( NewConfiguration ) == false )
         return false;
     if ( InitializeImGui() == false )
