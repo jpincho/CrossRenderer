@@ -26,6 +26,8 @@ static std::vector <MSG> PendingWindowsMessages;
 static std::unordered_map <HWND, RenderWindowHandle> HWNDToHandleMap;
 static std::map <uint32_t, std::string> KeyNameToCodeMap;
 static std::map <std::string, uint32_t> KeyCodeToNameMap;
+static uint8_t MouseButtonStatus = 0;
+static glm::ivec2 MouseCursorPosition;
 
 const char *StringifyWindowsMessage ( const UINT Value );
 void InitializeKeyNames ( void );
@@ -290,17 +292,15 @@ const char *GetKeyName ( const uint32_t KeyCode )
 
     return nullptr;
     }
+
 glm::ivec2 GetMousePosition ( void )
     {
-    POINT CursorPosition;
-    if ( !GetCursorPos ( &CursorPosition ) ) // Screen coordinates. Translate to window coordinates with ScreenToClient if needed
-        return glm::ivec2 ( 0, 0 );
-    return glm::ivec2 ( CursorPosition.x, CursorPosition.y );
+    return MouseCursorPosition;
     }
 
 uint32_t GetMouseButtonStatus ( void )
     {
-    return 0;
+    return MouseButtonStatus;
     }
 
 std::string GetErrorDescription ( void )
@@ -349,6 +349,7 @@ void ProcessSingleMessage ( const MSG &Message )
         {
         default:
             return;
+
         case WM_CREATE:
             {
             NewEvent.EventType = WindowEventType::WindowCreated;
@@ -367,6 +368,7 @@ void ProcessSingleMessage ( const MSG &Message )
             NewEvent.EventType = WindowEventType::WindowMoved;
             NewEvent.EventData.WindowMoved.X = LOWORD ( Message.lParam );
             NewEvent.EventData.WindowMoved.Y = HIWORD ( Message.lParam );
+            Windows[NewEvent.OwnerHandle].Position = glm::ivec2 ( NewEvent.EventData.WindowMoved.X, NewEvent.EventData.WindowMoved.Y );
             break;
             }
         case WM_SIZE:
@@ -374,6 +376,16 @@ void ProcessSingleMessage ( const MSG &Message )
             NewEvent.EventType = WindowEventType::WindowResized;
             NewEvent.EventData.WindowResized.Width = LOWORD ( Message.lParam );
             NewEvent.EventData.WindowResized.Height = HIWORD ( Message.lParam );
+            Windows[NewEvent.OwnerHandle].Size = glm::uvec2 ( NewEvent.EventData.WindowResized.Width, NewEvent.EventData.WindowResized.Height );
+            break;
+            }
+        case WM_MOUSEMOVE:
+            {
+            NewEvent.EventType = WindowEventType::MouseMoved;
+            NewEvent.EventData.MouseMoved.X = ( int16_t ) LOWORD ( Message.lParam );
+            NewEvent.EventData.MouseMoved.Y = ( int16_t ) HIWORD ( Message.lParam );
+            MouseCursorPosition.x = (int16_t)LOWORD ( Message.lParam );
+            MouseCursorPosition.y = (int16_t)HIWORD ( Message.lParam );
             break;
             }
         case WM_LBUTTONDOWN:
@@ -381,8 +393,10 @@ void ProcessSingleMessage ( const MSG &Message )
             {
             NewEvent.EventType = ( Message.message == WM_LBUTTONDOWN ) ? WindowEventType::ButtonPressed : WindowEventType::ButtonReleased;
             NewEvent.EventData.ButtonPressed.Button = 0;
-            //NewEvent.EventData.ButtonPressed.X = LOWORD ( CurrentMessage.lParam );
-            //NewEvent.EventData.ButtonPressed.Y = HIWORD ( CurrentMessage.lParam );
+            if ( Message.message == WM_LBUTTONDOWN )
+                MouseButtonStatus |= 1;
+            else
+                MouseButtonStatus ^= 1;
             break;
             }
         case WM_RBUTTONDOWN:
@@ -390,8 +404,10 @@ void ProcessSingleMessage ( const MSG &Message )
             {
             NewEvent.EventType = ( Message.message == WM_RBUTTONDOWN ) ? WindowEventType::ButtonPressed : WindowEventType::ButtonReleased;
             NewEvent.EventData.ButtonPressed.Button = 1;
-            //NewEvent.EventData.ButtonPressed.X = LOWORD(CurrentMessage.lParam);
-            //NewEvent.EventData.ButtonPressed.Y = HIWORD(CurrentMessage.lParam);
+            if ( Message.message == WM_RBUTTONDOWN )
+                MouseButtonStatus |= 2;
+            else
+                MouseButtonStatus ^= 2;
             break;
             }
         case WM_MBUTTONDOWN:
@@ -399,8 +415,10 @@ void ProcessSingleMessage ( const MSG &Message )
             {
             NewEvent.EventType = ( Message.message == WM_MBUTTONDOWN ) ? WindowEventType::ButtonPressed : WindowEventType::ButtonReleased;
             NewEvent.EventData.ButtonPressed.Button = 2;
-            //NewEvent.EventData.ButtonPressed.X = LOWORD(CurrentMessage.lParam);
-            //NewEvent.EventData.ButtonPressed.Y = HIWORD(CurrentMessage.lParam);
+            if ( Message.message == WM_MBUTTONDOWN )
+                MouseButtonStatus |= 4;
+            else
+                MouseButtonStatus ^= 4;
             break;
             }
         case WM_MOUSEWHEEL:
