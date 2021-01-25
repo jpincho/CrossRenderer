@@ -347,7 +347,7 @@ void ProcessSingleMessage ( const MSG &Message )
             {
             NewEvent.EventType = WindowEventType::WindowResized;
             NewEvent.EventData.WindowResized.Width = LOWORD ( Message.lParam );
-            NewEvent.EventData.WindowResized.Height = HIWORD ( Message.wParam );
+            NewEvent.EventData.WindowResized.Height = HIWORD ( Message.lParam );
             break;
             }
         case WM_LBUTTONDOWN:
