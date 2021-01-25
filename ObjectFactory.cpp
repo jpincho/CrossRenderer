@@ -17,7 +17,7 @@ namespace CrossRenderer
 {
 namespace ObjectFactory
 {
-void CreateNewWindowManager ( const WindowManagerBackend &Backend )
+bool CreateNewWindowManager ( const WindowManagerBackend &Backend )
     {
     switch ( Backend )
         {
@@ -69,11 +69,12 @@ void CreateNewWindowManager ( const WindowManagerBackend &Backend )
 #endif
         default:
             LOG_ERROR ( "Window manager backend '%s' is not built", Stringify ( Backend ) );
-            return;
+            return false;
         }
+    return true;
     }
 
-void CreateNewRenderer ( const RendererBackend &Backend )
+bool CreateNewRenderer ( const RendererBackend &Backend )
     {
     switch ( Backend )
         {
@@ -114,8 +115,9 @@ void CreateNewRenderer ( const RendererBackend &Backend )
 #endif
         default:
             LOG_ERROR ( "Renderer backend '%s' is not built", Stringify ( Backend ) );
-            return;
+            return false;
         }
+    return true;
     }
 }
 }

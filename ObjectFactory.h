@@ -7,7 +7,7 @@ namespace CrossRenderer
 {
 namespace ObjectFactory
 {
-void CreateNewWindowManager ( const WindowManagerBackend &Backend );
-void CreateNewRenderer ( const RendererBackend &Backend );
+bool CreateNewWindowManager ( const WindowManagerBackend &Backend );
+bool CreateNewRenderer ( const RendererBackend &Backend );
 }
 }
