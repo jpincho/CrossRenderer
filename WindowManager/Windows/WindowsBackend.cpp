@@ -1,6 +1,8 @@
 #include "WindowsBackend.h"
 #include "../../Logger.h"
 #include <unordered_map>
+#include <map>
+#include <algorithm>
 
 namespace CrossRenderer
 {
@@ -21,8 +23,12 @@ typedef struct WindowsWindowInfo
 
 static VectorizedContainer <WindowsWindowInfo, RenderWindowTag> Windows;
 static std::vector <MSG> PendingWindowsMessages;
+static std::unordered_map <HWND, RenderWindowHandle> HWNDToHandleMap;
+static std::map <uint32_t, std::string> KeyNameToCodeMap;
+static std::map <std::string, uint32_t> KeyCodeToNameMap;
+
 const char *StringifyWindowsMessage ( const UINT Value );
-std::unordered_map <HWND, RenderWindowHandle> HWNDToHandleMap;
+void InitializeKeyNames ( void );
 void ProcessSingleMessage ( const MSG &Message );
 
 LRESULT CALLBACK WindowProc ( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
@@ -244,6 +250,17 @@ uint32_t GetKeyCode ( const std::string KeyName )
             }
         return KeyName[0];
         }
+
+    if ( KeyCodeToNameMap.empty () )
+        {
+        InitializeKeyNames ();
+        }
+    std::string LowerCaseName = KeyName;
+    std::transform ( KeyName.begin (), KeyName.end (), LowerCaseName.begin (), [] ( unsigned char c ) -> unsigned char { return ( unsigned char ) std::tolower ( c ); } );
+    auto FindResult = KeyCodeToNameMap.find ( LowerCaseName );
+    if ( FindResult != KeyCodeToNameMap.end () )
+        return FindResult->second;
+
     return 0;
     }
 
@@ -261,6 +278,15 @@ const char *GetKeyName ( const uint32_t KeyCode )
             KeyName[0] += 32; // Convert to lowercase
         return KeyName;
         }
+
+    if ( KeyNameToCodeMap.empty () )
+        {
+        InitializeKeyNames ();
+        }
+
+    auto FindResult = KeyNameToCodeMap.find ( KeyCode );
+    if ( FindResult != KeyNameToCodeMap.end () )
+        return FindResult->second.c_str();
 
     return nullptr;
     }
@@ -629,6 +655,213 @@ const char *StringifyWindowsMessage ( const UINT Value )
         }
 #undef STRINGIFY
     return "";
+    }
+
+void InitializeKeyNames ( void )
+    {
+    KeyNameToCodeMap.clear ();
+    KeyCodeToNameMap.clear ();
+#define ADD_NAME(KEYCODE)\
+{\
+    std::string Name = std::string(#KEYCODE).substr(3);\
+    std::transform(Name.begin(), Name.end(), Name.begin(), [] ( unsigned char c ) -> unsigned char { return (unsigned char) std::tolower ( c ); } );\
+    KeyNameToCodeMap.insert ( std::pair <uint32_t,std::string> ( KEYCODE, Name ));\
+KeyCodeToNameMap.insert ( std::pair <std::string, uint32_t> ( Name,KEYCODE ));\
+}
+
+    ADD_NAME ( VK_LBUTTON );
+    ADD_NAME ( VK_RBUTTON );
+    ADD_NAME ( VK_CANCEL );
+    ADD_NAME ( VK_MBUTTON );
+    ADD_NAME ( VK_XBUTTON1 );
+    ADD_NAME ( VK_XBUTTON2 );
+    ADD_NAME ( VK_BACK );
+    ADD_NAME ( VK_TAB );
+    ADD_NAME ( VK_CLEAR );
+    ADD_NAME ( VK_RETURN );
+    ADD_NAME ( VK_SHIFT );
+    ADD_NAME ( VK_CONTROL );
+    ADD_NAME ( VK_MENU );
+    ADD_NAME ( VK_PAUSE );
+    ADD_NAME ( VK_CAPITAL );
+    ADD_NAME ( VK_KANA );
+    ADD_NAME ( VK_HANGEUL );
+    ADD_NAME ( VK_HANGUL );
+    ADD_NAME ( VK_JUNJA );
+    ADD_NAME ( VK_FINAL );
+    ADD_NAME ( VK_HANJA );
+    ADD_NAME ( VK_KANJI );
+    ADD_NAME ( VK_ESCAPE );
+    ADD_NAME ( VK_CONVERT );
+    ADD_NAME ( VK_NONCONVERT );
+    ADD_NAME ( VK_ACCEPT );
+    ADD_NAME ( VK_MODECHANGE );
+    ADD_NAME ( VK_SPACE );
+    ADD_NAME ( VK_PRIOR );
+    ADD_NAME ( VK_NEXT );
+    ADD_NAME ( VK_END );
+    ADD_NAME ( VK_HOME );
+    ADD_NAME ( VK_LEFT );
+    ADD_NAME ( VK_UP );
+    ADD_NAME ( VK_RIGHT );
+    ADD_NAME ( VK_DOWN );
+    ADD_NAME ( VK_SELECT );
+    ADD_NAME ( VK_PRINT );
+    ADD_NAME ( VK_EXECUTE );
+    ADD_NAME ( VK_SNAPSHOT );
+    ADD_NAME ( VK_INSERT );
+    ADD_NAME ( VK_DELETE );
+    ADD_NAME ( VK_HELP );
+    ADD_NAME ( VK_LWIN );
+    ADD_NAME ( VK_RWIN );
+    ADD_NAME ( VK_APPS );
+    ADD_NAME ( VK_SLEEP );
+    ADD_NAME ( VK_NUMPAD0 );
+    ADD_NAME ( VK_NUMPAD1 );
+    ADD_NAME ( VK_NUMPAD2 );
+    ADD_NAME ( VK_NUMPAD3 );
+    ADD_NAME ( VK_NUMPAD4 );
+    ADD_NAME ( VK_NUMPAD5 );
+    ADD_NAME ( VK_NUMPAD6 );
+    ADD_NAME ( VK_NUMPAD7 );
+    ADD_NAME ( VK_NUMPAD8 );
+    ADD_NAME ( VK_NUMPAD9 );
+    ADD_NAME ( VK_MULTIPLY );
+    ADD_NAME ( VK_ADD );
+    ADD_NAME ( VK_SEPARATOR );
+    ADD_NAME ( VK_SUBTRACT );
+    ADD_NAME ( VK_DECIMAL );
+    ADD_NAME ( VK_DIVIDE );
+    ADD_NAME ( VK_F1 );
+    ADD_NAME ( VK_F2 );
+    ADD_NAME ( VK_F3 );
+    ADD_NAME ( VK_F4 );
+    ADD_NAME ( VK_F5 );
+    ADD_NAME ( VK_F6 );
+    ADD_NAME ( VK_F7 );
+    ADD_NAME ( VK_F8 );
+    ADD_NAME ( VK_F9 );
+    ADD_NAME ( VK_F10 );
+    ADD_NAME ( VK_F11 );
+    ADD_NAME ( VK_F12 );
+    ADD_NAME ( VK_F13 );
+    ADD_NAME ( VK_F14 );
+    ADD_NAME ( VK_F15 );
+    ADD_NAME ( VK_F16 );
+    ADD_NAME ( VK_F17 );
+    ADD_NAME ( VK_F18 );
+    ADD_NAME ( VK_F19 );
+    ADD_NAME ( VK_F20 );
+    ADD_NAME ( VK_F21 );
+    ADD_NAME ( VK_F22 );
+    ADD_NAME ( VK_F23 );
+    ADD_NAME ( VK_F24 );
+    ADD_NAME ( VK_NAVIGATION_VIEW );
+    ADD_NAME ( VK_NAVIGATION_MENU );
+    ADD_NAME ( VK_NAVIGATION_UP );
+    ADD_NAME ( VK_NAVIGATION_DOWN );
+    ADD_NAME ( VK_NAVIGATION_LEFT );
+    ADD_NAME ( VK_NAVIGATION_RIGHT );
+    ADD_NAME ( VK_NAVIGATION_ACCEPT );
+    ADD_NAME ( VK_NAVIGATION_CANCEL );
+    ADD_NAME ( VK_NUMLOCK );
+    ADD_NAME ( VK_SCROLL );
+    ADD_NAME ( VK_OEM_NEC_EQUAL );
+    ADD_NAME ( VK_OEM_FJ_JISHO );
+    ADD_NAME ( VK_OEM_FJ_MASSHOU );
+    ADD_NAME ( VK_OEM_FJ_TOUROKU );
+    ADD_NAME ( VK_OEM_FJ_LOYA );
+    ADD_NAME ( VK_OEM_FJ_ROYA );
+    ADD_NAME ( VK_LSHIFT );
+    ADD_NAME ( VK_RSHIFT );
+    ADD_NAME ( VK_LCONTROL );
+    ADD_NAME ( VK_RCONTROL );
+    ADD_NAME ( VK_LMENU );
+    ADD_NAME ( VK_RMENU );
+    ADD_NAME ( VK_BROWSER_BACK );
+    ADD_NAME ( VK_BROWSER_FORWARD );
+    ADD_NAME ( VK_BROWSER_REFRESH );
+    ADD_NAME ( VK_BROWSER_STOP );
+    ADD_NAME ( VK_BROWSER_SEARCH );
+    ADD_NAME ( VK_BROWSER_FAVORITES );
+    ADD_NAME ( VK_BROWSER_HOME );
+    ADD_NAME ( VK_VOLUME_MUTE );
+    ADD_NAME ( VK_VOLUME_DOWN );
+    ADD_NAME ( VK_VOLUME_UP );
+    ADD_NAME ( VK_MEDIA_NEXT_TRACK );
+    ADD_NAME ( VK_MEDIA_PREV_TRACK );
+    ADD_NAME ( VK_MEDIA_STOP );
+    ADD_NAME ( VK_MEDIA_PLAY_PAUSE );
+    ADD_NAME ( VK_LAUNCH_MAIL );
+    ADD_NAME ( VK_LAUNCH_MEDIA_SELECT );
+    ADD_NAME ( VK_LAUNCH_APP1 );
+    ADD_NAME ( VK_LAUNCH_APP2 );
+    ADD_NAME ( VK_OEM_1 );
+    ADD_NAME ( VK_OEM_PLUS );
+    ADD_NAME ( VK_OEM_COMMA );
+    ADD_NAME ( VK_OEM_MINUS );
+    ADD_NAME ( VK_OEM_PERIOD );
+    ADD_NAME ( VK_OEM_2 );
+    ADD_NAME ( VK_OEM_3 );
+    ADD_NAME ( VK_GAMEPAD_A );
+    ADD_NAME ( VK_GAMEPAD_B );
+    ADD_NAME ( VK_GAMEPAD_X );
+    ADD_NAME ( VK_GAMEPAD_Y );
+    ADD_NAME ( VK_GAMEPAD_RIGHT_SHOULDER );
+    ADD_NAME ( VK_GAMEPAD_LEFT_SHOULDER );
+    ADD_NAME ( VK_GAMEPAD_LEFT_TRIGGER );
+    ADD_NAME ( VK_GAMEPAD_RIGHT_TRIGGER );
+    ADD_NAME ( VK_GAMEPAD_DPAD_UP );
+    ADD_NAME ( VK_GAMEPAD_DPAD_DOWN );
+    ADD_NAME ( VK_GAMEPAD_DPAD_LEFT );
+    ADD_NAME ( VK_GAMEPAD_DPAD_RIGHT );
+    ADD_NAME ( VK_GAMEPAD_MENU );
+    ADD_NAME ( VK_GAMEPAD_VIEW );
+    ADD_NAME ( VK_GAMEPAD_LEFT_THUMBSTICK_BUTTON );
+    ADD_NAME ( VK_GAMEPAD_RIGHT_THUMBSTICK_BUTTON );
+    ADD_NAME ( VK_GAMEPAD_LEFT_THUMBSTICK_UP );
+    ADD_NAME ( VK_GAMEPAD_LEFT_THUMBSTICK_DOWN );
+    ADD_NAME ( VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT );
+    ADD_NAME ( VK_GAMEPAD_LEFT_THUMBSTICK_LEFT );
+    ADD_NAME ( VK_GAMEPAD_RIGHT_THUMBSTICK_UP );
+    ADD_NAME ( VK_GAMEPAD_RIGHT_THUMBSTICK_DOWN );
+    ADD_NAME ( VK_GAMEPAD_RIGHT_THUMBSTICK_RIGHT );
+    ADD_NAME ( VK_GAMEPAD_RIGHT_THUMBSTICK_LEFT );
+    ADD_NAME ( VK_OEM_4 );
+    ADD_NAME ( VK_OEM_5 );
+    ADD_NAME ( VK_OEM_6 );
+    ADD_NAME ( VK_OEM_7 );
+    ADD_NAME ( VK_OEM_8 );
+    ADD_NAME ( VK_OEM_AX );
+    ADD_NAME ( VK_OEM_102 );
+    ADD_NAME ( VK_ICO_HELP );
+    ADD_NAME ( VK_ICO_00 );
+    ADD_NAME ( VK_PROCESSKEY );
+    ADD_NAME ( VK_ICO_CLEAR );
+    ADD_NAME ( VK_PACKET );
+    ADD_NAME ( VK_OEM_RESET );
+    ADD_NAME ( VK_OEM_JUMP );
+    ADD_NAME ( VK_OEM_PA1 );
+    ADD_NAME ( VK_OEM_PA2 );
+    ADD_NAME ( VK_OEM_PA3 );
+    ADD_NAME ( VK_OEM_WSCTRL );
+    ADD_NAME ( VK_OEM_CUSEL );
+    ADD_NAME ( VK_OEM_ATTN );
+    ADD_NAME ( VK_OEM_FINISH );
+    ADD_NAME ( VK_OEM_COPY );
+    ADD_NAME ( VK_OEM_AUTO );
+    ADD_NAME ( VK_OEM_ENLW );
+    ADD_NAME ( VK_OEM_BACKTAB );
+    ADD_NAME ( VK_ATTN );
+    ADD_NAME ( VK_CRSEL );
+    ADD_NAME ( VK_EXSEL );
+    ADD_NAME ( VK_EREOF );
+    ADD_NAME ( VK_PLAY );
+    ADD_NAME ( VK_ZOOM );
+    ADD_NAME ( VK_NONAME );
+    ADD_NAME ( VK_PA1 );
+    ADD_NAME ( VK_OEM_CLEAR );
+#undef ADD_NAME
     }
 }
 }
