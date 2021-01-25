@@ -174,7 +174,7 @@ void WGLContext::SwapWindowBuffer ( const RenderWindowHandle &Handle )
     {
     HWND WindowHandle = WindowManager::Windows::GetWindowHandle ( Handle );
     HDC WindowDC = GetWindowDC ( WindowHandle );
-    wglMakeCurrent ( WindowDC, GLContext );
+    wglSwapLayerBuffers ( WindowDC, WGL_SWAP_MAIN_PLANE );
     }
 }
 }
