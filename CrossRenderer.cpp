@@ -48,11 +48,10 @@ bool Initialize ( const RendererConfiguration &NewConfiguration )
 
 bool Shutdown ( void )
     {
-    for ( auto &WindowIterator : WindowManager::WindowList )
+    while ( WindowManager::WindowList.size() )
         {
-        WindowManager::DestroyWindow ( WindowIterator );
+        WindowManager::DestroyWindow ( *WindowManager::WindowList.begin() );
         }
-    WindowManager::WindowList.clear();
     ShutdownRenderer();
     return true;
     }
