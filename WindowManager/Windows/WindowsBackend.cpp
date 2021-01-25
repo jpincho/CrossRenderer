@@ -416,13 +416,12 @@ void ProcessSingleMessage ( const MSG &Message )
             {
             TranslateMessage ( &Message );
             DispatchMessage ( &Message );
+            if ( ( Message.message == WM_KEYDOWN ) && ( Message.lParam >> 30 & 1 ) ) // if the key was previously down already, just ignore this. It's a repeated message
+                return;
             NewEvent.EventType = ( Message.message == WM_KEYDOWN ) ? WindowEventType::KeyPressed : WindowEventType::KeyReleased;
             NewEvent.EventData.KeyPressed.Key = ( uint32_t ) Message.wParam;
-            if ( isprint ( ( int ) Message.wParam ) )
-                {
-                if ( ( Message.wParam >= 'A' ) && ( Message.wParam <= 'Z' ) )
-                    NewEvent.EventData.KeyPressed.Key += 32; // Convert to lowercase
-                }
+            if ( ( Message.wParam >= 'A' ) && ( Message.wParam <= 'Z' ) )
+                NewEvent.EventData.KeyPressed.Key += 32; // Convert to lowercase
             break;
             }
         }
