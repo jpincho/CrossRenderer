@@ -10,7 +10,7 @@ namespace WindowManager
 {
 namespace Windows
 {
-typedef struct WindowsWindowInfo
+typedef struct WindowInfo
     {
     HWND Window;
     HDC DC;
@@ -19,9 +19,9 @@ typedef struct WindowsWindowInfo
     glm::uvec2 Size;
     std::string Title;
     WindowState State;
-    } WindowsWindowInfo;
+    } WindowInfo;
 
-static VectorizedContainer <WindowsWindowInfo, RenderWindowTag> Windows;
+static VectorizedContainer <WindowInfo, RenderWindowTag> Windows;
 static std::vector <MSG> PendingWindowsMessages;
 static std::unordered_map <HWND, RenderWindowHandle> HWNDToHandleMap;
 static std::map <uint32_t, std::string> KeyNameToCodeMap;
@@ -73,7 +73,7 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
             }
         }
 
-    WindowsWindowInfo NewWindow;
+    WindowInfo NewWindow;
     DWORD dwExStyle;
     DWORD dwStyle;
     dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
@@ -117,94 +117,81 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
 
 bool DestroyWindow ( const RenderWindowHandle &Handle )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
+    WindowInfo *WindowInformation = &Windows[Handle];
 
-    HWNDToHandleMap.erase ( HWNDToHandleMap.find ( info->Window ) );
+    HWNDToHandleMap.erase ( HWNDToHandleMap.find ( WindowInformation->Window ) );
     Windows.ReleaseHandle ( Handle );
     WindowList.erase ( Handle );
 
-    ::DestroyWindow ( info->Window );
+    ::DestroyWindow ( WindowInformation->Window );
     return true;
     }
 
 void SetWindowPosition ( const RenderWindowHandle &Handle, const glm::ivec2 &NewPosition )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
-    SetWindowPos ( info->Window, nullptr, NewPosition.x, NewPosition.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE );
-    info->Position = NewPosition;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    SetWindowPos ( WindowInformation->Window, nullptr, NewPosition.x, NewPosition.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE );
+    WindowInformation->Position = NewPosition;
     }
 
 glm::ivec2 GetWindowPosition ( const RenderWindowHandle &Handle )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
-    return info->Position;
-
-    //RECT Rect;
-    //GetWindowRect ( info->Window, &Rect );
-    //return glm::ivec2 ( Rect.left, Rect.top );
+    WindowInfo *WindowInformation = &Windows[Handle];
+    return WindowInformation->Position;
     }
 
 void SetWindowSize ( const RenderWindowHandle &Handle, const glm::uvec2 &NewSize )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
-    SetWindowPos ( info->Window, nullptr, 0, 0, NewSize.x, NewSize.y, SWP_NOZORDER | SWP_NOMOVE );
-    info->Size = NewSize;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    SetWindowPos ( WindowInformation->Window, nullptr, 0, 0, NewSize.x, NewSize.y, SWP_NOZORDER | SWP_NOMOVE );
+    WindowInformation->Size = NewSize;
     }
 
 glm::uvec2 GetWindowSize ( const RenderWindowHandle &Handle )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
-    return info->Size;
-
-    //RECT Rect;
-    //GetWindowRect ( info->Window, &Rect );
-    //return glm::uvec2 ( Rect.right - Rect.left, Rect.bottom - Rect.top );
+    WindowInfo *WindowInformation = &Windows[Handle];
+    return WindowInformation->Size;
     }
 
 void SetWindowTitle ( const RenderWindowHandle &Handle, const std::string &NewTitle )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
-    SetWindowText ( info->Window, NewTitle.c_str () );
-    info->Title = NewTitle;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    SetWindowText ( WindowInformation->Window, NewTitle.c_str () );
+    WindowInformation->Title = NewTitle;
     }
 
 std::string GetWindowTitle ( const RenderWindowHandle &Handle )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
-    return info->Title;
-    //std::string Title;
-    //size_t Length = GetWindowTextLength ( info->Window );
-    //Title.resize ( Length );
-    //GetWindowText ( info->Window, const_cast <char*> ( Title.c_str() ), Length );
-    //return Title;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    return WindowInformation->Title;
     }
 
 bool SetWindowState ( const RenderWindowHandle &Handle, const WindowState NewState )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
+    WindowInfo *WindowInformation = &Windows[Handle];
     switch ( NewState )
         {
         case WindowState::Minimized:
-            ShowWindow ( info->Window, SW_SHOWMINIMIZED );
+            ShowWindow ( WindowInformation->Window, SW_SHOWMINIMIZED );
             break;
         case WindowState::Normal:
-            ShowWindow ( info->Window, SW_SHOWNORMAL );
+            ShowWindow ( WindowInformation->Window, SW_SHOWNORMAL );
             break;
         case WindowState::Maximized:
-            ShowWindow ( info->Window, SW_SHOWMAXIMIZED );
+            ShowWindow ( WindowInformation->Window, SW_SHOWMAXIMIZED );
             break;
         }
-    info->State = NewState;
+    WindowInformation->State = NewState;
     return true;
     }
 
 WindowState GetWindowState ( const RenderWindowHandle &Handle )
     {
-    WindowsWindowInfo *info = &Windows[Handle];
+    WindowInfo *WindowInformation = &Windows[Handle];
     WINDOWPLACEMENT Placement;
     memset ( &Placement, 0, sizeof ( Placement ) );
     Placement.length = sizeof ( WINDOWPLACEMENT );
-    GetWindowPlacement ( info->Window, &Placement );
+    GetWindowPlacement ( WindowInformation->Window, &Placement );
     if ( ( Placement.showCmd & SW_MAXIMIZE ) == SW_MAXIMIZE )
         return WindowState::Maximized;
     if ( ( Placement.showCmd & SW_SHOWNORMAL ) == SW_SHOWNORMAL )

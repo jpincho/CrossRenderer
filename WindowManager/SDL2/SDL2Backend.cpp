@@ -10,15 +10,15 @@ namespace WindowManager
 {
 namespace SDL2
 {
-typedef struct SDL2WindowInfo
+typedef struct WindowInfo
     {
     SDL_Window *Window;
     glm::ivec2 Position;
     glm::uvec2 Size;
     std::string Title;
-    } SDL2WindowInfo;
+    } WindowInfo;
 
-static VectorizedContainer <SDL2WindowInfo, RenderWindowTag> Windows;
+static VectorizedContainer <WindowInfo, RenderWindowTag> Windows;
 std::unordered_map <SDL_Window *, RenderWindowHandle> SDL_WindowToHandleMap;
 
 RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
@@ -28,7 +28,7 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
         CreationFlags |= SDL_WINDOW_RESIZABLE;
     if ( Descriptor.Fullscreen )
         CreationFlags |= SDL_WINDOW_FULLSCREEN;
-    SDL2WindowInfo NewWindow;
+    WindowInfo NewWindow;
     NewWindow.Window = SDL_CreateWindow ( "SDL window", Descriptor.Position.x, Descriptor.Position.y, Descriptor.Size.x, Descriptor.Size.y, CreationFlags );
     if ( NewWindow.Window == nullptr )
         return RenderWindowHandle::invalid;
@@ -45,81 +45,73 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
 
 bool DestroyWindow ( const RenderWindowHandle &Handle )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
-    SDL_DestroyWindow ( info->Window );
+    WindowInfo *WindowInformation = &Windows[Handle];
+    SDL_DestroyWindow ( WindowInformation->Window );
     return true;
     }
 
 void SetWindowPosition ( const RenderWindowHandle &Handle, const glm::ivec2 &NewPosition )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
-    SDL_SetWindowPosition ( info->Window, NewPosition.x, NewPosition.y );
-    info->Position = NewPosition;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    SDL_SetWindowPosition ( WindowInformation->Window, NewPosition.x, NewPosition.y );
+    WindowInformation->Position = NewPosition;
     }
 
 glm::ivec2 GetWindowPosition ( const RenderWindowHandle &Handle )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
-    return info->Position;
-
-    //glm::ivec2 Position;
-    //SDL_GetWindowPosition ( info->Window, &Position.x, &Position.y );
-    //return Position;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    return WindowInformation->Position;
     }
 
 void SetWindowSize ( const RenderWindowHandle &Handle, const glm::uvec2 &NewSize )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
-    SDL_SetWindowSize ( info->Window, NewSize.x, NewSize.y );
-    info->Size = NewSize;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    SDL_SetWindowSize ( WindowInformation->Window, NewSize.x, NewSize.y );
+    WindowInformation->Size = NewSize;
     }
 
 glm::uvec2 GetWindowSize ( const RenderWindowHandle &Handle )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
-    return info->Size;
-
-    //glm::uvec2 Size;
-    //SDL_GetWindowSize ( info->Window, ( int * ) &Size.x, ( int * ) &Size.y );
-    //return Size;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    return WindowInformation->Size;
     }
 
 void SetWindowTitle ( const RenderWindowHandle &Handle, const std::string &NewTitle )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
-    SDL_SetWindowTitle ( info->Window, NewTitle.c_str() );
-    info->Title = NewTitle;
+    WindowInfo *WindowInformation = &Windows[Handle];
+    SDL_SetWindowTitle ( WindowInformation->Window, NewTitle.c_str() );
+    WindowInformation->Title = NewTitle;
     }
 
 std::string GetWindowTitle ( const RenderWindowHandle &Handle )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
-    return info->Title;
-    //return SDL_GetWindowTitle ( info->Window );
+    WindowInfo *WindowInformation = &Windows[Handle];
+    return WindowInformation->Title;
     }
 
 bool SetWindowState ( const RenderWindowHandle &Handle, const WindowState NewState )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
+    WindowInfo *WindowInformation = &Windows[Handle];
     switch ( NewState )
         {
         case WindowState::Minimized:
-            SDL_MinimizeWindow ( info->Window );
+            SDL_MinimizeWindow ( WindowInformation->Window );
             break;
         case WindowState::Normal:
-            SDL_RestoreWindow ( info->Window );
+            SDL_RestoreWindow ( WindowInformation->Window );
             break;
         case WindowState::Maximized:
-            SDL_MaximizeWindow ( info->Window );
+            SDL_MaximizeWindow ( WindowInformation->Window );
             break;
         }
+    WindowInformation->State = NewState;
     return true;
     }
 
 WindowState GetWindowState ( const RenderWindowHandle &Handle )
     {
-    SDL2WindowInfo *info = &Windows[Handle];
-    uint32_t Flags = SDL_GetWindowFlags ( info->Window );
+    WindowInfo *WindowInformation = &Windows[Handle];
+    uint32_t Flags = SDL_GetWindowFlags ( WindowInformation->Window );
     if ( Flags & SDL_WINDOW_MAXIMIZED )
         return WindowState::Maximized;
     if ( Flags & SDL_WINDOW_MINIMIZED )
@@ -255,12 +247,14 @@ const char *GetKeyName ( const uint32_t KeyCode )
     {
     return SDL_GetKeyName ( KeyCode );
     }
+
 glm::ivec2 GetMousePosition ( void )
     {
     glm::ivec2 MousePosition;
     SDL_GetMouseState ( &MousePosition.x, &MousePosition.y );
     return MousePosition;
     }
+
 uint32_t GetMouseButtonStatus ( void )
     {
     return SDL_GetMouseState ( nullptr, nullptr );
