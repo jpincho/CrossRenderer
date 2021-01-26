@@ -15,7 +15,7 @@ include ( LocalPackage )
 include ( target_warning_options )
 
 set ( LOCAL_PACKAGE_ALLOW_SYSTEM TRUE )
-set ( LOCAL_PACKAGE_INSTALL_LOCATION "${PROJECT_BINARY_DIR}/output/" )
+set_local_package_install_location ( "${PROJECT_BINARY_DIR}/output/" )
 
 string ( TOUPPER ${CMAKE_SYSTEM_NAME} UPPERCASE_SYSTEM_NAME )
 set ( CROSS_RENDERER_HOST_PLATFORM_${UPPERCASE_SYSTEM_NAME} TRUE )
