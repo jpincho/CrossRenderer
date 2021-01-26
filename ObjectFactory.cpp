@@ -39,7 +39,6 @@ void CreateNewWindowManager ( const WindowManagerBackend &Backend )
             ATTRIB ( GetMousePosition );
             ATTRIB ( GetMouseButtonStatus );
             ATTRIB ( GetErrorDescription );
-            ATTRIB ( GetPlatformWindowHandle );
 #undef ATTRIB
             break;
 #endif
