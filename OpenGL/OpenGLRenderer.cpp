@@ -3,7 +3,6 @@
 #include "OpenGLInternals.h"
 #include "OpenGLStateCache.h"
 #include "../WindowManager/WindowManager.h"
-#include <Logger/Logger.h>
 #include "../Renderer.h"
 
 namespace CrossRenderer

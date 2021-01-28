@@ -1,7 +1,7 @@
 #include "OpenGLFramebuffer.h"
 #include "OpenGLInternals.h"
 #include "OpenGLTexture.h"
-#include <Logger/Logger.h>
+#include "../Logger.h"
 
 namespace CrossRenderer
 {

@@ -2,7 +2,6 @@
 #include "Stringify.h"
 #include "WindowManager/WindowManager.h"
 #include "Renderer.h"
-#include <Logger/Logger.h>
 
 #if defined (CROSS_RENDERER_SDL2_BACKEND_SUPPORT)
 #include "WindowManager/SDL2/SDL2Backend.h"

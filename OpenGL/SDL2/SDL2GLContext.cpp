@@ -1,7 +1,7 @@
 #include "SDL2GLContext.h"
 #include "../../WindowManager/SDL2/SDL2Backend.h"
 #include <glad/glad.h>
-#include <Logger/Logger.h>
+#include "../../Logger.h"
 
 namespace CrossRenderer
 {

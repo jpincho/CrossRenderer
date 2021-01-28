@@ -8,7 +8,7 @@ set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/output/bin" )
 set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/output/lib" )
 set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/output/bin" )
 
-list ( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/ExternalModules/CMake )
+list ( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/CMake )
 list ( APPEND CMAKE_MODULE_PATH ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/cmake )
 
 include ( LocalPackage )
@@ -95,14 +95,12 @@ if ( OPENGL_FOUND )
     endif()
 endif()
 
-add_subdirectory ( ExternalModules/Logger )
-
 # Main library
 configure_file ( CrossRendererConfig.h.in CrossRendererConfig.h )
 file ( GLOB SOURCES "*.cpp" "*.h" "WindowManager/*.cpp" "WindowManager/*.h" CrossRendererConfig.h.in AstyleConfig.astylerc )
 list ( APPEND CROSS_RENDERER_SOURCE_FILES ${SOURCES} )
 add_library ( CrossRenderer ${CROSS_RENDERER_SOURCE_FILES} )
 target_include_directories ( CrossRenderer PUBLIC ${CROSS_RENDERER_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} ${GLM_INCLUDE_DIRS} ExternalModules )
-target_link_libraries ( CrossRenderer PUBLIC ${CROSS_RENDERER_LIBRARIES} Logger )
+target_link_libraries ( CrossRenderer PUBLIC ${CROSS_RENDERER_LIBRARIES} )
 target_compile_definitions ( CrossRenderer PRIVATE ${CROSS_RENDERER_DEFINITIONS} )
 target_warning_options ( CrossRenderer HIGH AS_ERRORS )

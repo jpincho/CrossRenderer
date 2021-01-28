@@ -1,8 +1,8 @@
 #include "SDL2Backend.h"
 #include <SDL.h>
 #include <SDL_syswm.h>
-#include <Logger/Logger.h>
 #include <unordered_map>
+#include "../../Logger.h"
 
 namespace CrossRenderer
 {

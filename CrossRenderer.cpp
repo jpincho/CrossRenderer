@@ -1,7 +1,6 @@
 #include <stdexcept>
 #include "CrossRenderer.h"
 #include "WindowManager/WindowManager.h"
-#include <Logger/Logger.h>
 #include "Stringify.h"
 #include "ObjectFactory.h"
 

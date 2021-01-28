@@ -6,7 +6,7 @@
 #include "ShaderDefinitions.h"
 #include "FramebufferDefinitions.h"
 #include "RenderCommandDefinitions.h"
-#include <Logger/Logger.h>
+#include "Logger.h"
 #include "Stringify.h"
 
 namespace CrossRenderer
