@@ -6,7 +6,7 @@
 #include "WGL/WGLContext.h"
 #endif
 #include <glad/glad.h>
-#include <Logger/Logger.h>
+#include "../Logger.h"
 
 namespace CrossRenderer
 {
