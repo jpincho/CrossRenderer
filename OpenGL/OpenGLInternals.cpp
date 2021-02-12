@@ -111,7 +111,8 @@ bool CheckError ( void )
         if ( Error != GL_NO_ERROR )
             {
             Result = false;
-            throw std::runtime_error ( std::string ( "OpenGL error" ) + std::string ( StringifyOpenGL ( Error ) ) );
+            LOG_ERROR( (std::string( "OpenGL error - " ) + std::string( StringifyOpenGL( Error ) )).c_str() );
+            throw std::runtime_error ( std::string ( "OpenGL error - " ) + std::string ( StringifyOpenGL ( Error ) ) );
             }
         }
     while ( Error != GL_NO_ERROR );
