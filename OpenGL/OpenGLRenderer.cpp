@@ -13,10 +13,10 @@ RendererConfiguration Configuration;
 OpenGLContextInterface *Context;
 unsigned GeneralVAO;
 std::string OpenGLRendererString, OpenGLVendor[3];
-int MaxTextureUnits;
 ShaderHandle ActiveShader;
 RenderWindowHandle ActiveWindow;
 StateCache CurrentState;
+
 bool SetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHandle UniformHandle, const ShaderUniformValue &Value );
 
 bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
@@ -48,6 +48,8 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
     CurrentState.Invalidate();
 
     glGetIntegerv ( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &MaxTextureUnits );
+    BufferStorageAvailable = ( ( Context->GetOpenGLVersion().GreaterEqual( 4, 4 ) ) || ( Context->IsExtensionSupported( "ARB_buffer_storage" ) ) );
+
     glClearColor ( 0, 0, 0, 0 );
     glClearDepth ( 1.0 );
 

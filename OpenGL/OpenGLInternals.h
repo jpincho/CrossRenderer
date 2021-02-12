@@ -41,6 +41,7 @@ typedef struct ShaderBufferInfo
     GLenum GLBufferType;
     GLenum GLMappedAccessType;
     void *MappedPointer;
+    ShaderBufferDescriptor::ShaderBufferFlags Flags;
     } ShaderBufferInfo;
 
 typedef struct TextureInfo : public TextureDescriptor
@@ -63,6 +64,8 @@ extern VectorizedContainer <ShaderBufferInfo, ShaderBufferTag> ShaderBuffers;
 extern VectorizedContainer <TextureInfo, TextureTag> Textures;
 extern VectorizedContainer <ShaderInfo, ShaderTag> Shaders;
 extern VectorizedContainer <FramebufferInfo, FramebufferTag> Framebuffers;
+extern int MaxTextureUnits;
+extern bool BufferStorageAvailable;
 
 void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, GLchar const* message, void const* user_param );
 const char *StringifyOpenGL ( GLenum Value );
