@@ -17,7 +17,6 @@ int MaxTextureUnits;
 ShaderHandle ActiveShader;
 RenderWindowHandle ActiveWindow;
 StateCache CurrentState;
-bool SetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHandle UniformHandle, const ShaderUniformValue &Value );
 
 bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
     {
@@ -30,12 +29,12 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
         if ( !NewWindow )
             return false;
         }
-    ActiveWindow = * ( WindowManager::WindowList.begin() );
+    ActiveWindow = *( WindowManager::WindowList.begin () );
     if ( Context->Create ( Configuration, ActiveWindow ) == false )
         goto OnError;
 
     Context->MakeActive ( ActiveWindow );
-    if ( Context->GetOpenGLVersion().Lesser ( 3, 0 ) )
+    if ( Context->GetOpenGLVersion ().Lesser ( 3, 0 ) )
         {
         LOG_ERROR ( "OpenGL Core 3.0+ needed" );
         return false;
@@ -45,7 +44,7 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
     glGenVertexArrays ( 1, &GeneralVAO );
     glBindVertexArray ( GeneralVAO );
 
-    CurrentState.Invalidate();
+    CurrentState.Invalidate ();
 
     glGetIntegerv ( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &MaxTextureUnits );
     glClearColor ( 0, 0, 0, 0 );
@@ -59,13 +58,13 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
         else
             break;
         }
-        {
-        const char *String = reinterpret_cast<const char *> ( glGetString ( GL_RENDERER ) );
-        if ( ( String != nullptr ) && ( strlen ( String ) > 0 ) )
-            OpenGLRendererString.assign ( String );
-        }
+    {
+    const char *String = reinterpret_cast<const char *> ( glGetString ( GL_RENDERER ) );
+    if ( ( String != nullptr ) && ( strlen ( String ) > 0 ) )
+        OpenGLRendererString.assign ( String );
+    }
 
-    if ( CheckError() == false )
+    if ( CheckError () == false )
         goto OnError;
 
     //    for ( auto &iterator : OpenGLVendor )
@@ -84,7 +83,7 @@ OnError:
         }
     if ( Context )
         {
-        Context->Destroy();
+        Context->Destroy ();
         delete Context;
         Context = nullptr;
         }
@@ -100,7 +99,7 @@ bool ShutdownRenderer ( void )
         }
     if ( Context )
         {
-        Context->Destroy();
+        Context->Destroy ();
         delete Context;
         Context = nullptr;
         }
@@ -112,13 +111,13 @@ bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
 
     CurrentState.SetDefaultViewportSize ( FramebufferInformation->Dimensions );
-    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings() );
-    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings() );
-    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings() );
+    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings () );
+    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings () );
+    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
 
     glBindFramebuffer ( GL_FRAMEBUFFER, FramebufferInformation->OpenGLID );
     int BitMask = 0;
-    if ( FramebufferInformation->ColorTextures.size() )
+    if ( FramebufferInformation->ColorTextures.size () )
         {
         BitMask |= GL_COLOR_BUFFER_BIT;
         glClearColor ( FramebufferInformation->ClearColor.r, FramebufferInformation->ClearColor.g, FramebufferInformation->ClearColor.b, FramebufferInformation->ClearColor.a );
@@ -130,7 +129,7 @@ bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
         }
     if ( BitMask )
         glClear ( BitMask );
-    return CheckError();
+    return CheckError ();
     }
 
 bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle )
@@ -139,9 +138,9 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
     Context->MakeActive ( WindowHandle );
     glm::uvec2 WindowSize = WindowManager::GetWindowSize ( WindowHandle );
     CurrentState.SetDefaultViewportSize ( WindowSize );
-    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings() );
-    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings() );
-    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings() );
+    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings () );
+    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings () );
+    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
 
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
     glBindFramebuffer ( GL_READ_FRAMEBUFFER, FramebufferInformation->OpenGLID );
@@ -150,16 +149,16 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
         0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
         0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
         GL_COLOR_BUFFER_BIT, GL_NEAREST );
-    return CheckError();
+    return CheckError ();
     }
 
 bool StartFrame ( const RenderWindowHandle &Handle )
     {
     ActiveWindow = Handle;
     CurrentState.SetDefaultViewportSize ( WindowManager::GetWindowSize ( Handle ) );
-    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings() );
-    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings() );
-    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings() );
+    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings () );
+    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings () );
+    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
 
     Context->MakeActive ( Handle );
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -168,9 +167,9 @@ bool StartFrame ( const RenderWindowHandle &Handle )
 
 bool EndFrame ( const RenderWindowHandle &Handle )
     {
-    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings() );
-    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings() );
-    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings() );
+    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings () );
+    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings () );
+    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
     Context->SwapWindowBuffer ( Handle );
     return true;
     }
@@ -194,26 +193,83 @@ bool RunCommand ( const RenderCommand &Command )
     ShaderInfo *ShaderInformation = &Shaders[Command.Shader];
     glUseProgram ( ShaderInformation->OpenGLID );
     ActiveShader = Command.Shader;
-    CheckError();
+    CheckError ();
 
     CurrentState.ApplyState ( Command.State );
-    CheckError();
+    CheckError ();
+
+    // Set all uniforms
+    unsigned UniformBlockBindingIndex = 0;
     for ( auto &Iterator : Command.UniformValues )
         {
         if ( !Iterator.UniformHandle )
             return false;
-        UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.key()];
+        UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.key ()];
 
         if ( UniformInformation->CurrentValue.Equals ( Iterator.UniformValue, UniformInformation->Type ) == true )
             continue;
-        SetShaderUniformValue ( Command.Shader, Iterator.UniformHandle, Iterator.UniformValue );
+
+        switch ( UniformInformation->Type )
+            {
+#define CASE_TYPE(TYPENAME,FUNCTION)\
+        case ShaderUniformType::TYPENAME:\
+            {\
+            FUNCTION ( UniformInformation->OpenGLID, Iterator.UniformValue.TYPENAME##Value );\
+            break;\
+            }
+#define CASE_TYPE_VEC(TYPENAME,FUNCTION)\
+        case ShaderUniformType::TYPENAME:\
+            {\
+            FUNCTION ( UniformInformation->OpenGLID, 1, glm::value_ptr(Iterator.UniformValue.TYPENAME##Value) );\
+            break;\
+            }
+
+            CASE_TYPE ( Float, glUniform1f );
+            CASE_TYPE_VEC ( Float2, glUniform2fv );
+            CASE_TYPE_VEC ( Float3, glUniform3fv );
+            CASE_TYPE_VEC ( Float4, glUniform4fv );
+
+            CASE_TYPE ( Integer, glUniform1i );
+            CASE_TYPE_VEC ( Integer2, glUniform2iv );
+            CASE_TYPE_VEC ( Integer3, glUniform3iv );
+            CASE_TYPE_VEC ( Integer4, glUniform4iv );
+
+            CASE_TYPE ( UnsignedInteger, glUniform1ui );
+            CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv );
+            CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv );
+            CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv );
+#undef CASE_TYPE
+#undef CASE_TYPE_VEC
+
+            case ShaderUniformType::Matrix3:
+                glUniformMatrix3fv ( UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix3Value ) );
+                break;
+            case ShaderUniformType::Matrix4:
+                glUniformMatrix4fv ( UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix4Value ) );
+                break;
+            case ShaderUniformType::Bool:
+                glUniform1i ( UniformInformation->OpenGLID, Iterator.UniformValue.BoolValue );
+                break;
+            case ShaderUniformType::Block:
+                {
+                ShaderBufferInfo SBInfo = ShaderBuffers[Iterator.UniformValue.BlockValue];
+                glUniformBlockBinding ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, UniformBlockBindingIndex );
+                glBindBufferRange ( GL_UNIFORM_BUFFER, UniformBlockBindingIndex, SBInfo.OpenGLID, 0, SBInfo.DataSize );
+                ++UniformBlockBindingIndex;
+                break;
+                }
+            default:
+                throw std::runtime_error ( "Unhandled shader uniform type" );
+            }
         UniformInformation->CurrentValue = Iterator.UniformValue;
         }
-    CheckError();
+    CheckError ();
+
+    // Bind all attribute buffers
     for ( auto &Iterator : Command.ShaderBufferBindings )
         {
-        AttributeInfo *AttributeInformation = & ( ShaderInformation->Attributes[Iterator.AttributeHandle.key()] );
-        ShaderBufferInfo *BufferInformation = & ( ShaderBuffers[Iterator.DataStream.BufferHandle] );
+        AttributeInfo *AttributeInformation = &( ShaderInformation->Attributes[Iterator.AttributeHandle.key ()] );
+        ShaderBufferInfo *BufferInformation = &( ShaderBuffers[Iterator.DataStream.BufferHandle] );
 
         if ( AttributeInformation->Enabled == false )
             {
@@ -228,17 +284,19 @@ bool RunCommand ( const RenderCommand &Command )
 
         glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
         glVertexAttribPointer ( AttributeInformation->OpenGLID,
-                                ( GLint ) Iterator.DataStream.ComponentsPerElement,
+                                (GLint) Iterator.DataStream.ComponentsPerElement,
                                 Translate ( Iterator.DataStream.ComponentType ),
                                 Iterator.DataStream.NormalizeData,
-                                ( GLsizei ) Iterator.DataStream.Stride,
-                                ( void * ) Iterator.DataStream.StartOffset );
+                                (GLsizei) Iterator.DataStream.Stride,
+                                (void *) Iterator.DataStream.StartOffset );
         }
-    CheckError();
-    unsigned TextureLevel = 0;
+    CheckError ();
+
+    // Bind all textures
+    unsigned TextureBindingIndex = 0;
     for ( auto &Iterator : Command.TextureBindings )
         {
-        UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.key()];
+        UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.key ()];
         //if ( UniformInformation->Type != ShaderUniformType::Sampler2D ) return false;
 
         GLint DesiredSWrap = Translate ( Iterator.BindSettings.WrapSettings.Horizontal );
@@ -247,7 +305,7 @@ bool RunCommand ( const RenderCommand &Command )
         GLint DesiredMagFilter = Translate ( Iterator.BindSettings.FilterSettings.MagFilter );
 
         TextureInfo *TextureInformation = &Textures[Iterator.BindSettings.Handle];
-        glActiveTexture ( GL_TEXTURE0 + TextureLevel ); // Multitexture index
+        glActiveTexture ( GL_TEXTURE0 + TextureBindingIndex ); // Multitexture index
         glBindTexture ( GL_TEXTURE_2D, TextureInformation->OpenGLID );
         if ( TextureInformation->GLSWrap != DesiredSWrap )
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, DesiredSWrap );
@@ -257,9 +315,9 @@ bool RunCommand ( const RenderCommand &Command )
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, DesiredMinFilter );
         if ( TextureInformation->GLMagFilter != DesiredMagFilter )
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, DesiredMagFilter );
-        glUniform1i ( UniformInformation->OpenGLID, ( GLint ) TextureLevel );
+        glUniform1i ( UniformInformation->OpenGLID, (GLint) TextureBindingIndex );
 
-        if ( CheckError() == false )
+        if ( CheckError () == false )
             {
             LOG_ERROR ( "Error activating texture" );
             return false;
@@ -269,10 +327,11 @@ bool RunCommand ( const RenderCommand &Command )
         TextureInformation->GLMinFilter = DesiredMinFilter;
         TextureInformation->GLMagFilter = DesiredMagFilter;
 
-        ++TextureLevel;
+        ++TextureBindingIndex;
         }
-    CheckError();
+    CheckError ();
 
+    // Finally, issue the draw call
     if ( Command.IndexBuffer )
         {
         static size_t Sizes[] = { sizeof ( float ), sizeof ( uint8_t ), sizeof ( uint16_t ), sizeof ( uint32_t ) };
@@ -280,15 +339,15 @@ bool RunCommand ( const RenderCommand &Command )
         ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBuffer];
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, BufferToUse->OpenGLID );
         glDrawElements ( Translate ( Command.Primitive ),
-                         ( GLint ) Command.VertexCount,
+                         (GLint) Command.VertexCount,
                          Translate ( Command.IndexBufferStream.ComponentType ),
-                         reinterpret_cast <void *> ( Command.StartVertex * Sizes[ ( int ) Command.IndexBufferStream.ComponentType] ) );
+                         reinterpret_cast <void *> ( Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ) );
         }
     else
         {
-        glDrawArrays ( Translate ( Command.Primitive ), ( GLint ) Command.StartVertex, static_cast <GLsizei> ( Command.VertexCount ) );
+        glDrawArrays ( Translate ( Command.Primitive ), (GLint) Command.StartVertex, static_cast <GLsizei> ( Command.VertexCount ) );
         }
-    return CheckError();
+    return CheckError ();
     }
 }
 }

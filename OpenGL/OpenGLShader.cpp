@@ -11,7 +11,6 @@ std::string GetInfoLog ( bool IsProgram, GLuint GLID );
 bool BuildShaderObject ( unsigned &Out_ShaderObjectGLID, const unsigned ShaderType, const std::string &ShaderString );
 bool CompileShader ( const GLuint OpenGLID, const ShaderCode &NewCode );
 bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &Uniforms, std::vector <AttributeInfo> &Attributes );
-bool SetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHandle UniformHandle, const ShaderUniformValue &Value );
 
 ShaderHandle CreateShader ( const ShaderCode &NewCode )
     {
@@ -62,67 +61,6 @@ bool ChangeShaderCode ( const ShaderHandle Handle, const ShaderCode &NewCode )
         return false;
         }
     return true;
-    }
-
-bool SetShaderUniformValue ( const ShaderHandle Handle, const ShaderUniformHandle UniformHandle, const ShaderUniformValue &Value )
-    {
-    ShaderInfo *ShaderInformation = &Shaders[Handle];
-
-    if ( !UniformHandle )
-        return false;
-    UniformInfo *Uniform = &ShaderInformation->Uniforms[UniformHandle.key()];
-
-    switch ( Uniform->Type )
-        {
-#define CASE_TYPE(TYPENAME,FUNCTION)\
-        case ShaderUniformType::TYPENAME:\
-            {\
-            FUNCTION ( Uniform->OpenGLID, Value.TYPENAME##Value );\
-            break;\
-            }
-#define CASE_TYPE_VEC(TYPENAME,FUNCTION)\
-        case ShaderUniformType::TYPENAME:\
-            {\
-            FUNCTION ( Uniform->OpenGLID, 1, glm::value_ptr(Value.TYPENAME##Value) );\
-            break;\
-            }
-
-            CASE_TYPE ( Float, glUniform1f )
-            CASE_TYPE_VEC ( Float2, glUniform2fv )
-            CASE_TYPE_VEC ( Float3, glUniform3fv )
-            CASE_TYPE_VEC ( Float4, glUniform4fv )
-
-            CASE_TYPE ( Integer, glUniform1i )
-            CASE_TYPE_VEC ( Integer2, glUniform2iv )
-            CASE_TYPE_VEC ( Integer3, glUniform3iv )
-            CASE_TYPE_VEC ( Integer4, glUniform4iv )
-
-            CASE_TYPE ( UnsignedInteger, glUniform1ui )
-            CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv )
-            CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv )
-            CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv )
-#undef CASE_TYPE
-#undef CASE_TYPE_VEC
-
-        case ShaderUniformType::Matrix3:
-            glUniformMatrix3fv ( Uniform->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Value.Matrix3Value ) );
-            break;
-        case ShaderUniformType::Matrix4:
-            glUniformMatrix4fv ( Uniform->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Value.Matrix4Value ) );
-            break;
-        case ShaderUniformType::Bool:
-            glUniform1i ( Uniform->OpenGLID, Value.BoolValue );
-            break;
-        case ShaderUniformType::Block:
-            {
-            ShaderBufferInfo SBInfo = ShaderBuffers[Value.BlockValue];
-            glBindBufferBase ( GL_UNIFORM_BUFFER, Uniform->OpenGLID, SBInfo.OpenGLID );
-            break;
-            }
-        default:
-            throw std::runtime_error ( "Unhandled shader uniform type" );
-        }
-    return CheckError();
     }
 
 void GetShaderUniformList ( const ShaderHandle Handle, std::vector <std::pair <std::string, ShaderUniformType>> &UniformList )
