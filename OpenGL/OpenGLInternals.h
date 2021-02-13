@@ -12,7 +12,7 @@ namespace OpenGL
 {
 typedef struct
     {
-    int OpenGLID;
+    GLint OpenGLID;
     ShaderUniformValue CurrentValue;
     ShaderUniformType Type;
     std::string Name;
@@ -20,7 +20,7 @@ typedef struct
 
 typedef struct
     {
-    int OpenGLID;
+    GLint OpenGLID;
     bool Enabled;
     ShaderAttributeType Type;
     std::string Name;
@@ -28,35 +28,46 @@ typedef struct
 
 typedef struct ShaderInfo
     {
-    unsigned OpenGLID;
+    GLuint OpenGLID;
     std::vector <UniformInfo> Uniforms;
     std::vector <AttributeInfo> Attributes;
     } ShaderInfo;
 
-typedef struct ShaderBufferInfo
+typedef struct ShaderBufferInfo : public ShaderBufferDescriptor
     {
-    unsigned OpenGLID;
-    size_t DataSize;
+    GLuint OpenGLID;
     GLenum GLAccessType;
     GLenum GLBufferType;
     GLenum GLMappedAccessType;
     void *MappedPointer;
+    ShaderBufferInfo &operator = ( const ShaderBufferDescriptor &other )
+        {
+        *( (ShaderBufferDescriptor *) this ) = other;
+        return *this;
+        }
     } ShaderBufferInfo;
 
 typedef struct TextureInfo : public TextureDescriptor
     {
-    unsigned OpenGLID;
-    int GLMinFilter, GLMagFilter, GLSWrap, GLTWrap;
+    GLuint OpenGLID;
+    GLint GLMinFilter, GLMagFilter, GLSWrap, GLTWrap;
+    TextureInfo &operator = ( const TextureDescriptor &other )
+        {
+        *( (TextureDescriptor *) this ) = other;
+        return *this;
+        }
     } TextureInfo;
 
-typedef struct FramebufferInfo
+typedef struct FramebufferInfo : public FramebufferDescriptor
     {
-    unsigned OpenGLID;
+    GLuint OpenGLID;
     std::vector <TextureHandle> ColorTextures;
     TextureHandle DepthTexture;
-    glm::uvec2 Dimensions;
-    glm::vec4 ClearColor;
-    float ClearDepth;
+    FramebufferInfo &operator = ( const FramebufferDescriptor &other )
+        {
+        *( (FramebufferDescriptor *) this ) = other;
+        return *this;
+        }
     } FramebufferInfo;
 
 extern VectorizedContainer <ShaderBufferInfo, ShaderBufferTag> ShaderBuffers;

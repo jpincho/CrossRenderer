@@ -12,9 +12,7 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
     FramebufferInfo NewFramebuffer;
     GLenum FramebufferStatus;
 
-    NewFramebuffer.Dimensions = CreationParameters.Dimensions;
-    NewFramebuffer.ClearColor = CreationParameters.DefaultClearColor;
-    NewFramebuffer.ClearDepth = CreationParameters.DefaultClearDepth;
+    NewFramebuffer = CreationParameters;
 
     if ( CreationParameters.DepthEnabled )
         {

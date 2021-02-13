@@ -8,10 +8,11 @@ namespace OpenGL
 ShaderBufferHandle CreateShaderBuffer ( const ShaderBufferDescriptor CreationParameters )
     {
     ShaderBufferInfo NewBufferInformation;
+    NewBufferInformation = CreationParameters;
     NewBufferInformation.GLAccessType = Translate ( CreationParameters.AccessType );
     NewBufferInformation.GLBufferType = Translate ( CreationParameters.BufferType );
     NewBufferInformation.MappedPointer = nullptr;
-    NewBufferInformation.DataSize = CreationParameters.DataSize;
+
     glGenBuffers ( 1, &NewBufferInformation.OpenGLID );
     if ( CheckError() == false )
         return ShaderBufferHandle::invalid;

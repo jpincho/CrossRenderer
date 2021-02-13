@@ -10,6 +10,7 @@ typedef HandleTemplate <FramebufferTag> FramebufferHandle;
 
 typedef struct FramebufferDescriptor
     {
+    FramebufferDescriptor ( void ) = default;
     FramebufferDescriptor ( const glm::uvec2 Dimensions )
         {
         ColorAttachments = 1;
@@ -18,14 +19,14 @@ typedef struct FramebufferDescriptor
         DepthFormat = PixelFormat::DepthComponent;
         StencilEnabled = false;
         this->Dimensions = Dimensions;
-        DefaultClearDepth = 1.0f;
+        ClearDepth = 1.0f;
         }
     bool DepthEnabled, StencilEnabled;
     PixelFormat ColorAttachmentFormat, DepthFormat, StencilFormat;
     uint8_t ColorAttachments;
     glm::uvec2 Dimensions;
-    glm::vec4 DefaultClearColor;
-    float DefaultClearDepth;
+    glm::vec4 ClearColor;
+    float ClearDepth;
     } FramebufferDescriptor;
 
 }

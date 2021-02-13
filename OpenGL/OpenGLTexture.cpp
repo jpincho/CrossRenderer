@@ -19,7 +19,7 @@ namespace OpenGL
 // OriginPixelFormat - GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
 // DataType - GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT, GL_UNSIGNED_BYTE_3_3_2, GL_UNSIGNED_BYTE_2_3_3_REV, GL_UNSIGNED_SHORT_5_6_5, GL_UNSIGNED_SHORT_5_6_5_REV, GL_UNSIGNED_SHORT_4_4_4_4, GL_UNSIGNED_SHORT_4_4_4_4_REV, GL_UNSIGNED_SHORT_5_5_5_1, GL_UNSIGNED_SHORT_1_5_5_5_REV, GL_UNSIGNED_INT_8_8_8_8, GL_UNSIGNED_INT_8_8_8_8_REV, GL_UNSIGNED_INT_10_10_10_2, and GL_UNSIGNED_INT_2_10_10_10_REV.
 
-struct
+static struct
     {
     GLint DataType;
     GLint Format;
@@ -34,9 +34,7 @@ struct
 TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
     {
     TextureInfo NewTexture;
-    NewTexture.Dimensions = CreationParameters.Dimensions;
-    NewTexture.Format = CreationParameters.Format;
-    NewTexture.Type = CreationParameters.Type;
+    NewTexture = CreationParameters;
     NewTexture.GLSWrap = Translate ( CreationParameters.WrapSettings.Horizontal );
     NewTexture.GLTWrap = Translate ( CreationParameters.WrapSettings.Vertical );
     NewTexture.GLMinFilter = Translate ( CreationParameters.FilterSettings.MinFilter );
