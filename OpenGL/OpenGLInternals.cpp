@@ -10,6 +10,10 @@ VectorizedContainer <ShaderBufferInfo, ShaderBufferTag> ShaderBuffers;
 VectorizedContainer <TextureInfo, TextureTag> Textures;
 VectorizedContainer <ShaderInfo, ShaderTag> Shaders;
 VectorizedContainer <FramebufferInfo, FramebufferTag> Framebuffers;
+int MaxTextureUnits;
+ShaderHandle ActiveShader;
+RenderWindowHandle ActiveWindow;
+StateCache CurrentState;
 
 void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, GLchar const* message, void const*  )
     {

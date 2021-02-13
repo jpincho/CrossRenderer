@@ -4,17 +4,33 @@
 #include "OpenGLStateCache.h"
 #include "../Renderer.h"
 #include <algorithm>
-
 namespace CrossRenderer
 {
 namespace OpenGL
 {
+bool SetShaderUniformValue( const ShaderHandle Handle, const ShaderUniformHandle UniformHandle, const ShaderUniformValue &Value );
 bool DSARunCommand ( const RenderCommand &Command )
     {
+    // Disable active vertex attributes
+    if ( ( ActiveShader ) && ( ActiveShader != Command.Shader ) )
+        {
+        ShaderInfo *OldShaderInfo = &Shaders[ActiveShader];
+        for ( auto &AttributeIterator : OldShaderInfo->Attributes )
+            {
+            if ( AttributeIterator.Enabled == true )
+                {
+                AttributeIterator.Enabled = false;
+                glDisableVertexAttribArray( AttributeIterator.OpenGLID );
+                }
+            }
+        }
+    // Activate new shader
     ShaderInfo *ShaderInformation = &Shaders[Command.Shader];
+    glUseProgram( ShaderInformation->OpenGLID );
+    ActiveShader = Command.Shader;
+    CheckError();
 
-    // Apply state
-    //CurrentState.ApplyState ( Command.State );
+    CurrentState.ApplyState( Command.State );
     CheckError();
 
     // Sets shader uniform values
@@ -26,6 +42,7 @@ bool DSARunCommand ( const RenderCommand &Command )
 
         if ( UniformInformation->CurrentValue.Equals ( Iterator.UniformValue, UniformInformation->Type ) == true )
             continue;
+        SetShaderUniformValue( Command.Shader, Iterator.UniformHandle, Iterator.UniformValue );
 
         switch ( UniformInformation->Type )
             {
@@ -60,23 +77,25 @@ bool DSARunCommand ( const RenderCommand &Command )
 #undef CASE_TYPE_VEC
 
             case ShaderUniformType::Matrix3:
-                glProgramUniformMatrix3fv ( ShaderInformation->OpenGLID, ShaderInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix3Value ) );
+                glProgramUniformMatrix3fv ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix3Value ) );
                 break;
             case ShaderUniformType::Matrix4:
-                glProgramUniformMatrix4fv ( ShaderInformation->OpenGLID, ShaderInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix4Value ) );
+                glProgramUniformMatrix4fv ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix4Value ) );
                 break;
             case ShaderUniformType::Bool:
-                glProgramUniform1i ( ShaderInformation->OpenGLID, ShaderInformation->OpenGLID, Iterator.UniformValue.BoolValue );
+                glProgramUniform1i ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, Iterator.UniformValue.BoolValue );
                 break;
             case ShaderUniformType::Block:
                 {
-                ShaderBufferInfo SBInfo = ShaderBuffers[Iterator.UniformValue.BlockValue];
-                glBindBufferBase ( GL_UNIFORM_BUFFER, ShaderInformation->OpenGLID, SBInfo.OpenGLID );
+                SetShaderUniformValue( Command.Shader, Iterator.UniformHandle, Iterator.UniformValue );
+                //ShaderBufferInfo SBInfo = ShaderBuffers[Iterator.UniformValue.BlockValue];
+                //glBindBufferBase ( GL_UNIFORM_BUFFER, ShaderInformation->OpenGLID, SBInfo.OpenGLID );
                 break;
                 }
             default:
                 throw std::runtime_error ( "Unknown uniform type" );
             }
+        CheckError();
         UniformInformation->CurrentValue = Iterator.UniformValue;
         }
     CheckError();
@@ -120,23 +139,23 @@ bool DSARunCommand ( const RenderCommand &Command )
             {
             CompiledBindingInformation::BufferInfo NewBufferInfo;
             NewBufferInfo.BufferOpenGLID = BufferInformation->OpenGLID;
-            NewBufferInfo.StartOffset = Iterator.DataStream.StartOffset;
-            NewBufferInfo.Stride = Iterator.DataStream.Stride;
+            NewBufferInfo.StartOffset = (GLint) Iterator.DataStream.StartOffset;
+            NewBufferInfo.Stride = (GLsizei) Iterator.DataStream.Stride;
             BindingInformation.Buffers.push_back ( NewBufferInfo );
 
-            NewStream.BufferIndex = BindingInformation.Buffers.size() - 1;
+            NewStream.BufferIndex = (int)BindingInformation.Buffers.size() - 1;
             }
         else
             {
-            NewStream.BufferIndex = FindResult - BindingInformation.Buffers.begin();
+            NewStream.BufferIndex = (int)(FindResult - BindingInformation.Buffers.begin());
             }
 
         AttributeInfo *AttributeInformation = & ( ShaderInformation->Attributes[Iterator.AttributeHandle.key()] );
         NewStream.AttributeOpenGLID = AttributeInformation->OpenGLID;
-        NewStream.ComponentsPerElement = Iterator.DataStream.ComponentsPerElement;
+        NewStream.ComponentsPerElement = (GLint)Iterator.DataStream.ComponentsPerElement;
         NewStream.ComponentType = Translate ( Iterator.DataStream.ComponentType );
         NewStream.NormalizeData = Iterator.DataStream.NormalizeData;
-        NewStream.StartOffset = Iterator.DataStream.StartOffset;
+        NewStream.StartOffset = (GLint)Iterator.DataStream.StartOffset;
         BindingInformation.Streams.push_back ( NewStream );
         }
 

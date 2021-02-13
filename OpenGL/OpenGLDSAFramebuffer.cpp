@@ -2,7 +2,7 @@
 #include "OpenGLDSATexture.h"
 #include "OpenGLTexture.h"
 #include "OpenGLInternals.h"
-#include <Logger/Logger.h>
+#include "../Logger.h"
 
 namespace CrossRenderer
 {

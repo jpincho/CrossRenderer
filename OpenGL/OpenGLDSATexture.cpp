@@ -5,7 +5,7 @@ namespace CrossRenderer
 {
 namespace OpenGL
 {
-struct
+static struct
     {
     GLint DataType;
     GLint Format;

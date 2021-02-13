@@ -5,11 +5,17 @@
 #include "../TextureDefinitions.h"
 #include "../ShaderDefinitions.h"
 #include "../FramebufferDefinitions.h"
+#include "OpenGLStateCache.h"
 
 namespace CrossRenderer
 {
 namespace OpenGL
 {
+extern int MaxTextureUnits;
+extern ShaderHandle ActiveShader;
+extern RenderWindowHandle ActiveWindow;
+extern StateCache CurrentState;
+
 typedef struct
     {
     GLint OpenGLID;

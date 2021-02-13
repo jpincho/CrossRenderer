@@ -1,7 +1,11 @@
 #include "OpenGLRenderer.h"
 #include "OpenGLContext.h"
+#include "OpenGLDSAFramebuffer.h"
+#include "OpenGLDSAShader.h"
+#include "OpenGLDSAShaderBuffer.h"
+#include "OpenGLDSATexture.h"
+#include "OpenGLDSARenderer.h"
 #include "OpenGLInternals.h"
-#include "OpenGLStateCache.h"
 #include "../WindowManager/WindowManager.h"
 #include "../Renderer.h"
 
@@ -67,8 +71,20 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
     if ( CheckError () == false )
         goto OnError;
 
-    //    for ( auto &iterator : OpenGLVendor )
-    //        LOG_DEBUG ( "OpenGL vendor information: %s", iterator.c_str () );
+    if ( ( Context->GetOpenGLVersion().GreaterEqual( 4, 2 ) ) || ( Context->IsExtensionSupported( "ARB_direct_state_access" ) ) )
+        {
+        LOG_DEBUG( "Direct State Access available. Using" );
+        CrossRenderer::CreateFramebuffer = DSACreateFramebuffer;
+        CrossRenderer::RunCommand = DSARunCommand;
+        CrossRenderer::CreateShaderBuffer = DSACreateShaderBuffer;
+        CrossRenderer::ChangeShaderBufferContents = DSAChangeShaderBufferContents;
+        CrossRenderer::CreateTexture = DSACreateTexture;
+        CrossRenderer::Load2DTextureData = DSALoad2DTextureData;
+        CrossRenderer::Update2DTextureRegion = DSAUpdate2DTextureRegion;
+        CrossRenderer::LoadCubeMapTextureData = DSALoadCubeMapTextureData;
+        //CrossRenderer::MapShaderBuffer = DSAMapShaderBuffer;
+        //CrossRenderer::UnmapShaderBuffer = DSAUnmapShaderBuffer;
+        }
 
     LOG_DEBUG ( "Max Texture Units - %u", MaxTextureUnits );
 
