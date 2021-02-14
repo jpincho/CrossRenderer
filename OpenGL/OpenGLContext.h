@@ -1,5 +1,4 @@
 #pragma once
-#include <unordered_set>
 #include "../Version.h"
 #include "../RendererDefinitions.h"
 
@@ -11,7 +10,8 @@ class OpenGLContextInterface
     {
     protected:
         Version OpenGLVersion, GLSLVersion;
-        std::unordered_set <std::string> Extensions;
+        std::vector <std::string> Extensions;
+        std::string OpenGLRendererString, OpenGLVendorString;
 
     public:
         virtual ~OpenGLContextInterface ( void ) = default;
@@ -23,9 +23,7 @@ class OpenGLContextInterface
         Version GetGLSLVersion ( void ) const;
         bool IsExtensionSupported ( const char *Extension );
     protected:
-        bool DetectOpenGLVersion ( void );
-        bool DetectGLSLVersion ( void );
-        bool DetectOpenGLExtensions ( void );
+        bool DetectOpenGLInformation ( void );
     };
 
 OpenGLContextInterface *GetOpenGLContext ( const WindowManagerBackend DesiredType );

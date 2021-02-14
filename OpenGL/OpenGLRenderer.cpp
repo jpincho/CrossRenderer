@@ -1,7 +1,6 @@
 #include "OpenGLRenderer.h"
 #include "OpenGLContext.h"
 #include "OpenGLInternals.h"
-#include "OpenGLStateCache.h"
 #include "../WindowManager/WindowManager.h"
 #include "../Renderer.h"
 
@@ -13,10 +12,8 @@ RendererConfiguration Configuration;
 OpenGLContextInterface *Context;
 unsigned GeneralVAO;
 std::string OpenGLRendererString, OpenGLVendor[3];
-int MaxTextureUnits;
 ShaderHandle ActiveShader;
 RenderWindowHandle ActiveWindow;
-StateCache CurrentState;
 
 bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
     {
@@ -46,31 +43,17 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 
     CurrentState.Invalidate ();
 
-    glGetIntegerv ( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &MaxTextureUnits );
+    glGetIntegerv ( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &OpenGLInformation.MaxTextureUnits );
+    OpenGLInformation.OpenGLVersion = Context->GetOpenGLVersion ();
+    OpenGLInformation.GLSLVersion = Context->GetGLSLVersion ();
+
     glClearColor ( 0, 0, 0, 0 );
     glClearDepth ( 1.0 );
-
-    for ( GLenum iterator = 0; iterator < /*std::numeric_limits<unsigned>::max ()*/3; ++iterator )
-        {
-        const char *String = reinterpret_cast<const char *> ( glGetString ( GL_VENDOR + iterator ) );
-        if ( ( String != nullptr ) && ( strlen ( String ) > 0 ) )
-            OpenGLVendor[iterator].assign ( String );
-        else
-            break;
-        }
-    {
-    const char *String = reinterpret_cast<const char *> ( glGetString ( GL_RENDERER ) );
-    if ( ( String != nullptr ) && ( strlen ( String ) > 0 ) )
-        OpenGLRendererString.assign ( String );
-    }
 
     if ( CheckError () == false )
         goto OnError;
 
-    //    for ( auto &iterator : OpenGLVendor )
-    //        LOG_DEBUG ( "OpenGL vendor information: %s", iterator.c_str () );
-
-    LOG_DEBUG ( "Max Texture Units - %u", MaxTextureUnits );
+    LOG_DEBUG ( "Max Texture Units - %u", OpenGLInformation.MaxTextureUnits );
 
     glEnable ( GL_DEBUG_OUTPUT );
     glDebugMessageCallback ( OpenGLMessageCallback, nullptr );

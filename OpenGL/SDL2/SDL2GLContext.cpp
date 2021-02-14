@@ -48,10 +48,7 @@ bool SDL2OpenGLContext::Create ( const RendererConfiguration &NewConfiguration, 
     if ( !gladLoadGLLoader ( ( GLADloadproc ) SDL_GL_GetProcAddress ) )
         return false;
 
-    DetectOpenGLVersion();
-    DetectGLSLVersion();
-    DetectOpenGLExtensions();
-    return true;
+    return DetectOpenGLInformation ();
     }
 
 bool SDL2OpenGLContext::Destroy ( void )

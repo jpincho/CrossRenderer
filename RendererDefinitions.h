@@ -16,6 +16,8 @@ typedef struct RendererConfiguration
         RedBits = GreenBits = BlueBits = AlphaBits = 8;
         DepthBits = 24;
         StencilBits = 8;
+        DesiredRendererBackend = (RendererBackend) 0;
+        DesiredWindowBackend = (WindowManagerBackend) 0;
         }
     std::vector <RenderWindowDescriptor> InitialWindowConfigurations;
     WindowManagerBackend DesiredWindowBackend;
@@ -127,9 +129,9 @@ typedef struct StencilBufferSettings
     StencilBufferSettings ( void )
         {
         Enabled = false;
-        Mask = std::numeric_limits <unsigned>::max();
+        Mask = std::numeric_limits <unsigned>::max ();
         Function = StencilFunction::Always;
-        FunctionReference = FunctionMask = std::numeric_limits <unsigned>::max();
+        FunctionReference = FunctionMask = std::numeric_limits <unsigned>::max ();
         OnFail = OnFailZ = OnPassZ = StencilFailAction::Keep;
         }
     bool operator == ( const StencilBufferSettings &other ) const

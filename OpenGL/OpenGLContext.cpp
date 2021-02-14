@@ -4,6 +4,7 @@
 #include "SDL2/SDL2GLContext.h"
 #endif
 #include "../Logger.h"
+#include <algorithm>
 
 namespace CrossRenderer
 {
@@ -34,37 +35,32 @@ Version OpenGLContextInterface::GetGLSLVersion ( void ) const
 
 bool OpenGLContextInterface::IsExtensionSupported ( const char *Extension )
     {
-    return Extensions.find ( Extension ) != Extensions.end();
+    return std::find ( Extensions.begin (), Extensions.end (), Extension ) != Extensions.end ();
     }
 
-bool OpenGLContextInterface::DetectOpenGLVersion ( void )
+bool OpenGLContextInterface::DetectOpenGLInformation( void )
     {
-    /*#if defined GL_MAJOR_VERSION && defined GL_MINOR_VERSION
-        // MAJOR & MINOR only introduced in GL {,ES} 3.0
-        GLint TempMajor = 0, TempMinor = 0;
-        glGetIntegerv ( GL_MAJOR_VERSION, &TempMajor );
-        glGetIntegerv ( GL_MINOR_VERSION, &TempMinor );
-        if ( ( glGetError() == GL_NO_ERROR ) && ( TempMajor != 0 ) )
-            {
-            OpenGLVersion.Set ( static_cast <unsigned> ( TempMajor ), static_cast <unsigned> ( TempMinor ) );
-            return true;
-            }
-    #endif*/
-
-    // Still don't have the version. Try to get it with GL_VERSION...
-    const GLubyte *GLVersionString = glGetString ( GL_VERSION );
-    if ( GLVersionString == nullptr )
-        return false;
-    // < v3.0; resort to the old-fashioned way.
-    LOG_DEBUG ( "Reported GL version string : %s", GLVersionString );
-    if ( OpenGLVersion.ParseString ( reinterpret_cast <const char *> ( GLVersionString ) ) == false )
-        return false;
+    // MAJOR & MINOR only introduced in GL {,ES} 3.0
+    GLint TempMajor = 0, TempMinor = 0;
+    glGetIntegerv ( GL_MAJOR_VERSION, &TempMajor );
+    glGetIntegerv ( GL_MINOR_VERSION, &TempMinor );
+    if ( ( glGetError () == GL_NO_ERROR ) && ( TempMajor != 0 ) )
+        {
+        OpenGLVersion.Set ( static_cast <unsigned> ( TempMajor ), static_cast <unsigned> ( TempMinor ) );
+        }
+    else
+        {
+        // Still don't have the version. Try to get it with GL_VERSION...
+        const GLubyte *GLVersionString = glGetString ( GL_VERSION );
+        if ( GLVersionString == nullptr )
+            return false;
+        // < v3.0; resort to the old-fashioned way.
+        LOG_DEBUG ( "Reported GL version string : '%s'", GLVersionString );
+        if ( OpenGLVersion.ParseString ( reinterpret_cast <const char *> ( GLVersionString ) ) == false )
+            return false;
+        }
     LOG_DEBUG ( "OpenGL version %d.%d", OpenGLVersion.Major, OpenGLVersion.Minor );
-    return true;
-    }
 
-bool OpenGLContextInterface::DetectGLSLVersion ( void )
-    {
     /**
     OpenGL 	#version 	latest spec version number 	Note
     2.0 	100 	1.10.59
@@ -90,45 +86,60 @@ bool OpenGLContextInterface::DetectGLSLVersion ( void )
     const GLubyte *GLSLVersionString = glGetString ( GL_SHADING_LANGUAGE_VERSION );
     if ( GLSLVersionString != nullptr )
         {
-        LOG_DEBUG ( "Reported GLSL version string : %s", GLSLVersionString );
+        LOG_DEBUG ( "Reported GLSL version string : '%s'", GLSLVersionString );
         if ( GLSLVersion.ParseString ( reinterpret_cast <const char *> ( GLSLVersionString ) ) == false )
             LOG_ERROR ( "Error parsing GLSL version string. Assuming safe values" );
         }
     LOG_DEBUG ( "GLSL version %d.%d", GLSLVersion.Major, GLSLVersion.Minor );
-    return true;
-    }
 
-bool OpenGLContextInterface::DetectOpenGLExtensions ( void )
-    {
-    Extensions.clear();
+    const char *String = reinterpret_cast<const char *> ( glGetString ( GL_RENDERER ) );
+    if ( ( String != nullptr ) && ( strlen ( String ) > 0 ) )
+        OpenGLRendererString.assign ( String );
+
+    LOG_DEBUG ( "OpenGL renderer string : '%s'", OpenGLRendererString.c_str() );
+    for ( GLenum iterator = 0; iterator < /*std::numeric_limits<unsigned>::max ()*/3; ++iterator )
+        {
+        String = reinterpret_cast<const char *> ( glGetString ( GL_VENDOR + iterator ) );
+        if ( ( String != nullptr ) && ( strlen ( String ) > 0 ) )
+            {
+            if ( OpenGLVendorString.length () > 0 )
+                OpenGLVendorString.append ( "\n" );
+            OpenGLVendorString.append ( String );
+            }
+        else
+            break;
+        }
+    LOG_DEBUG ( "OpenGL vendor string : '%s'", OpenGLVendorString.c_str () );
+
+    Extensions.clear ();
     // Method 1 - glGetStringi is only guaranteed to be available after glcore/gles 3.0
     if ( OpenGLVersion.GreaterEqual ( 3, 0 ) )
         {
         // Try to get extensions using the index
         int ExtensionCount = 0;
         glGetIntegerv ( GL_NUM_EXTENSIONS, &ExtensionCount );
-        if ( ( glGetError() == GL_NO_ERROR ) && ( ExtensionCount != 0 ) && ( glGetStringi != nullptr ) )
+        if ( ( glGetError () == GL_NO_ERROR ) && ( ExtensionCount != 0 ) && ( glGetStringi != nullptr ) )
             {
+            Extensions.reserve ( ExtensionCount );
             for ( int ExtensionIndex = 0; ExtensionIndex < ExtensionCount; ++ExtensionIndex )
                 {
-                const char *CurrentExtension = ( const char * ) glGetStringi ( GL_EXTENSIONS, ExtensionIndex );
+                const char *CurrentExtension = (const char *) glGetStringi ( GL_EXTENSIONS, ExtensionIndex );
                 if ( CurrentExtension == nullptr ) continue;
-                Extensions.insert ( CurrentExtension );
+                Extensions.push_back ( CurrentExtension );
                 }
-            return true;
             }
         }
     // Method 2
     // Profiles >= 3.0 are not guaranteed to have GL_EXTENSIONS support for glGetString
-    if ( Extensions.empty() )
+    if ( Extensions.empty () )
         {
         const char *ExtensionString, *Begin, *End;
-        ExtensionString = ( const char * ) glGetString ( GL_EXTENSIONS );
+        ExtensionString = (const char *) glGetString ( GL_EXTENSIONS );
         if ( ExtensionString == NULL )
             return false;
-        if ( glGetError() == GL_NO_ERROR )
+        if ( glGetError () == GL_NO_ERROR )
             {
-            unsigned Length = ( unsigned ) strlen ( ExtensionString );
+            unsigned Length = (unsigned) strlen ( ExtensionString );
             for ( Begin = ExtensionString; Begin < ExtensionString + Length; Begin = End + 1 )
                 {
                 End = strchr ( Begin, ' ' );
@@ -136,14 +147,15 @@ bool OpenGLContextInterface::DetectOpenGLExtensions ( void )
 
                 std::string NewExtension;
                 NewExtension.assign ( Begin, End );
-                Extensions.insert ( NewExtension );
+                Extensions.push_back ( NewExtension );
                 }
             }
         }
+    std::sort ( Extensions.begin (), Extensions.end () );
 #if 1
-    LOG_DEBUG ( "Detected extensions: %lu", ( unsigned long ) Extensions.size() );
+    LOG_DEBUG ( "Detected extensions: %lu", (unsigned long) Extensions.size () );
     for ( auto Iterator : Extensions )
-        LOG_DEBUG ( "%s", Iterator.c_str() );
+        LOG_DEBUG ( "%s", Iterator.c_str () );
 #endif
     return true;
     }
