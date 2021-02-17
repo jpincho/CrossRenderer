@@ -46,7 +46,7 @@ typedef struct WindowEvent
     {
     WindowEventType EventType;
     RenderWindowHandle OwnerHandle;
-    union
+    struct
         {
         struct
             {
@@ -58,11 +58,11 @@ typedef struct WindowEvent
             } ButtonPressed, ButtonReleased;
         struct
             {
-            int32_t X, Y;
+            glm::ivec2 Amount;
             } MouseWheel;
         struct
             {
-            int32_t X, Y;
+            glm::ivec2 NewPosition, Delta;
             } MouseMoved;
         struct
             {
@@ -70,11 +70,11 @@ typedef struct WindowEvent
             } Raw;
         struct
             {
-            int32_t X, Y;
+            glm::ivec2 NewPosition;
             } WindowMoved;
         struct
             {
-            uint32_t Width, Height;
+            glm::uvec2 NewSize;
             } WindowResized;
         struct
             {

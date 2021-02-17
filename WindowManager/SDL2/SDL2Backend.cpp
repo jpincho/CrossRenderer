@@ -125,32 +125,45 @@ void ProcessEvents ( void )
             case SDL_MOUSEMOTION:
                 {
                 NewEvent.EventType = WindowEventType::MouseMoved;
-                NewEvent.EventData.MouseMoved.X = Event.motion.x;
-                NewEvent.EventData.MouseMoved.Y = Event.motion.y;
+                NewEvent.EventData.MouseMoved.NewPosition.x = Event.motion.x;
+                NewEvent.EventData.MouseMoved.NewPosition.y = Event.motion.y;
+                NewEvent.EventData.MouseMoved.Delta.x = Event.motion.xrel;
+                NewEvent.EventData.MouseMoved.Delta.y = Event.motion.yrel;
                 break;
                 }
             case SDL_MOUSEWHEEL:
                 {
                 NewEvent.EventType = WindowEventType::MouseWheel;
-                NewEvent.EventData.MouseWheel.X = Event.wheel.x;
-                NewEvent.EventData.MouseWheel.Y = Event.wheel.y;
+                NewEvent.EventData.MouseWheel.Amount.x = Event.wheel.x;
+                NewEvent.EventData.MouseWheel.Amount.y = Event.wheel.y;
                 break;
                 }
             case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
                 {
                 if ( Event.key.repeat != 0 ) continue;
-                NewEvent.EventType = ( Event.type == SDL_MOUSEBUTTONDOWN ? WindowEventType::ButtonPressed : WindowEventType::ButtonReleased );
+                NewEvent.EventType = WindowEventType::ButtonPressed;
                 NewEvent.EventData.ButtonPressed.Button = Event.button.button;
                 break;
                 }
+            case SDL_MOUSEBUTTONUP:
+                {
+                NewEvent.EventType = WindowEventType::ButtonReleased;
+                NewEvent.EventData.ButtonReleased.Button = Event.button.button;
+                break;
+                }
             case SDL_KEYDOWN:
-            case SDL_KEYUP:
                 {
                 if ( Event.key.repeat != 0 ) continue;
-                NewEvent.EventType = ( Event.type == SDL_KEYDOWN ? WindowEventType::KeyPressed : WindowEventType::KeyReleased );
-                NewEvent.EventData.Raw.Data1 = Event.key.keysym.sym;
-                NewEvent.EventData.Raw.Data2 = Event.key.keysym.scancode;
+                NewEvent.EventType = WindowEventType::KeyPressed;
+                NewEvent.EventData.KeyPressed.Key = Event.key.keysym.sym;
+                NewEvent.EventData.KeyPressed.ScanCode = Event.key.keysym.scancode;
+                break;
+                }
+            case SDL_KEYUP:
+                {
+                NewEvent.EventType = WindowEventType::KeyReleased;
+                NewEvent.EventData.KeyReleased.Key= Event.key.keysym.sym;
+                NewEvent.EventData.KeyReleased.ScanCode = Event.key.keysym.scancode;
                 break;
                 }
             case SDL_TEXTINPUT:
@@ -195,8 +208,8 @@ void ProcessEvents ( void )
                     case SDL_WINDOWEVENT_MOVED:
                         {
                         NewEvent.EventType = WindowEventType::WindowMoved;
-                        NewEvent.EventData.WindowMoved.X = Event.window.data1;
-                        NewEvent.EventData.WindowMoved.Y = Event.window.data2;
+                        NewEvent.EventData.WindowMoved.NewPosition.x = Event.window.data1;
+                        NewEvent.EventData.WindowMoved.NewPosition.y = Event.window.data2;
 
                         Windows[NewEvent.OwnerHandle].Position = glm::ivec2 ( Event.window.data1, Event.window.data2 );
                         break;
@@ -205,8 +218,8 @@ void ProcessEvents ( void )
                     case SDL_WINDOWEVENT_RESIZED:
                         {
                         NewEvent.EventType = WindowEventType::WindowResized;
-                        NewEvent.EventData.WindowResized.Width = Event.window.data1;
-                        NewEvent.EventData.WindowResized.Height = Event.window.data2;
+                        NewEvent.EventData.WindowResized.NewSize.x = Event.window.data1;
+                        NewEvent.EventData.WindowResized.NewSize.y = Event.window.data2;
 
                         Windows[NewEvent.OwnerHandle].Size = glm::uvec2 ( Event.window.data1, Event.window.data2 );
                         break;
