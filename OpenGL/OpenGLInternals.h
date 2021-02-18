@@ -16,7 +16,7 @@ typedef struct
     {
     GLint MaxTextureUnits;
     Version OpenGLVersion, GLSLVersion;
-    }OpenGLInformationStruct;
+    } OpenGLInformationStruct;
 
 extern OpenGLInformationStruct OpenGLInformation;
 extern StateCache CurrentState;
@@ -53,7 +53,7 @@ typedef struct ShaderBufferInfo : public ShaderBufferDescriptor
     void *MappedPointer;
     ShaderBufferInfo &operator = ( const ShaderBufferDescriptor &other )
         {
-        *( (ShaderBufferDescriptor *) this ) = other;
+        * ( ( ShaderBufferDescriptor * ) this ) = other;
         return *this;
         }
     } ShaderBufferInfo;
@@ -64,7 +64,7 @@ typedef struct TextureInfo : public TextureDescriptor
     GLint GLMinFilter, GLMagFilter, GLSWrap, GLTWrap;
     TextureInfo &operator = ( const TextureDescriptor &other )
         {
-        *( (TextureDescriptor *) this ) = other;
+        * ( ( TextureDescriptor * ) this ) = other;
         return *this;
         }
     } TextureInfo;
@@ -76,7 +76,7 @@ typedef struct FramebufferInfo : public FramebufferDescriptor
     TextureHandle DepthTexture;
     FramebufferInfo &operator = ( const FramebufferDescriptor &other )
         {
-        *( (FramebufferDescriptor *) this ) = other;
+        * ( ( FramebufferDescriptor * ) this ) = other;
         return *this;
         }
     } FramebufferInfo;

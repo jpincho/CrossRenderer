@@ -16,8 +16,8 @@ typedef struct RendererConfiguration
         RedBits = GreenBits = BlueBits = AlphaBits = 8;
         DepthBits = 24;
         StencilBits = 8;
-        DesiredRendererBackend = (RendererBackend) 0;
-        DesiredWindowBackend = (WindowManagerBackend) 0;
+        DesiredRendererBackend = ( RendererBackend ) 0;
+        DesiredWindowBackend = ( WindowManagerBackend ) 0;
         }
     std::vector <RenderWindowDescriptor> InitialWindowConfigurations;
     WindowManagerBackend DesiredWindowBackend;

@@ -38,7 +38,7 @@ bool OpenGLContextInterface::IsExtensionSupported ( const char *Extension )
     return std::find ( Extensions.begin (), Extensions.end (), Extension ) != Extensions.end ();
     }
 
-bool OpenGLContextInterface::DetectOpenGLInformation( void )
+bool OpenGLContextInterface::DetectOpenGLInformation ( void )
     {
     // MAJOR & MINOR only introduced in GL {,ES} 3.0
     GLint TempMajor = 0, TempMinor = 0;
@@ -123,7 +123,7 @@ bool OpenGLContextInterface::DetectOpenGLInformation( void )
             Extensions.reserve ( ExtensionCount );
             for ( int ExtensionIndex = 0; ExtensionIndex < ExtensionCount; ++ExtensionIndex )
                 {
-                const char *CurrentExtension = (const char *) glGetStringi ( GL_EXTENSIONS, ExtensionIndex );
+                const char *CurrentExtension = ( const char * ) glGetStringi ( GL_EXTENSIONS, ExtensionIndex );
                 if ( CurrentExtension == nullptr ) continue;
                 Extensions.push_back ( CurrentExtension );
                 }
@@ -134,12 +134,12 @@ bool OpenGLContextInterface::DetectOpenGLInformation( void )
     if ( Extensions.empty () )
         {
         const char *ExtensionString, *Begin, *End;
-        ExtensionString = (const char *) glGetString ( GL_EXTENSIONS );
+        ExtensionString = ( const char * ) glGetString ( GL_EXTENSIONS );
         if ( ExtensionString == NULL )
             return false;
         if ( glGetError () == GL_NO_ERROR )
             {
-            unsigned Length = (unsigned) strlen ( ExtensionString );
+            unsigned Length = ( unsigned ) strlen ( ExtensionString );
             for ( Begin = ExtensionString; Begin < ExtensionString + Length; Begin = End + 1 )
                 {
                 End = strchr ( Begin, ' ' );
@@ -153,7 +153,7 @@ bool OpenGLContextInterface::DetectOpenGLInformation( void )
         }
     std::sort ( Extensions.begin (), Extensions.end () );
 #if 1
-    LOG_DEBUG ( "Detected extensions: %lu", (unsigned long) Extensions.size () );
+    LOG_DEBUG ( "Detected extensions: %lu", ( unsigned long ) Extensions.size () );
     for ( auto Iterator : Extensions )
         LOG_DEBUG ( "%s", Iterator.c_str () );
 #endif

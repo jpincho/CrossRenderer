@@ -26,7 +26,7 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
         if ( !NewWindow )
             return false;
         }
-    ActiveWindow = *( WindowManager::WindowList.begin () );
+    ActiveWindow = * ( WindowManager::WindowList.begin () );
     if ( Context->Create ( Configuration, ActiveWindow ) == false )
         goto OnError;
 
@@ -207,20 +207,20 @@ bool RunCommand ( const RenderCommand &Command )
             break;\
             }
 
-            CASE_TYPE ( Float, glUniform1f );
-            CASE_TYPE_VEC ( Float2, glUniform2fv );
-            CASE_TYPE_VEC ( Float3, glUniform3fv );
-            CASE_TYPE_VEC ( Float4, glUniform4fv );
+                CASE_TYPE ( Float, glUniform1f );
+                CASE_TYPE_VEC ( Float2, glUniform2fv );
+                CASE_TYPE_VEC ( Float3, glUniform3fv );
+                CASE_TYPE_VEC ( Float4, glUniform4fv );
 
-            CASE_TYPE ( Integer, glUniform1i );
-            CASE_TYPE_VEC ( Integer2, glUniform2iv );
-            CASE_TYPE_VEC ( Integer3, glUniform3iv );
-            CASE_TYPE_VEC ( Integer4, glUniform4iv );
+                CASE_TYPE ( Integer, glUniform1i );
+                CASE_TYPE_VEC ( Integer2, glUniform2iv );
+                CASE_TYPE_VEC ( Integer3, glUniform3iv );
+                CASE_TYPE_VEC ( Integer4, glUniform4iv );
 
-            CASE_TYPE ( UnsignedInteger, glUniform1ui );
-            CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv );
-            CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv );
-            CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv );
+                CASE_TYPE ( UnsignedInteger, glUniform1ui );
+                CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv );
+                CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv );
+                CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv );
 #undef CASE_TYPE
 #undef CASE_TYPE_VEC
 
@@ -251,8 +251,8 @@ bool RunCommand ( const RenderCommand &Command )
     // Bind all attribute buffers
     for ( auto &Iterator : Command.ShaderBufferBindings )
         {
-        AttributeInfo *AttributeInformation = &( ShaderInformation->Attributes[Iterator.AttributeHandle.key ()] );
-        ShaderBufferInfo *BufferInformation = &( ShaderBuffers[Iterator.DataStream.BufferHandle] );
+        AttributeInfo *AttributeInformation = & ( ShaderInformation->Attributes[Iterator.AttributeHandle.key ()] );
+        ShaderBufferInfo *BufferInformation = & ( ShaderBuffers[Iterator.DataStream.BufferHandle] );
 
         if ( AttributeInformation->Enabled == false )
             {
@@ -267,11 +267,11 @@ bool RunCommand ( const RenderCommand &Command )
 
         glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
         glVertexAttribPointer ( AttributeInformation->OpenGLID,
-                                (GLint) Iterator.DataStream.ComponentsPerElement,
+                                ( GLint ) Iterator.DataStream.ComponentsPerElement,
                                 Translate ( Iterator.DataStream.ComponentType ),
                                 Iterator.DataStream.NormalizeData,
-                                (GLsizei) Iterator.DataStream.Stride,
-                                (void *) Iterator.DataStream.StartOffset );
+                                ( GLsizei ) Iterator.DataStream.Stride,
+                                ( void * ) Iterator.DataStream.StartOffset );
         }
     CheckError ();
 
@@ -298,7 +298,7 @@ bool RunCommand ( const RenderCommand &Command )
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, DesiredMinFilter );
         if ( TextureInformation->GLMagFilter != DesiredMagFilter )
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, DesiredMagFilter );
-        glUniform1i ( UniformInformation->OpenGLID, (GLint) TextureBindingIndex );
+        glUniform1i ( UniformInformation->OpenGLID, ( GLint ) TextureBindingIndex );
 
         if ( CheckError () == false )
             {
@@ -322,13 +322,13 @@ bool RunCommand ( const RenderCommand &Command )
         ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBuffer];
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, BufferToUse->OpenGLID );
         glDrawElements ( Translate ( Command.Primitive ),
-                         (GLint) Command.VertexCount,
+                         ( GLint ) Command.VertexCount,
                          Translate ( Command.IndexBufferStream.ComponentType ),
-                         reinterpret_cast <void *> ( Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ) );
+                         reinterpret_cast <void *> ( Command.StartVertex * Sizes[ ( int ) Command.IndexBufferStream.ComponentType] ) );
         }
     else
         {
-        glDrawArrays ( Translate ( Command.Primitive ), (GLint) Command.StartVertex, static_cast <GLsizei> ( Command.VertexCount ) );
+        glDrawArrays ( Translate ( Command.Primitive ), ( GLint ) Command.StartVertex, static_cast <GLsizei> ( Command.VertexCount ) );
         }
     return CheckError ();
     }

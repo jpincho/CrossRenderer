@@ -24,7 +24,8 @@ static struct
     GLint DataType;
     GLint Format;
     GLint SizedFormat;
-    } PixelFormatData[] = { 
+    } PixelFormatData[] =
+    {
         {GL_UNSIGNED_BYTE, GL_RGB, GL_RGB8},// RedGreenBlue888
         {GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA8},// RedGreenBlueAlpha8888
         {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24}// DepthComponent
@@ -55,7 +56,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
             glTexStorage2D ( GL_TEXTURE_2D,
                              1,
-                             PixelFormatData[(int) NewTexture.Format].SizedFormat,
+                             PixelFormatData[ ( int ) NewTexture.Format].SizedFormat,
                              NewTexture.Dimensions.x, NewTexture.Dimensions.y );
             break;
             }
@@ -74,7 +75,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
             glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
             glTexStorage2D ( GL_TEXTURE_CUBE_MAP,
                              1,
-                             PixelFormatData[(int) NewTexture.Format].SizedFormat,
+                             PixelFormatData[ ( int ) NewTexture.Format].SizedFormat,
                              NewTexture.Dimensions.x, NewTexture.Dimensions.y );
             break;
             }
@@ -128,9 +129,9 @@ bool Update2DTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerL
     glTexSubImage2D ( GL_TEXTURE_2D,
                       0,
                       LowerLeft.x, LowerLeft.y,
-                      (int) RegionDimensions.x, (int) RegionDimensions.y,
-                      PixelFormatData[(int) SourcePixelFormat].Format,
-                      PixelFormatData[(int) SourcePixelFormat].DataType,
+                      ( int ) RegionDimensions.x, ( int ) RegionDimensions.y,
+                      PixelFormatData[ ( int ) SourcePixelFormat].Format,
+                      PixelFormatData[ ( int ) SourcePixelFormat].DataType,
                       Data );
     if ( !CheckError () )
         return false;
@@ -150,8 +151,8 @@ bool LoadCubeMapTextureData ( const TextureHandle Handle, const PixelFormat Sour
                           0,
                           0, 0,
                           TextureInformation->Dimensions.x, TextureInformation->Dimensions.y,
-                          PixelFormatData[(int) SourcePixelFormat].Format,
-                          PixelFormatData[(int) SourcePixelFormat].DataType,
+                          PixelFormatData[ ( int ) SourcePixelFormat].Format,
+                          PixelFormatData[ ( int ) SourcePixelFormat].DataType,
                           Data[Face] );
         }
     if ( TextureInformation->Mipmapped )

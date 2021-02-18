@@ -162,7 +162,7 @@ void ProcessEvents ( void )
             case SDL_KEYUP:
                 {
                 NewEvent.EventType = WindowEventType::KeyReleased;
-                NewEvent.EventData.KeyReleased.Key= Event.key.keysym.sym;
+                NewEvent.EventData.KeyReleased.Key = Event.key.keysym.sym;
                 NewEvent.EventData.KeyReleased.ScanCode = Event.key.keysym.scancode;
                 break;
                 }
