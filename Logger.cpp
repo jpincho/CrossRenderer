@@ -7,7 +7,7 @@
 
 namespace ConsoleColor
 {
-enum class Attribute
+enum class Attribute : int8_t
     {
     Ignore = -1,
     Reset = 0,
@@ -18,7 +18,7 @@ enum class Attribute
     Hidden
     };
 
-enum class Color
+enum class Color : int8_t
     {
     Ignore = -1,
     Black = 0,
@@ -33,14 +33,31 @@ enum class Color
 
 std::string TextColor ( Color Foreground, Color Background, Attribute Attribute )
     {
+    static std::string Commands[9][9];
+    if ( Commands[1][1].empty () )
+        {
+        for ( int8_t ForegroundIterator = ( int8_t ) Color::Ignore; ForegroundIterator <= ( int8_t ) Color::White; ++ForegroundIterator )
+            {
+            for ( int8_t BackgroundIterator = ( int8_t ) Color::Ignore; BackgroundIterator <= ( int8_t ) Color::White; ++BackgroundIterator )
+                {
+                Commands[ForegroundIterator + 1][BackgroundIterator + 1].assign ( "" );
+                if ( ForegroundIterator != ( int8_t ) Color::Ignore )
+                    {
+                    char Temp[10];
+                    snprintf ( Temp, 10, ";%d", ( int8_t ) ( ForegroundIterator ) + 30 );
+                    Commands[ForegroundIterator + 1][BackgroundIterator + 1].append ( Temp );
+                    }
+                if ( BackgroundIterator != ( int8_t ) Color::Ignore )
+                    {
+                    char Temp[10];
+                    snprintf ( Temp, 10, ";%d", ( int8_t ) ( BackgroundIterator ) + 40 );
+                    Commands[ForegroundIterator + 1][BackgroundIterator + 1].append ( Temp );
+                    }
+                }
+            }
+        }
     char command[13] = { 0 };
-    char BackStr[10] = { 0 }, ForeStr[10] = { 0 };
-    if ( Foreground != Color::Ignore )
-        snprintf ( ForeStr, 10, ";%d", ( int ) ( Foreground ) + 30 );
-    if ( Background != Color::Ignore )
-        snprintf ( BackStr, 10, ";%d", ( int ) ( Background ) + 40 );
-
-    snprintf ( command, 13, "%c[%d%s%sm", 0x1B, ( int ) Attribute, ForeStr, BackStr );
+    snprintf ( command, 13, "%c[%d%sm", 0x1B, ( int ) Attribute, Commands[ ( int8_t ) Foreground + 1][ ( int8_t ) Background + 1].c_str() );
     return std::string ( command );
     }
 
@@ -155,15 +172,13 @@ void Log ( const std::string Filename, const std::string PrettyFunctionName, con
     // Get all these strings into static variables
     static std::string LogLevelStrings[] =
         {
-        ConsoleColor::TextColor ( ConsoleColor::Color::Cyan, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[DEBUG]" ),
-        ConsoleColor::TextColor ( ConsoleColor::Color::Black, ConsoleColor::Color::Red, ConsoleColor::Attribute::Bright ) + std::string ( "[ERROR]" ),
-        ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[MSG]" ),
-        ConsoleColor::TextColor ( ConsoleColor::Color::Yellow, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[WARN]" )
+        ConsoleColor::TextColor ( ConsoleColor::Color::Black, ConsoleColor::Color::Red, ConsoleColor::Attribute::Bright ) + std::string ( "[ERROR]" ) + ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " ),
+        ConsoleColor::TextColor ( ConsoleColor::Color::Yellow, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[WARN]" ) + ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " ),
+        ConsoleColor::TextColor ( ConsoleColor::Color::Cyan, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[DEBUG]" ) + ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " ),
+        ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[MSG]" ) + ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " )
         };
 
-    static std::string EndLogLevelString = ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " );
-
-    std::cout << TimeString << FilenameString << FunctionString << LineNumberString << LogLevelStrings[ ( int ) Level] << EndLogLevelString << LogMessage << std::endl;
+    std::cout << TimeString << FilenameString << FunctionString << LineNumberString << LogLevelStrings[ ( int ) Level] << LogMessage << std::endl;
     std::cout << ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset );
     }
 }
