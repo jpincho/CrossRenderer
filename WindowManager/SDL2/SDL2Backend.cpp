@@ -3,6 +3,7 @@
 #include <SDL_syswm.h>
 #include <unordered_map>
 #include "../../Logger.h"
+#include "../../VectorizedContainer.h"
 
 namespace CrossRenderer
 {
@@ -18,7 +19,7 @@ typedef struct SDL2WindowInfo
     std::string Title;
     } SDL2WindowInfo;
 
-static VectorizedContainer <SDL2WindowInfo, RenderWindowTag> Windows;
+static VectorizedContainer <SDL2WindowInfo> Windows;
 std::unordered_map <SDL_Window *, RenderWindowHandle> SDL_WindowToHandleMap;
 
 RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
@@ -36,7 +37,7 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
     NewWindow.Size = Descriptor.Size;
     NewWindow.Position = Descriptor.Position;
     NewWindow.Title = Descriptor.Title;
-    RenderWindowHandle NewHandle = Windows.GetNewHandle();
+    RenderWindowHandle NewHandle ( Windows.GetFreeIndex() );
     Windows[NewHandle] = NewWindow;
     SDL_WindowToHandleMap.insert ( std::pair <SDL_Window *, RenderWindowHandle> ( NewWindow.Window, NewHandle ) );
     WindowManager::WindowList.insert ( NewHandle );
@@ -200,7 +201,7 @@ void ProcessEvents ( void )
                         SDL_DestroyWindow ( window );
                         NewEvent.EventType = WindowEventType::WindowClosed;
                         SDL_WindowToHandleMap.erase ( SDL_WindowToHandleMap.find ( window ) );
-                        Windows.ReleaseHandle ( NewEvent.OwnerHandle );
+                        Windows.ReleaseIndex ( NewEvent.OwnerHandle );
                         WindowList.erase ( NewEvent.OwnerHandle );
                         break;
                         }

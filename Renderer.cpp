@@ -51,7 +51,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
     GetShaderInformation ( Command.Shader, Info );
 
     // Find invalid uniform handles
-    for ( auto& Iterator : Command.UniformValues )
+    for ( auto &Iterator : Command.UniformValues )
         {
         if ( Iterator.UniformHandle == ShaderUniformHandle::invalid )
             {
@@ -62,7 +62,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         }
 
     // Find invalid attribute handles
-    for ( auto& Iterator : Command.ShaderBufferBindings )
+    for ( auto &Iterator : Command.ShaderBufferBindings )
         {
         if ( Iterator.AttributeHandle == ShaderAttributeHandle::invalid )
             {
@@ -73,7 +73,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         }
 
     // Find invalid texture uniform handles
-    for ( auto& Iterator : Command.TextureBindings )
+    for ( auto &Iterator : Command.TextureBindings )
         {
         if ( Iterator.UniformHandle == ShaderUniformHandle::invalid )
             {
@@ -154,14 +154,14 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         }
 
     // Find missing uniform values
-    for ( auto& Iterator : Command.UniformValues )
+    for ( auto &Iterator : Command.UniformValues )
         {
         int Index = FindUniformIndexFromHandle ( Iterator.UniformHandle );
         if ( Index == -1 )
             continue;
         Info.Uniforms.erase ( Info.Uniforms.begin() + Index );
         }
-    for ( auto& Iterator : Command.TextureBindings )
+    for ( auto &Iterator : Command.TextureBindings )
         {
         int Index = FindUniformIndexFromHandle ( Iterator.UniformHandle );
         if ( Index == -1 )
@@ -174,7 +174,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         Result = false;
         }
     // Find missing attribute bindings
-    for ( auto& Iterator : Command.ShaderBufferBindings )
+    for ( auto &Iterator : Command.ShaderBufferBindings )
         {
         int Index = FindAttributeIndexFromHandle ( Iterator.AttributeHandle );
         if ( Index == -1 )

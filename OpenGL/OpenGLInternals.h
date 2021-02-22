@@ -6,6 +6,7 @@
 #include "../ShaderDefinitions.h"
 #include "../FramebufferDefinitions.h"
 #include "../Version.h"
+#include "../VectorizedContainer.h"
 #include "OpenGLStateCache.h"
 
 namespace CrossRenderer
@@ -81,10 +82,10 @@ typedef struct FramebufferInfo : public FramebufferDescriptor
         }
     } FramebufferInfo;
 
-extern VectorizedContainer <ShaderBufferInfo, ShaderBufferTag> ShaderBuffers;
-extern VectorizedContainer <TextureInfo, TextureTag> Textures;
-extern VectorizedContainer <ShaderInfo, ShaderTag> Shaders;
-extern VectorizedContainer <FramebufferInfo, FramebufferTag> Framebuffers;
+extern VectorizedContainer <ShaderBufferInfo> ShaderBuffers;
+extern VectorizedContainer <TextureInfo> Textures;
+extern VectorizedContainer <ShaderInfo> Shaders;
+extern VectorizedContainer <FramebufferInfo> Framebuffers;
 
 void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, GLchar const* message, void const* user_param );
 const char *StringifyOpenGL ( GLenum Value );

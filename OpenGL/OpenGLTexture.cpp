@@ -89,7 +89,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
         return TextureHandle::invalid;
         }
 
-    TextureHandle NewHandle = Textures.GetNewHandle ();
+    TextureHandle NewHandle ( Textures.GetFreeIndex () );
     Textures[NewHandle] = NewTexture;
     return NewHandle;
     }
@@ -99,7 +99,7 @@ bool DeleteTexture ( const TextureHandle Handle )
     TextureInfo *TextureInformation = &Textures[Handle];
 
     glDeleteTextures ( 1, &TextureInformation->OpenGLID );
-    Textures.ReleaseHandle ( Handle );
+    Textures.ReleaseIndex ( Handle );
     return true;
     }
 

@@ -56,7 +56,7 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
         }
 
         {
-        FramebufferHandle NewHandle = Framebuffers.GetNewHandle();
+        FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex() );
         Framebuffers[NewHandle] = NewFramebuffer;
         return NewHandle;
         }
@@ -80,7 +80,7 @@ bool DeleteFramebuffer ( const FramebufferHandle Handle )
         DeleteTexture ( info->ColorTextures[cont] );
 
     glDeleteFramebuffers ( 1, &info->OpenGLID );
-    Framebuffers.ReleaseHandle ( Handle );
+    Framebuffers.ReleaseIndex ( Handle );
     return true;
     }
 

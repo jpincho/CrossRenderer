@@ -6,10 +6,10 @@ namespace CrossRenderer
 {
 namespace OpenGL
 {
-VectorizedContainer <ShaderBufferInfo, ShaderBufferTag> ShaderBuffers;
-VectorizedContainer <TextureInfo, TextureTag> Textures;
-VectorizedContainer <ShaderInfo, ShaderTag> Shaders;
-VectorizedContainer <FramebufferInfo, FramebufferTag> Framebuffers;
+VectorizedContainer <ShaderBufferInfo> ShaderBuffers;
+VectorizedContainer <TextureInfo> Textures;
+VectorizedContainer <ShaderInfo> Shaders;
+VectorizedContainer <FramebufferInfo> Framebuffers;
 OpenGLInformationStruct OpenGLInformation;
 StateCache CurrentState;
 

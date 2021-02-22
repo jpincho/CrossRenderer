@@ -25,7 +25,7 @@ ShaderBufferHandle CreateShaderBuffer ( const ShaderBufferDescriptor CreationPar
         return ShaderBufferHandle::invalid;
         }
 
-    ShaderBufferHandle NewHandle = ShaderBuffers.GetNewHandle();
+    ShaderBufferHandle NewHandle ( ShaderBuffers.GetFreeIndex() );
     ShaderBuffers[NewHandle] = NewBufferInformation;
     return NewHandle;
     }
@@ -34,7 +34,7 @@ bool DeleteShaderBuffer ( const ShaderBufferHandle Handle )
     {
     ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
     glDeleteBuffers ( 1, &ShaderBufferInformation->OpenGLID );
-    ShaderBuffers.ReleaseHandle ( Handle );
+    ShaderBuffers.ReleaseIndex ( Handle );
     return true;
     }
 

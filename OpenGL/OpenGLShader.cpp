@@ -34,7 +34,7 @@ ShaderHandle CreateShader ( const ShaderCode &NewCode )
         return ShaderHandle::invalid;
         }
 
-    ShaderHandle NewHandle = Shaders.GetNewHandle();
+    ShaderHandle NewHandle ( Shaders.GetFreeIndex() );
     Shaders[NewHandle] = NewShader;
     return NewHandle;
     }
@@ -44,7 +44,7 @@ bool DeleteShader ( const ShaderHandle Handle )
     ShaderInfo *ShaderInformation = &Shaders[Handle];
 
     glDeleteProgram ( ShaderInformation->OpenGLID );
-    Shaders.ReleaseHandle ( Handle );
+    Shaders.ReleaseIndex ( Handle );
     return true;
     }
 
