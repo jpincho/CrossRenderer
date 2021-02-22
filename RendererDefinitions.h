@@ -1,5 +1,6 @@
 #pragma once
 #include "WindowManager/WindowManagerDefinitions.h"
+#include <vector>
 
 namespace CrossRenderer
 {

@@ -1,6 +1,4 @@
 #pragma once
-#include <functional>
-#include <vector>
 #include <assert.h>
 
 namespace CrossRenderer
@@ -54,31 +52,36 @@ template <typename Type, typename TypeTag> class VectorizedContainer
             intptr_t Previous, Next;
             } ListNode;
 
-        std::vector <ListNode> Objects;
-        intptr_t FirstFree, LastFree, FreeCount;
+        ListNode *Objects;
+        size_t FreeCount, TotalCount;
+        intptr_t FirstFree, LastFree;
 
     public:
         VectorizedContainer ( void )
             {
             FirstFree = -1;
             LastFree = -1;
-            FreeCount = 0;
+            FreeCount = TotalCount = 0;
+            Objects = nullptr;
             }
         void Reserve ( const size_t NewSize )
             {
-            if ( NewSize <= Objects.size () )
+            if ( NewSize <= TotalCount )
                 return;
             if ( NewSize == 0 )
                 return;
-            size_t Delta = NewSize - Objects.size ();
-            Objects.resize ( NewSize );
+            size_t Delta = NewSize - TotalCount;
+            Objects = ( ListNode * ) realloc ( Objects, sizeof ( ListNode ) * NewSize );
+            TotalCount = NewSize;
             if ( FirstFree == -1 ) // First allocation. Initialize the first node.
                 {
                 FirstFree = LastFree = 0;
                 Objects[FirstFree].Previous = Objects[FirstFree].Next = -1;
+                new ( Objects ) ListNode ();
                 }
             for ( unsigned Index = 0; Index < Delta - 1; ++Index ) // Add all the new nodes to the list
                 {
+                new ( Objects + LastFree + 1 ) ListNode ();
                 Objects[LastFree].Next = LastFree + 1;
                 Objects[LastFree + 1].Previous = LastFree;
                 ++LastFree;
@@ -90,7 +93,7 @@ template <typename Type, typename TypeTag> class VectorizedContainer
             {
             if ( FreeCount == 0 )
                 {
-                Reserve ( Objects.size () + 10 );
+                Reserve ( TotalCount + 10 );
                 }
             // Get the first free index from the list, saves it for return, and updates FirstFree to the next index if there is one
             size_t FreeIndex = FirstFree;
@@ -104,7 +107,10 @@ template <typename Type, typename TypeTag> class VectorizedContainer
         void ReleaseHandle ( const HandleTemplate<TypeTag> &Handle )
             {
             assert ( Handle );
-            assert ( ( unsigned long ) Handle.key() < Objects.size() );
+            assert ( ( unsigned long ) Handle.key() < TotalCount );
+
+            Objects[Handle.key ()].~ListNode ();
+
             // The simplified case where there are no more free nodes
             if ( FreeCount == 0 )
                 {
@@ -163,7 +169,7 @@ template <typename Type, typename TypeTag> class VectorizedContainer
         Type &operator [] ( const HandleTemplate<TypeTag> Handle )
             {
             assert ( Handle );
-            assert ( ( unsigned long ) Handle.key() < Objects.size() );
+            assert ( ( unsigned long ) Handle.key() < TotalCount );
             return Objects[Handle.key ()];
             }
         Type &operator [] ( const intptr_t Index )
@@ -173,6 +179,7 @@ template <typename Type, typename TypeTag> class VectorizedContainer
     };
 }
 
+#include <functional>
 namespace std
 {
 template <typename Type>
