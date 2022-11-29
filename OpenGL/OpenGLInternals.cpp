@@ -6,14 +6,17 @@ namespace CrossRenderer
 {
 namespace OpenGL
 {
+RenderState CurrentState;
+FramebufferHandle CurrentBoundFramebuffer;
+
 VectorizedContainer <ShaderBufferInfo> ShaderBuffers;
 VectorizedContainer <TextureInfo> Textures;
 VectorizedContainer <ShaderInfo> Shaders;
+VectorizedContainer <ShaderObjectInfo> ShaderObjects;
 VectorizedContainer <FramebufferInfo> Framebuffers;
 OpenGLInformationStruct OpenGLInformation;
-StateCache CurrentState;
 
-void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, GLchar const* message, void const*  )
+void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, GLchar const *message, void const * )
     {
 #define STRINGIFY(X) case GL_DEBUG_##X: return #X;
     auto const src_str = [source]()
@@ -113,8 +116,10 @@ bool CheckError ( void )
         if ( Error != GL_NO_ERROR )
             {
             Result = false;
-            LOG_ERROR ( ( std::string ( "OpenGL error - " ) + std::string ( StringifyOpenGL ( Error ) ) ).c_str() );
-            throw std::runtime_error ( std::string ( "OpenGL error - " ) + std::string ( StringifyOpenGL ( Error ) ) );
+			std::string ErrorString ( "OpenGL error - " );
+			ErrorString.append ( StringifyOpenGL ( Error ) );
+			LOG_ERROR ( ErrorString.c_str() );
+			throw std::runtime_error ( ErrorString.c_str() );
             }
         }
     while ( Error != GL_NO_ERROR );
@@ -124,7 +129,7 @@ bool CheckError ( void )
 
 GLenum Translate ( const DepthTestMode Value )
     {
-    static GLenum Values [] =
+	static GLenum Values[] =
         {
         GL_NEVER,
         GL_LESS,
@@ -184,7 +189,7 @@ GLenum Translate ( const StencilFunction Value )
 
 GLenum Translate ( const StencilFailAction Value )
     {
-    static GLenum Values [] =
+	static GLenum Values[] =
         {
         GL_ZERO,
         GL_KEEP,
@@ -201,7 +206,7 @@ GLenum Translate ( const StencilFailAction Value )
 
 GLenum Translate ( const CullingMode Value )
     {
-    static GLenum Values [] =
+	static GLenum Values[] =
         {
         GL_FRONT,
         GL_BACK,
@@ -218,7 +223,7 @@ GLenum Translate ( const CullingMode Value )
 
 GLenum Translate ( const CullingFaceWinding Value )
     {
-    static GLenum Values [] =
+	static GLenum Values[] =
         {
         GL_CW,
         GL_CCW,
@@ -231,7 +236,7 @@ GLenum Translate ( const CullingFaceWinding Value )
 
 GLenum Translate ( const ShaderBufferComponentType Value )
     {
-    static GLenum Values [] =
+	static GLenum Values[] =
         {
         GL_FLOAT,
         GL_UNSIGNED_BYTE,
@@ -246,7 +251,7 @@ GLenum Translate ( const ShaderBufferComponentType Value )
 
 GLenum Translate ( const ShaderBufferAccessType Value )
     {
-    static GLenum Values [] =
+	static GLenum Values[] =
         {
         GL_STATIC_DRAW,
         GL_DYNAMIC_DRAW,
@@ -260,7 +265,7 @@ GLenum Translate ( const ShaderBufferAccessType Value )
 
 GLenum Translate ( const ShaderBufferType Value )
     {
-    static GLenum Values [] =
+	static GLenum Values[] =
         {
         GL_ARRAY_BUFFER,
         GL_UNIFORM_BUFFER,
@@ -273,7 +278,7 @@ GLenum Translate ( const ShaderBufferType Value )
 
 GLenum Translate ( const PrimitiveType Value )
     {
-    static GLenum Values [] =
+	static GLenum Values[] =
         {
         GL_POINTS,
         GL_LINES,
@@ -289,13 +294,14 @@ GLenum Translate ( const PrimitiveType Value )
 
 GLint Translate ( const TextureFilter Value )
     {
-    static GLint Values [] =
+	static GLint Values[] =
         {
         GL_LINEAR,
         GL_NEAREST,
         GL_NEAREST_MIPMAP_NEAREST,
         GL_NEAREST_MIPMAP_LINEAR,
-        GL_LINEAR_MIPMAP_LINEAR
+		GL_LINEAR_MIPMAP_LINEAR,
+		GL_LINEAR_MIPMAP_NEAREST
         };
     static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
     if ( static_cast <unsigned> ( Value ) >= Count )
@@ -305,11 +311,12 @@ GLint Translate ( const TextureFilter Value )
 
 GLint Translate ( const TextureWrapMode Value )
     {
-    static GLint Values [] =
+	static GLint Values[] =
         {
         GL_REPEAT,
         GL_MIRRORED_REPEAT,
-        GL_CLAMP_TO_EDGE
+		GL_CLAMP_TO_EDGE,
+		GL_CLAMP_TO_BORDER
         };
     static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
     if ( static_cast <unsigned> ( Value ) >= Count )

@@ -22,7 +22,7 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
         NewTextureDescriptor.Type = TextureType::Texture2D;
         NewFramebuffer.DepthTexture = CreateTexture ( NewTextureDescriptor );
         if ( !NewFramebuffer.DepthTexture )
-            return FramebufferHandle::invalid;
+            return FramebufferHandle::Invalid;
         }
     for ( unsigned cont = 0; cont < CreationParameters.ColorAttachments; ++cont )
         {
@@ -67,44 +67,80 @@ error:
     for ( size_t cont = 0; cont < NewFramebuffer.ColorTextures.size(); ++cont )
         DeleteTexture ( NewFramebuffer.ColorTextures[cont] );
     glDeleteFramebuffers ( 1, &NewFramebuffer.OpenGLID );
-    return FramebufferHandle::invalid;
+    return FramebufferHandle::Invalid;
     }
 
 bool DeleteFramebuffer ( const FramebufferHandle Handle )
     {
-    FramebufferInfo *info = &Framebuffers[Handle];
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
 
-    if ( info->DepthTexture )
-        DeleteTexture ( info->DepthTexture );
-    for ( size_t cont = 0; cont < info->ColorTextures.size(); ++cont )
-        DeleteTexture ( info->ColorTextures[cont] );
+	if ( FramebufferInformation->DepthTexture )
+		DeleteTexture ( FramebufferInformation->DepthTexture );
+	for ( size_t cont = 0; cont < FramebufferInformation->ColorTextures.size (); ++cont )
+		DeleteTexture ( FramebufferInformation->ColorTextures[cont] );
 
-    glDeleteFramebuffers ( 1, &info->OpenGLID );
+	glDeleteFramebuffers ( 1, &FramebufferInformation->OpenGLID );
     Framebuffers.ReleaseIndex ( Handle );
     return true;
     }
 
+void ClearFramebuffer ( const FramebufferHandle &Handle, const bool ShouldClearColorBuffer, const glm::vec4 Color, const bool ShouldClearDepthBuffer, const float DepthClearValue, const bool ShouldClearStencilBuffer, const int StencilClearValue, const int StencilMask )
+	{
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
+	int BitMask = 0;
+	if ( ( ( FramebufferInformation->OpenGLID == 0 ) || ( FramebufferInformation->ColorTextures.size () ) ) && ( ShouldClearColorBuffer ) )
+		{
+		BitMask |= GL_COLOR_BUFFER_BIT;
+		glClearColor ( Color.r, Color.g, Color.b, Color.a );
+		}
+	if ( ( ( FramebufferInformation->OpenGLID == 0 ) || ( FramebufferInformation->DepthTexture ) ) && ( ShouldClearDepthBuffer ) )
+		{
+		BitMask |= GL_DEPTH_BUFFER_BIT;
+		glClearDepth ( DepthClearValue );
+		}
+	if ( ( ( FramebufferInformation->OpenGLID == 0 ) || ( FramebufferInformation->StencilTexture ) ) && ( ShouldClearStencilBuffer ) )
+		{
+		BitMask |= GL_STENCIL_BUFFER_BIT;
+		glStencilMask ( StencilMask );
+		glClearStencil ( StencilClearValue );
+		}
+	if ( BitMask )
+		{
+		if ( CurrentBoundFramebuffer != Handle )
+			{
+			glBindFramebuffer ( GL_FRAMEBUFFER, FramebufferInformation->OpenGLID );
+			CurrentBoundFramebuffer = Handle;
+			}
+
+		StateCache::SetDefaultViewportSize ( FramebufferInformation->Dimensions );
+		StateCache::ConfigureScissor ( ScissorSettings () );
+		StateCache::ConfigureViewport ( ViewportSettings () );
+		StateCache::ConfigureStencil ( StencilBufferSettings () );
+		glClear ( BitMask );
+		}
+	}
+
 glm::uvec2 GetFramebufferSize ( const FramebufferHandle Handle )
     {
-    FramebufferInfo *info = &Framebuffers[Handle];
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
 
-    return info->Dimensions;
+	return FramebufferInformation->Dimensions;
     }
 
 TextureHandle GetColorBufferFromFramebuffer ( const FramebufferHandle Handle, const size_t Index )
     {
-    FramebufferInfo *info = &Framebuffers[Handle];
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
 
-    if ( Index > info->ColorTextures.size() )
-        return TextureHandle::invalid;
-    return info->ColorTextures[Index];
+	if ( Index > FramebufferInformation->ColorTextures.size () )
+		return TextureHandle::Invalid;
+	return FramebufferInformation->ColorTextures[Index];
     }
 
 TextureHandle GetDepthBufferFromFramebuffer ( const FramebufferHandle Handle )
     {
-    FramebufferInfo *info = &Framebuffers[Handle];
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
 
-    return info->DepthTexture;
+	return FramebufferInformation->DepthTexture;
     }
 }
 }

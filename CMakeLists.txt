@@ -96,6 +96,8 @@ if ( OPENGL_FOUND )
     endif()
 endif()
 
+add_subdirectory(cpplib)
+
 # Main library
 configure_file ( CrossRendererConfig.hpp.in CrossRendererConfig.hpp )
 file ( GLOB SOURCES "*.cpp" "*.hpp" "WindowManager/*.cpp" "WindowManager/*.hpp" CrossRendererConfig.hpp.in AstyleConfig.astylerc )

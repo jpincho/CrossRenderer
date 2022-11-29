@@ -32,7 +32,7 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
     SDL2WindowInfo NewWindow;
     NewWindow.Window = SDL_CreateWindow ( "SDL window", Descriptor.Position.x, Descriptor.Position.y, Descriptor.Size.x, Descriptor.Size.y, CreationFlags );
     if ( NewWindow.Window == nullptr )
-        return RenderWindowHandle::invalid;
+        return RenderWindowHandle::Invalid;
 
     NewWindow.Size = Descriptor.Size;
     NewWindow.Position = Descriptor.Position;

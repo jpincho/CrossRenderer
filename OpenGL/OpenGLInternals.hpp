@@ -13,39 +13,39 @@ namespace CrossRenderer
 {
 namespace OpenGL
 {
-typedef struct
+struct OpenGLInformationStruct
     {
     GLint MaxTextureUnits;
     Version OpenGLVersion, GLSLVersion;
-    } OpenGLInformationStruct;
+    };
 
 extern OpenGLInformationStruct OpenGLInformation;
-extern StateCache CurrentState;
 
-typedef struct
+struct UniformInfo
     {
     GLint OpenGLID;
     ShaderUniformValue CurrentValue;
     ShaderUniformType Type;
     std::string Name;
-    } UniformInfo;
+	};
 
-typedef struct
+struct AttributeInfo
     {
     GLint OpenGLID;
     bool Enabled;
     ShaderAttributeType Type;
     std::string Name;
-    } AttributeInfo;
+	};
 
-typedef struct ShaderInfo
+struct ShaderInfo
     {
     GLuint OpenGLID;
+	std::vector <ShaderObjectHandle> AttachedShaderObjects;
     std::vector <UniformInfo> Uniforms;
     std::vector <AttributeInfo> Attributes;
-    } ShaderInfo;
+	};
 
-typedef struct ShaderBufferInfo : public ShaderBufferDescriptor
+struct ShaderBufferInfo : public ShaderBufferDescriptor
     {
     GLuint OpenGLID;
     GLenum GLAccessType;
@@ -57,9 +57,9 @@ typedef struct ShaderBufferInfo : public ShaderBufferDescriptor
         * ( ( ShaderBufferDescriptor * ) this ) = other;
         return *this;
         }
-    } ShaderBufferInfo;
+	};
 
-typedef struct TextureInfo : public TextureDescriptor
+struct TextureInfo : public TextureDescriptor
     {
     GLuint OpenGLID;
     GLint GLMinFilter, GLMagFilter, GLSWrap, GLTWrap;
@@ -68,26 +68,37 @@ typedef struct TextureInfo : public TextureDescriptor
         * ( ( TextureDescriptor * ) this ) = other;
         return *this;
         }
-    } TextureInfo;
+	};
 
-typedef struct FramebufferInfo : public FramebufferDescriptor
+struct FramebufferInfo : public FramebufferDescriptor
     {
     GLuint OpenGLID;
     std::vector <TextureHandle> ColorTextures;
     TextureHandle DepthTexture;
+	TextureHandle StencilTexture;
     FramebufferInfo &operator = ( const FramebufferDescriptor &other )
         {
         * ( ( FramebufferDescriptor * ) this ) = other;
         return *this;
         }
-    } FramebufferInfo;
+	};
 
+struct ShaderObjectInfo
+	{
+	GLuint OpenGLID;
+	std::string Code;
+	ShaderObjectType Type;
+	};
+
+extern RenderState CurrentState;
+extern FramebufferHandle CurrentBoundFramebuffer;
 extern VectorizedContainer <ShaderBufferInfo> ShaderBuffers;
 extern VectorizedContainer <TextureInfo> Textures;
 extern VectorizedContainer <ShaderInfo> Shaders;
+extern VectorizedContainer <ShaderObjectInfo> ShaderObjects;
 extern VectorizedContainer <FramebufferInfo> Framebuffers;
 
-void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, GLchar const* message, void const* user_param );
+void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, GLchar const *message, void const *user_param );
 const char *StringifyOpenGL ( GLenum Value );
 bool CheckError ( void );
 GLenum Translate ( const DepthTestMode Value );
@@ -102,5 +113,8 @@ GLenum Translate ( const ShaderBufferType Value );
 GLenum Translate ( const PrimitiveType Value );
 GLint Translate ( const TextureFilter Value );
 GLint Translate ( const TextureWrapMode Value );
+ShaderUniformType TranslateOpenGLUniformType ( GLenum Type );
+GLenum TranslateUniformType ( ShaderUniformType Type );
+
 }
 }

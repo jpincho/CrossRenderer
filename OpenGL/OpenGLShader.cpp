@@ -17,12 +17,12 @@ ShaderHandle CreateShader ( const ShaderCode &NewCode )
     ShaderInfo NewShader;
     NewShader.OpenGLID = glCreateProgram();
     if ( CheckError() == false )
-        return ShaderHandle::invalid;
+        return ShaderHandle::Invalid;
 
     if ( CompileShader ( NewShader.OpenGLID, NewCode ) == false )
         {
         glDeleteProgram ( NewShader.OpenGLID );
-        return ShaderHandle::invalid;
+        return ShaderHandle::Invalid;
         }
 
     LOG_DEBUG ( "Created shader program %u", NewShader.OpenGLID );
@@ -31,7 +31,7 @@ ShaderHandle CreateShader ( const ShaderCode &NewCode )
         {
         LOG_ERROR ( "Error detecting uniforms/attributes" );
         glDeleteProgram ( NewShader.OpenGLID );
-        return ShaderHandle::invalid;
+        return ShaderHandle::Invalid;
         }
 
     ShaderHandle NewHandle ( Shaders.GetFreeIndex() );
@@ -81,7 +81,7 @@ ShaderUniformHandle GetShaderUniformHandle ( const ShaderHandle Handle, const st
             return ShaderUniformHandle ( cont );
         }
     LOG_ERROR ( "Invalid uniform '%s' for shader", Name.c_str() );
-    return ShaderUniformHandle::invalid;
+    return ShaderUniformHandle::Invalid;
     }
 
 void GetShaderAttributeList ( const ShaderHandle Handle, std::vector <std::pair <std::string, ShaderAttributeType>> &AttributeList )
@@ -102,12 +102,12 @@ ShaderAttributeHandle GetShaderAttributeHandle ( const ShaderHandle Handle, cons
             return ShaderAttributeHandle ( cont );
         }
     LOG_ERROR ( "Invalid attribute '%s' for shader", Name.c_str() );
-    return ShaderAttributeHandle::invalid;
+    return ShaderAttributeHandle::Invalid;
     }
 
 void GetShaderInformation ( const ShaderHandle Handle, ShaderInformation &Information )
     {
-    ShaderInfo *ShaderInformation = &Shaders[Handle.key()];
+    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey()];
     for ( unsigned cont = 0; cont < ShaderInformation->Uniforms.size(); ++cont )
         {
         ShaderInformation::ShaderUniformInformation Info;
@@ -249,7 +249,7 @@ bool CompileShader ( const GLuint OpenGLID, const ShaderCode &NewCode )
     GLuint VertexShaderGLID = 0, GeometryShaderGLID = 0, FragmentShaderGLID = 0;
     std::vector <GLuint> GLIDs;
     if ( BuildShaderObject ( VertexShaderGLID, GL_VERTEX_SHADER, NewCode.VertexShader ) == false )
-        return ShaderHandle::invalid;
+        return ShaderHandle::Invalid;
     GLIDs.push_back ( VertexShaderGLID );
     if ( NewCode.GeometryShader.size() != 0 )
         {

@@ -1,15 +1,22 @@
 #pragma once
 #include "GLMHeaders.hpp"
-#include "HandleTemplate.hpp"
+#include "RendererHandleTemplate.hpp"
 #include "ShaderBufferDefinitions.hpp"
 #include <stdexcept>
 
 namespace CrossRenderer
 {
-typedef struct
+struct ShaderCode
     {
     std::string VertexShader, GeometryShader, FragmentShader;
-    } ShaderCode;
+    };
+
+enum class ShaderObjectType
+    {
+    Vertex,
+    Geometry,
+    Fragment
+    };
 
 enum class ShaderUniformType
     {
@@ -41,31 +48,27 @@ enum class ShaderUniformType
     };
 typedef ShaderUniformType ShaderAttributeType;
 
-struct ShaderTag {};
-typedef HandleTemplate <ShaderTag> ShaderHandle;
-typedef HandleTemplate <void> ShaderUniformHandle;
-typedef HandleTemplate <void> ShaderAttributeHandle;
-
-typedef struct
+struct ShaderInformation
     {
-    typedef struct
+	struct ShaderUniformInformation
         {
         std::string Name;
         ShaderUniformHandle Handle;
         ShaderUniformType Type;
-        } ShaderUniformInformation;
-    typedef struct
+		};
+	struct ShaderAttributeInformation
         {
         std::string Name;
         ShaderAttributeHandle Handle;
         ShaderAttributeType Type;
-        } ShaderAttributeInformation;
+		};
     std::vector <ShaderUniformInformation> Uniforms;
     std::vector <ShaderAttributeInformation> Attributes;
+	std::vector <ShaderObjectHandle> AttachedShaderObjects;
     ShaderHandle Handle;
-    } ShaderInformation;
+	};
 
-typedef struct ShaderUniformValue
+struct ShaderUniformValue
     {
     union
         {
@@ -181,5 +184,5 @@ typedef struct ShaderUniformValue
                 throw std::runtime_error ( "Unhandled uniform type" );
             }
         }
-    } ShaderUniformValue;
+	};
 }

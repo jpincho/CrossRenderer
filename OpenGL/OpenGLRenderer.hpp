@@ -1,6 +1,6 @@
 #pragma once
 #include "../RenderCommandDefinitions.hpp"
-#include "../HandleTemplate.hpp"
+#include "../RendererHandleTemplate.hpp"
 #include "OpenGLFramebuffer.hpp"
 #include "OpenGLShader.hpp"
 #include "OpenGLShaderBuffer.hpp"

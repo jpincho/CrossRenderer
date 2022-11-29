@@ -1,12 +1,10 @@
 #pragma once
-#include "HandleTemplate.hpp"
+#include "RendererHandleTemplate.hpp"
 #include <vector>
 #include "GLMHeaders.hpp"
 
 namespace CrossRenderer
 {
-struct ShaderBufferTag {};
-typedef HandleTemplate <ShaderBufferTag> ShaderBufferHandle;
 enum class ShaderBufferComponentType : uint8_t
     {
     Float = 0,
@@ -28,7 +26,7 @@ enum class ShaderBufferType : uint8_t
     Uniform
     };
 
-typedef struct ShaderBufferDataStream
+struct ShaderBufferDataStream
     {
     ShaderBufferDataStream() = default;
     ShaderBufferDataStream ( const ShaderBufferHandle NewBufferHandle, const size_t NewStartOffset, const size_t NewStride, const ShaderBufferComponentType NewComponentType, const size_t NewComponentsPerElement, const bool ShouldNormalizeData = false )
@@ -46,11 +44,11 @@ typedef struct ShaderBufferDataStream
     ShaderBufferComponentType ComponentType;
     size_t ComponentsPerElement;
     bool NormalizeData;
-    } ShaderBufferDataStream;
+	};
 
-typedef struct ShaderBufferDescriptor
+struct ShaderBufferDescriptor
     {
-    size_t DataSize;
+	size_t DataSize, Capacity;
     const void *Data;
     ShaderBufferAccessType AccessType;
     ShaderBufferType BufferType;
@@ -58,26 +56,27 @@ typedef struct ShaderBufferDescriptor
     ShaderBufferDescriptor ( void )
         {
         Data = nullptr;
-        DataSize = 0;
+		DataSize = Capacity = 0;
         AccessType = ShaderBufferAccessType::Static;
         BufferType = ShaderBufferType::Array;
         }
 
-    ShaderBufferDescriptor ( const void *NewData, const size_t NewDataSize, const ShaderBufferAccessType NewAccessType = ShaderBufferAccessType::Static )
+	ShaderBufferDescriptor ( const void *NewData, const size_t NewDataSize, const ShaderBufferType NewShaderBufferType = ShaderBufferType::Array, const ShaderBufferAccessType NewAccessType = ShaderBufferAccessType::Static )
         {
-        Data = reinterpret_cast <const void*> ( NewData );
-        DataSize = NewDataSize;
+		Data = reinterpret_cast <const void *> ( NewData );
+		DataSize = Capacity = NewDataSize;
         AccessType = NewAccessType;
-        BufferType = ShaderBufferType::Array;
+		BufferType = NewShaderBufferType;
         }
 
     template <typename Type>
-    ShaderBufferDescriptor ( const std::vector <Type> &NewData, const ShaderBufferAccessType NewAccessType = ShaderBufferAccessType::Static )
+	ShaderBufferDescriptor ( const std::vector <Type> &NewData, const ShaderBufferType NewShaderBufferType = ShaderBufferType::Array, const ShaderBufferAccessType NewAccessType = ShaderBufferAccessType::Static )
         {
-        Data = reinterpret_cast <const void*> ( NewData.data() );
-        DataSize = NewData.size() * sizeof ( Type );
+		Data = reinterpret_cast <const void *> ( NewData.data () );
+		DataSize = Capacity = NewData.size () * sizeof ( Type );
         AccessType = NewAccessType;
-        BufferType = ShaderBufferType::Array;
+		BufferType = NewShaderBufferType;
         }
-    } ShaderBufferDescriptor;
+	};
 }
+

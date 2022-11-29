@@ -1,14 +1,12 @@
 #pragma once
 #include <CrossRendererConfig.hpp>
 #include <string>
-#include "../HandleTemplate.hpp"
+#include "../RendererHandleTemplate.hpp"
 #include "../GLMHeaders.hpp"
 
 namespace CrossRenderer
 {
-struct RenderWindowTag {};
-typedef HandleTemplate <RenderWindowTag> RenderWindowHandle;
-typedef struct RenderWindowDescriptor
+struct RenderWindowDescriptor
     {
     RenderWindowDescriptor ( const glm::ivec2 NewPosition = glm::ivec2 ( 0, 0 ), const glm::uvec2 NewSize = glm::uvec2 ( 640, 480 ) )
         {
@@ -22,7 +20,7 @@ typedef struct RenderWindowDescriptor
     glm::ivec2 Position;
     bool Resizable, Fullscreen;
     std::string Title;
-    } RenderWindowDescriptor;
+    };
 
 enum class WindowEventType
     {

@@ -1,16 +1,21 @@
 #pragma once
-#include "HandleTemplate.hpp"
 #include "GLMHeaders.hpp"
 #include "PixelFormat.hpp"
 
 namespace CrossRenderer
 {
-struct FramebufferTag {};
-typedef HandleTemplate <FramebufferTag> FramebufferHandle;
+struct FramebufferDescriptor
+	{
+	FramebufferDescriptor ( void )
+		{
+		ColorAttachments = 1;
+		ColorAttachmentFormat = PixelFormat::RedGreenBlueAlpha8888;
+		DepthEnabled = true;
+		DepthFormat = PixelFormat::DepthComponent;
+		StencilEnabled = false;
+		ClearDepth = 1.0f;
+		}
 
-typedef struct FramebufferDescriptor
-    {
-    FramebufferDescriptor ( void ) = default;
     FramebufferDescriptor ( const glm::uvec2 Dimensions )
         {
         ColorAttachments = 1;
@@ -27,6 +32,5 @@ typedef struct FramebufferDescriptor
     glm::uvec2 Dimensions;
     glm::vec4 ClearColor;
     float ClearDepth;
-    } FramebufferDescriptor;
-
+	};
 }

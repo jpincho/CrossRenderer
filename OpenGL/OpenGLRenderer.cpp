@@ -41,7 +41,7 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
     glGenVertexArrays ( 1, &GeneralVAO );
     glBindVertexArray ( GeneralVAO );
 
-    CurrentState.Invalidate ();
+    StateCache::Invalidate ();
 
     glGetIntegerv ( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &OpenGLInformation.MaxTextureUnits );
     OpenGLInformation.OpenGLVersion = Context->GetOpenGLVersion ();
@@ -93,10 +93,10 @@ bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
     {
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
 
-    CurrentState.SetDefaultViewportSize ( FramebufferInformation->Dimensions );
-    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings () );
-    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings () );
-    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
+    StateCache::SetDefaultViewportSize ( FramebufferInformation->Dimensions );
+    StateCache::ConfigureScissor ( CrossRenderer::ScissorSettings () );
+    StateCache::ConfigureViewport ( CrossRenderer::ViewportSettings () );
+    StateCache::ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
 
     glBindFramebuffer ( GL_FRAMEBUFFER, FramebufferInformation->OpenGLID );
     int BitMask = 0;
@@ -120,10 +120,10 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
     ActiveWindow = WindowHandle;
     Context->MakeActive ( WindowHandle );
     glm::uvec2 WindowSize = WindowManager::GetWindowSize ( WindowHandle );
-    CurrentState.SetDefaultViewportSize ( WindowSize );
-    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings () );
-    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings () );
-    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
+    StateCache::SetDefaultViewportSize ( WindowSize );
+    StateCache::ConfigureScissor ( CrossRenderer::ScissorSettings () );
+    StateCache::ConfigureViewport ( CrossRenderer::ViewportSettings () );
+    StateCache::ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
 
     FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
     glBindFramebuffer ( GL_READ_FRAMEBUFFER, FramebufferInformation->OpenGLID );
@@ -138,10 +138,10 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
 bool StartFrame ( const RenderWindowHandle &Handle )
     {
     ActiveWindow = Handle;
-    CurrentState.SetDefaultViewportSize ( WindowManager::GetWindowSize ( Handle ) );
-    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings () );
-    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings () );
-    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
+    StateCache::SetDefaultViewportSize ( WindowManager::GetWindowSize ( Handle ) );
+    StateCache::ConfigureScissor ( CrossRenderer::ScissorSettings () );
+    StateCache::ConfigureViewport ( CrossRenderer::ViewportSettings () );
+    StateCache::ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
 
     Context->MakeActive ( Handle );
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -150,9 +150,9 @@ bool StartFrame ( const RenderWindowHandle &Handle )
 
 bool EndFrame ( const RenderWindowHandle &Handle )
     {
-    CurrentState.ConfigureScissor ( CrossRenderer::ScissorSettings () );
-    CurrentState.ConfigureViewport ( CrossRenderer::ViewportSettings () );
-    CurrentState.ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
+    StateCache::ConfigureScissor ( CrossRenderer::ScissorSettings () );
+    StateCache::ConfigureViewport ( CrossRenderer::ViewportSettings () );
+    StateCache::ConfigureStencil ( CrossRenderer::StencilBufferSettings () );
     Context->SwapWindowBuffer ( Handle );
     return true;
     }
@@ -178,7 +178,7 @@ bool RunCommand ( const RenderCommand &Command )
     ActiveShader = Command.Shader;
     CheckError ();
 
-    CurrentState.ApplyState ( Command.State );
+    StateCache::ApplyState ( Command.State );
     CheckError ();
 
     // Set all uniforms
@@ -187,7 +187,7 @@ bool RunCommand ( const RenderCommand &Command )
         {
         if ( !Iterator.UniformHandle )
             return false;
-        UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.key ()];
+        UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.GetKey ()];
 
         if ( UniformInformation->CurrentValue.Equals ( Iterator.UniformValue, UniformInformation->Type ) == true )
             continue;
@@ -251,7 +251,7 @@ bool RunCommand ( const RenderCommand &Command )
     // Bind all attribute buffers
     for ( auto &Iterator : Command.ShaderBufferBindings )
         {
-        AttributeInfo *AttributeInformation = & ( ShaderInformation->Attributes[Iterator.AttributeHandle.key ()] );
+        AttributeInfo *AttributeInformation = & ( ShaderInformation->Attributes[Iterator.AttributeHandle.GetKey ()] );
         ShaderBufferInfo *BufferInformation = & ( ShaderBuffers[Iterator.DataStream.BufferHandle] );
 
         if ( AttributeInformation->Enabled == false )
@@ -279,7 +279,7 @@ bool RunCommand ( const RenderCommand &Command )
     unsigned TextureBindingIndex = 0;
     for ( auto &Iterator : Command.TextureBindings )
         {
-        UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.key ()];
+        UniformInfo *UniformInformation = &ShaderInformation->Uniforms[Iterator.UniformHandle.GetKey ()];
         //if ( UniformInformation->Type != ShaderUniformType::Sampler2D ) return false;
 
         GLint DesiredSWrap = Translate ( Iterator.BindSettings.WrapSettings.Horizontal );
@@ -315,11 +315,11 @@ bool RunCommand ( const RenderCommand &Command )
     CheckError ();
 
     // Finally, issue the draw call
-    if ( Command.IndexBuffer )
+    if ( Command.IndexBufferStream.BufferHandle )
         {
         static size_t Sizes[] = { sizeof ( float ), sizeof ( uint8_t ), sizeof ( uint16_t ), sizeof ( uint32_t ) };
 
-        ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBuffer];
+        ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBufferStream.BufferHandle];
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, BufferToUse->OpenGLID );
         glDrawElements ( Translate ( Command.Primitive ),
                          ( GLint ) Command.VertexCount,

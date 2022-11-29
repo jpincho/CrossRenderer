@@ -53,7 +53,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
     // Find invalid uniform handles
     for ( auto &Iterator : Command.UniformValues )
         {
-        if ( Iterator.UniformHandle == ShaderUniformHandle::invalid )
+        if ( Iterator.UniformHandle == ShaderUniformHandle::Invalid )
             {
             LOG_ERROR ( "Invalid uniform handle" );
             Result = false;
@@ -61,10 +61,10 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
             }
         }
 
-    // Find invalid attribute handles
+    // Find Invalid attribute handles
     for ( auto &Iterator : Command.ShaderBufferBindings )
         {
-        if ( Iterator.AttributeHandle == ShaderAttributeHandle::invalid )
+        if ( Iterator.AttributeHandle == ShaderAttributeHandle::Invalid )
             {
             LOG_ERROR ( "Invalid attribute handle" );
             Result = false;
@@ -72,10 +72,10 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
             }
         }
 
-    // Find invalid texture uniform handles
+    // Find Invalid texture uniform handles
     for ( auto &Iterator : Command.TextureBindings )
         {
-        if ( Iterator.UniformHandle == ShaderUniformHandle::invalid )
+        if ( Iterator.UniformHandle == ShaderUniformHandle::Invalid )
             {
             LOG_ERROR ( "Invalid texture uniform handle" );
             Result = false;
@@ -148,7 +148,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         {
         if ( !Iterator.BindSettings.Handle )
             {
-            LOG_ERROR ( "Missing texture handle for binding '%s'.", Info.Uniforms[Iterator.UniformHandle.key()].Name.c_str() );
+            LOG_ERROR ( "Missing texture handle for binding '%s'.", Info.Uniforms[Iterator.UniformHandle.GetKey()].Name.c_str() );
             Result = false;
             }
         }

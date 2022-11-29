@@ -15,14 +15,14 @@ ShaderBufferHandle CreateShaderBuffer ( const ShaderBufferDescriptor CreationPar
 
     glGenBuffers ( 1, &NewBufferInformation.OpenGLID );
     if ( CheckError() == false )
-        return ShaderBufferHandle::invalid;
+        return ShaderBufferHandle::Invalid;
 
     glBindBuffer ( NewBufferInformation.GLBufferType, NewBufferInformation.OpenGLID );
     glBufferData ( NewBufferInformation.GLBufferType, NewBufferInformation.DataSize, CreationParameters.Data, NewBufferInformation.GLAccessType );
     if ( CheckError() == false )
         {
         glDeleteBuffers ( 1, &NewBufferInformation.OpenGLID );
-        return ShaderBufferHandle::invalid;
+        return ShaderBufferHandle::Invalid;
         }
 
     ShaderBufferHandle NewHandle ( ShaderBuffers.GetFreeIndex() );
@@ -46,7 +46,10 @@ bool ChangeShaderBufferContents ( const ShaderBufferHandle Handle, const ShaderB
     if ( CreationParameters.DataSize <= ShaderBufferInformation->DataSize )
         glBufferSubData ( ShaderBufferInformation->GLBufferType, 0, CreationParameters.DataSize, CreationParameters.Data );
     else
+		{
         glBufferData ( ShaderBufferInformation->GLBufferType, CreationParameters.DataSize, CreationParameters.Data, ShaderBufferInformation->GLAccessType );
+		ShaderBufferInformation->Capacity = CreationParameters.DataSize;
+		}
     glBindBuffer ( ShaderBufferInformation->GLBufferType, 0 ); // Unbind it
     ShaderBufferInformation->DataSize = CreationParameters.DataSize;
     return CheckError();
@@ -82,5 +85,10 @@ bool UnmapShaderBuffer ( const ShaderBufferHandle Handle )
     ShaderBufferInformation->MappedPointer = nullptr;
     return CheckError();
     }
+
+const ShaderBufferDescriptor GetShaderBufferDescriptor ( const ShaderBufferHandle Handle )
+	{
+	return ShaderBuffers[Handle];
+	}
 }
 }

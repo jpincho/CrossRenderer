@@ -1,26 +1,26 @@
 #pragma once
 #include "GLMHeaders.hpp"
-#include "HandleTemplate.hpp"
+#include "RendererHandleTemplate.hpp"
 #include "PixelFormat.hpp"
 
 namespace CrossRenderer
 {
-struct TextureTag {};
-typedef HandleTemplate <TextureTag> TextureHandle;
 enum class TextureFilter : uint8_t
     {
     Linear = 0,
     Nearest,
     NearestMipmapNearest,
     NearestMipmapLinear,
-    LinearMipmapLinear
+	LinearMipmapLinear,
+	LinearMipmapNearest
     };
 
 enum class TextureWrapMode : uint8_t
     {
     Repeat = 0,
     MirroredRepeat,
-    ClampToEdge
+	ClampToEdge,
+	ClampToBorder
     };
 
 enum class TextureType : uint8_t
@@ -29,7 +29,7 @@ enum class TextureType : uint8_t
     TextureCubeMap
     };
 
-typedef struct TextureFilterSettings
+struct TextureFilterSettings
     {
     TextureFilterSettings ( void )
         {
@@ -45,13 +45,13 @@ typedef struct TextureFilterSettings
         MagFilter = NewMagFilter;
         }
     TextureFilter MinFilter, MagFilter;
-    } TextureFilterSettings;
+	};
 
-typedef struct TextureWrapSettings
+struct TextureWrapSettings
     {
     TextureWrapSettings ( void )
         {
-        Horizontal = Vertical = TextureWrapMode::ClampToEdge;
+		Horizontal = Vertical = TextureWrapMode::Repeat;
         }
     TextureWrapSettings ( const TextureWrapMode NewMode )
         {
@@ -63,11 +63,15 @@ typedef struct TextureWrapSettings
         Vertical = NewVertical;
         }
     TextureWrapMode Horizontal, Vertical;
-    } TextureWrapSettings;
+	};
 
-typedef struct TextureDescriptor
+struct TextureDescriptor
+	{
+	TextureDescriptor ( void )
     {
-    TextureDescriptor ( void ) = default;
+		Type = TextureType::Texture2D;
+		Mipmapped = true;
+		}
     TextureDescriptor ( glm::uvec2 NewDimensions, PixelFormat NewTextureFormat )
         {
         Format = NewTextureFormat;
@@ -83,9 +87,9 @@ typedef struct TextureDescriptor
     TextureWrapSettings WrapSettings;
     size_t Pitch;
     bool Mipmapped;
-    } TextureDescriptor;
+	};
 
-typedef struct TextureBindSettings
+struct TextureBindSettings
     {
     TextureBindSettings ( void ) = default;
     TextureBindSettings ( const TextureHandle NewHandle ) : Handle ( NewHandle )
@@ -95,5 +99,5 @@ typedef struct TextureBindSettings
     TextureHandle Handle;
     TextureWrapSettings WrapSettings;
     TextureFilterSettings FilterSettings;
-    } TextureBindSettings;
+    };
 }

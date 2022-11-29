@@ -47,7 +47,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
             glGenTextures ( 1, &NewTexture.OpenGLID );
             if ( CheckError () == false )
                 {
-                return TextureHandle::invalid;
+                return TextureHandle::Invalid;
                 }
             glBindTexture ( GL_TEXTURE_2D, NewTexture.OpenGLID );
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
@@ -65,7 +65,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
             glGenTextures ( 1, &NewTexture.OpenGLID );
             if ( CheckError () == false )
                 {
-                return TextureHandle::invalid;
+                return TextureHandle::Invalid;
                 }
             glBindTexture ( GL_TEXTURE_CUBE_MAP, NewTexture.OpenGLID );
             glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
@@ -80,13 +80,13 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
             break;
             }
         default:
-            return TextureHandle::invalid;
+            return TextureHandle::Invalid;
         }
 
     if ( CheckError () == false )
         {
         glDeleteTextures ( 1, &NewTexture.OpenGLID );
-        return TextureHandle::invalid;
+        return TextureHandle::Invalid;
         }
 
     TextureHandle NewHandle ( Textures.GetFreeIndex () );

@@ -6,12 +6,17 @@ namespace CrossRenderer
 {
 namespace OpenGL
 {
-void StateCache::SetDefaultViewportSize ( const glm::uvec2 NewSize )
+namespace StateCache
+{
+static bool Enabled = true;
+static glm::uvec2 DefaultViewportSize;
+
+void SetDefaultViewportSize ( const glm::uvec2 NewSize )
     {
     DefaultViewportSize = NewSize;
     }
 
-void StateCache::ApplyState ( const RenderState &NewState )
+void ApplyState ( const RenderState &NewState )
     {
     if ( Enabled )
         {
@@ -62,7 +67,7 @@ void StateCache::ApplyState ( const RenderState &NewState )
         }
     }
 
-void StateCache::Invalidate ( void )
+void Invalidate ( void )
     {
     CurrentState = RenderState();
 //    CurrentState.Viewport = RendererInfo.DefaultViewport;
@@ -110,12 +115,12 @@ void StateCache::Invalidate ( void )
 //        bindFramebuffer ( CurrentState.Framebuffer.targetFramebuffer );
     }
 
-RenderState StateCache::GetCurrentState ( void )
+RenderState GetCurrentState ( void )
     {
     return CurrentState;
     }
 
-void StateCache::ConfigureCulling ( const CullingSettings &NewSettings )
+void ConfigureCulling ( const CullingSettings &NewSettings )
     {
     if ( NewSettings == CurrentState.Culling )
         return;
@@ -138,7 +143,7 @@ void StateCache::ConfigureCulling ( const CullingSettings &NewSettings )
     CheckError();
     }
 
-void StateCache::ConfigureBlending ( const BlendSettings &NewSettings )
+void ConfigureBlending ( const BlendSettings &NewSettings )
     {
     if ( NewSettings == CurrentState.Blending )
         return;
@@ -170,7 +175,7 @@ void StateCache::ConfigureBlending ( const BlendSettings &NewSettings )
     CheckError();
     }
 
-void StateCache::ConfigureStencil ( const StencilBufferSettings &NewSettings )
+void ConfigureStencil ( const StencilBufferSettings &NewSettings )
     {
     if ( NewSettings == CurrentState.Stencil )
         return;
@@ -212,7 +217,7 @@ void StateCache::ConfigureStencil ( const StencilBufferSettings &NewSettings )
     CheckError();
     }
 
-void StateCache::ConfigureScissor ( const ScissorSettings &NewSettings )
+void ConfigureScissor ( const ScissorSettings &NewSettings )
     {
     if ( CurrentState.Scissor == NewSettings )
         return;
@@ -237,7 +242,7 @@ void StateCache::ConfigureScissor ( const ScissorSettings &NewSettings )
     CheckError();
     }
 
-void StateCache::ConfigureViewport ( const ViewportSettings &NewSettings )
+void ConfigureViewport ( const ViewportSettings &NewSettings )
     {
     if ( NewSettings.Enabled == false )
         {
@@ -255,7 +260,7 @@ void StateCache::ConfigureViewport ( const ViewportSettings &NewSettings )
     CheckError();
     }
 
-void StateCache::ConfigureDepthTest ( const DepthTestSettings &NewSettings )
+void ConfigureDepthTest ( const DepthTestSettings &NewSettings )
     {
     if ( CurrentState.DepthTest == NewSettings )
         return;
@@ -274,5 +279,20 @@ void StateCache::ConfigureDepthTest ( const DepthTestSettings &NewSettings )
     CurrentState.DepthTest = NewSettings;
     CheckError();
     }
+
+void ConfigureFramebuffer ( const FramebufferHandle &NewFramebuffer )
+	{
+	if ( ( Enabled ) && ( NewFramebuffer == CurrentBoundFramebuffer ) )
+		return;
+	if ( !NewFramebuffer )
+		glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	else
+		{
+		FramebufferInfo *info = &Framebuffers[NewFramebuffer];
+		glBindFramebuffer ( GL_FRAMEBUFFER, info->OpenGLID );
+		}
+	CurrentBoundFramebuffer = NewFramebuffer;
+	}
+}
 }
 }
