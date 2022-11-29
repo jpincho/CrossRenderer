@@ -1,5 +1,5 @@
 #pragma once
-#include "CrossRendererConfig.h"
+#include "CrossRendererConfig.hpp"
 
 #if defined ( CROSS_RENDERER_COMPILER_MSVC )
 #pragma warning ( push )

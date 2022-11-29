@@ -1,6 +1,6 @@
 #pragma once
-#include "../Version.h"
-#include "../RendererDefinitions.h"
+#include "../Version.hpp"
+#include "../RendererDefinitions.hpp"
 
 namespace CrossRenderer
 {

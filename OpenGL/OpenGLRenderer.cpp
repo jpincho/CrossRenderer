@@ -1,8 +1,8 @@
-#include "OpenGLRenderer.h"
-#include "OpenGLContext.h"
-#include "OpenGLInternals.h"
-#include "../WindowManager/WindowManager.h"
-#include "../Renderer.h"
+#include "OpenGLRenderer.hpp"
+#include "OpenGLContext.hpp"
+#include "OpenGLInternals.hpp"
+#include "../WindowManager/WindowManager.hpp"
+#include "../Renderer.hpp"
 
 namespace CrossRenderer
 {

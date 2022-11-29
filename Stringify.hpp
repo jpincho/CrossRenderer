@@ -1,9 +1,9 @@
 #pragma once
-#include "RendererDefinitions.h"
-#include "ShaderBufferDefinitions.h"
-#include "ShaderDefinitions.h"
-#include "TextureDefinitions.h"
-#include "WindowManager/WindowManagerDefinitions.h"
+#include "RendererDefinitions.hpp"
+#include "ShaderBufferDefinitions.hpp"
+#include "ShaderDefinitions.hpp"
+#include "TextureDefinitions.hpp"
+#include "WindowManager/WindowManagerDefinitions.hpp"
 
 namespace CrossRenderer
 {

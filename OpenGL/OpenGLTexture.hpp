@@ -1,5 +1,5 @@
 #pragma once
-#include "../TextureDefinitions.h"
+#include "../TextureDefinitions.hpp"
 
 namespace CrossRenderer
 {

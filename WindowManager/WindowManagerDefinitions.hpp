@@ -1,8 +1,8 @@
 #pragma once
-#include <CrossRendererConfig.h>
+#include <CrossRendererConfig.hpp>
 #include <string>
-#include "../HandleTemplate.h"
-#include "../GLMHeaders.h"
+#include "../HandleTemplate.hpp"
+#include "../GLMHeaders.hpp"
 
 namespace CrossRenderer
 {

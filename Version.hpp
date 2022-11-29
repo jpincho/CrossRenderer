@@ -1,7 +1,7 @@
 #pragma once
 #include <string.h>
 #include <stdio.h>
-#include <CrossRendererConfig.h>
+#include <CrossRendererConfig.hpp>
 class Version
     {
     public:

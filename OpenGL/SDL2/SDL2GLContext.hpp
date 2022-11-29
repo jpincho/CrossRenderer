@@ -1,5 +1,5 @@
 #pragma once
-#include "../OpenGLContext.h"
+#include "../OpenGLContext.hpp"
 #include <SDL.h>
 
 namespace CrossRenderer

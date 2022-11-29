@@ -1,6 +1,6 @@
 #pragma once
-#include <CrossRendererConfig.h>
-#include "WindowManagerDefinitions.h"
+#include <CrossRendererConfig.hpp>
+#include "WindowManagerDefinitions.hpp"
 #include <unordered_set>
 
 namespace CrossRenderer

@@ -1,7 +1,7 @@
 #pragma once
-#include "GLMHeaders.h"
-#include "HandleTemplate.h"
-#include "PixelFormat.h"
+#include "GLMHeaders.hpp"
+#include "HandleTemplate.hpp"
+#include "PixelFormat.hpp"
 
 namespace CrossRenderer
 {

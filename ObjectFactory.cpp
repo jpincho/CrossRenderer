@@ -1,13 +1,13 @@
-#include "ObjectFactory.h"
-#include "Stringify.h"
-#include "WindowManager/WindowManager.h"
-#include "Renderer.h"
+#include "ObjectFactory.hpp"
+#include "Stringify.hpp"
+#include "WindowManager/WindowManager.hpp"
+#include "Renderer.hpp"
 
 #if defined (CROSS_RENDERER_SDL2_BACKEND_SUPPORT)
-#include "WindowManager/SDL2/SDL2Backend.h"
+#include "WindowManager/SDL2/SDL2Backend.hpp"
 #endif
 #if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT)
-#include "OpenGL/OpenGLRenderer.h"
+#include "OpenGL/OpenGLRenderer.hpp"
 #endif
 
 namespace CrossRenderer

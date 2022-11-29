@@ -1,5 +1,5 @@
 #pragma once
-#include "../ShaderBufferDefinitions.h"
+#include "../ShaderBufferDefinitions.hpp"
 
 namespace CrossRenderer
 {

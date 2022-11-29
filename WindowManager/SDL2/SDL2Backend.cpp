@@ -1,9 +1,9 @@
-#include "SDL2Backend.h"
+#include "SDL2Backend.hpp"
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include <unordered_map>
-#include "../../Logger.h"
-#include "../../VectorizedContainer.h"
+#include "../../Logger.hpp"
+#include "../../VectorizedContainer.hpp"
 
 namespace CrossRenderer
 {

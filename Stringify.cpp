@@ -1,4 +1,4 @@
-#include "Stringify.h"
+#include "Stringify.hpp"
 #include <stdexcept>
 
 namespace CrossRenderer

@@ -1,6 +1,6 @@
-#include "OpenGLShader.h"
-#include "OpenGLInternals.h"
-#include "../Logger.h"
+#include "OpenGLShader.hpp"
+#include "OpenGLInternals.hpp"
+#include "../Logger.hpp"
 
 namespace CrossRenderer
 {

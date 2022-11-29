@@ -1,5 +1,5 @@
-#include "../FramebufferDefinitions.h"
-#include "../TextureDefinitions.h"
+#include "../FramebufferDefinitions.hpp"
+#include "../TextureDefinitions.hpp"
 
 namespace CrossRenderer
 {

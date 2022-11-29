@@ -1,5 +1,5 @@
-#include "OpenGLShaderBuffer.h"
-#include "OpenGLInternals.h"
+#include "OpenGLShaderBuffer.hpp"
+#include "OpenGLInternals.hpp"
 
 namespace CrossRenderer
 {

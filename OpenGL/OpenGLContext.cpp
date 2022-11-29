@@ -1,9 +1,9 @@
-#include <CrossRendererConfig.h>
+#include <CrossRendererConfig.hpp>
 #include <glad/glad.h>
 #if defined ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
-#include "SDL2/SDL2GLContext.h"
+#include "SDL2/SDL2GLContext.hpp"
 #endif
-#include "../Logger.h"
+#include "../Logger.hpp"
 #include <algorithm>
 
 namespace CrossRenderer

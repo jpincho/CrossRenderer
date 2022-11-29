@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
-#include "ShaderBufferDefinitions.h"
-#include "ShaderDefinitions.h"
-#include "TextureDefinitions.h"
-#include "RendererDefinitions.h"
+#include "ShaderBufferDefinitions.hpp"
+#include "ShaderDefinitions.hpp"
+#include "TextureDefinitions.hpp"
+#include "RendererDefinitions.hpp"
 
 namespace CrossRenderer
 {

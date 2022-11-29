@@ -1,10 +1,10 @@
 #pragma once
-#include "../RenderCommandDefinitions.h"
-#include "../HandleTemplate.h"
-#include "OpenGLFramebuffer.h"
-#include "OpenGLShader.h"
-#include "OpenGLShaderBuffer.h"
-#include "OpenGLTexture.h"
+#include "../RenderCommandDefinitions.hpp"
+#include "../HandleTemplate.hpp"
+#include "OpenGLFramebuffer.hpp"
+#include "OpenGLShader.hpp"
+#include "OpenGLShaderBuffer.hpp"
+#include "OpenGLTexture.hpp"
 
 namespace CrossRenderer
 {

@@ -1,6 +1,6 @@
-#include "OpenGLStateCache.h"
-#include "OpenGLInternals.h"
-#include "../WindowManager/WindowManager.h"
+#include "OpenGLStateCache.hpp"
+#include "OpenGLInternals.hpp"
+#include "../WindowManager/WindowManager.hpp"
 
 namespace CrossRenderer
 {

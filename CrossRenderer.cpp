@@ -1,8 +1,8 @@
 #include <stdexcept>
-#include "CrossRenderer.h"
-#include "WindowManager/WindowManager.h"
-#include "Stringify.h"
-#include "ObjectFactory.h"
+#include "CrossRenderer.hpp"
+#include "WindowManager/WindowManager.hpp"
+#include "Stringify.hpp"
+#include "ObjectFactory.hpp"
 
 namespace CrossRenderer
 {

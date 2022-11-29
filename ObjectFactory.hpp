@@ -1,7 +1,7 @@
 #pragma once
-#include <CrossRendererConfig.h>
-#include "WindowManager/WindowManagerDefinitions.h"
-#include "RendererDefinitions.h"
+#include <CrossRendererConfig.hpp>
+#include "WindowManager/WindowManagerDefinitions.hpp"
+#include "RendererDefinitions.hpp"
 
 namespace CrossRenderer
 {

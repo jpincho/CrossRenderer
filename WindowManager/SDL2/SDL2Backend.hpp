@@ -1,5 +1,5 @@
 #pragma once
-#include "../WindowManager.h"
+#include "../WindowManager.hpp"
 #include <SDL.h>
 
 namespace CrossRenderer

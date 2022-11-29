@@ -1,13 +1,13 @@
 #pragma once
 #include <glad/glad.h>
-#include "../RendererDefinitions.h"
-#include "../ShaderBufferDefinitions.h"
-#include "../TextureDefinitions.h"
-#include "../ShaderDefinitions.h"
-#include "../FramebufferDefinitions.h"
-#include "../Version.h"
-#include "../VectorizedContainer.h"
-#include "OpenGLStateCache.h"
+#include "../RendererDefinitions.hpp"
+#include "../ShaderBufferDefinitions.hpp"
+#include "../TextureDefinitions.hpp"
+#include "../ShaderDefinitions.hpp"
+#include "../FramebufferDefinitions.hpp"
+#include "../Version.hpp"
+#include "../VectorizedContainer.hpp"
+#include "OpenGLStateCache.hpp"
 
 namespace CrossRenderer
 {

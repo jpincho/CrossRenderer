@@ -1,18 +1,21 @@
 include ( "ExternalProject" )
 
+# GLM #####################################
 ExternalProject_Add ( Install_glm
-    #GIT_REPOSITORY "https://github.com/g-truc/glm"
-    URL
-        "https://github.com/g-truc/glm/archive/0.9.7.6.zip"
-    URL_HASH
-        SHA512=53580df63d465a29b011506ee9595eecaf848a996b918418499ad58cb26608ce4566f1266df080ebc0f58c9efca8db8c7dd6371cbe15bf6579d862a53143b431
-    DOWNLOAD_DIR
-        ${CMAKE_BINARY_DIR}/Downloads/
+    GIT_REPOSITORY
+        https://github.com/g-truc/glm
+    GIT_SHALLOW
+        TRUE
     SOURCE_DIR
         ${CMAKE_BINARY_DIR}/Downloads/glm
     INSTALL_DIR
         ${GLM_PATH}
     CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        -DGLM_TEST_ENABLE_CXX_11=TRUE
+        -DGLM_TEST_ENABLE=FALSE
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         ${GLM_CMAKE_FLAGS}
+    EXCLUDE_FROM_ALL
+        TRUE
     )

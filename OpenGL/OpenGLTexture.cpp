@@ -1,5 +1,5 @@
-#include "OpenGLTexture.h"
-#include "OpenGLInternals.h"
+#include "OpenGLTexture.hpp"
+#include "OpenGLInternals.hpp"
 
 namespace CrossRenderer
 {

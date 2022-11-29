@@ -1,7 +1,7 @@
 #pragma once
-#include "HandleTemplate.h"
+#include "HandleTemplate.hpp"
 #include <vector>
-#include "GLMHeaders.h"
+#include "GLMHeaders.hpp"
 
 namespace CrossRenderer
 {

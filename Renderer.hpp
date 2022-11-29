@@ -1,13 +1,13 @@
 #pragma once
-#include <CrossRendererConfig.h>
-#include "RendererDefinitions.h"
-#include "ShaderBufferDefinitions.h"
-#include "TextureDefinitions.h"
-#include "ShaderDefinitions.h"
-#include "FramebufferDefinitions.h"
-#include "RenderCommandDefinitions.h"
-#include "Logger.h"
-#include "Stringify.h"
+#include <CrossRendererConfig.hpp>
+#include "RendererDefinitions.hpp"
+#include "ShaderBufferDefinitions.hpp"
+#include "TextureDefinitions.hpp"
+#include "ShaderDefinitions.hpp"
+#include "FramebufferDefinitions.hpp"
+#include "RenderCommandDefinitions.hpp"
+#include "Logger.hpp"
+#include "Stringify.hpp"
 
 namespace CrossRenderer
 {

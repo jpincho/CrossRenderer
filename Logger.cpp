@@ -1,9 +1,9 @@
-#include "Logger.h"
+#include "Logger.hpp"
 #include <mutex>
 #include <time.h>
 //#include <memory.h>*/
 #include <iostream>
-#include <CrossRendererConfig.h>
+#include <CrossRendererConfig.hpp>
 
 namespace ConsoleColor
 {
