@@ -38,24 +38,20 @@ bool DeleteShaderBuffer ( const ShaderBufferHandle Handle )
     return true;
     }
 
-bool ChangeShaderBufferContents ( const ShaderBufferHandle Handle, const ShaderBufferDescriptor CreationParameters )
+bool ChangeShaderBufferContents ( const ShaderBufferHandle Handle, const size_t Offset, const void *Data, const size_t DataSize )
     {
     ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
 
+	if ( DataSize > ShaderBufferInformation->DataSize )
+		return false;
     glBindBuffer ( ShaderBufferInformation->GLBufferType, ShaderBufferInformation->OpenGLID );
-    if ( CreationParameters.DataSize <= ShaderBufferInformation->DataSize )
-        glBufferSubData ( ShaderBufferInformation->GLBufferType, 0, CreationParameters.DataSize, CreationParameters.Data );
-    else
-		{
-        glBufferData ( ShaderBufferInformation->GLBufferType, CreationParameters.DataSize, CreationParameters.Data, ShaderBufferInformation->GLAccessType );
-		ShaderBufferInformation->Capacity = CreationParameters.DataSize;
-		}
+	glBufferSubData ( ShaderBufferInformation->GLBufferType, Offset, DataSize, Data );
+	
     glBindBuffer ( ShaderBufferInformation->GLBufferType, 0 ); // Unbind it
-    ShaderBufferInformation->DataSize = CreationParameters.DataSize;
     return CheckError();
     }
 
-void *MapShaderBuffer ( const ShaderBufferHandle Handle, const ShaderBufferAccessType AccessType )
+void *MapShaderBuffer ( const ShaderBufferHandle Handle, const ShaderBufferMapAccessType AccessType )
     {
     ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
     GLenum GLAccessType = Translate ( AccessType );
@@ -64,6 +60,8 @@ void *MapShaderBuffer ( const ShaderBufferHandle Handle, const ShaderBufferAcces
         return ShaderBufferInformation->MappedPointer;
 
     glBindBuffer ( ShaderBufferInformation->GLBufferType, ShaderBufferInformation->OpenGLID );
+	if ( CheckError () == false )
+		return nullptr;
     ShaderBufferInformation->MappedPointer = glMapBuffer ( ShaderBufferInformation->GLBufferType, GLAccessType );
     ShaderBufferInformation->GLMappedAccessType = GLAccessType;
     if ( CheckError() == false )

@@ -70,49 +70,11 @@ void ApplyState ( const RenderState &NewState )
 void Invalidate ( void )
     {
     CurrentState = RenderState();
-//    CurrentState.Viewport = RendererInfo.DefaultViewport;
-
-    if ( CurrentState.Culling.Enabled )
-        glEnable ( GL_CULL_FACE );
-    else
-        glDisable ( GL_CULL_FACE );
-    glCullFace ( Translate ( CurrentState.Culling.Mode ) );
-
-    if ( CurrentState.Blending.Enabled )
-        glEnable ( GL_BLEND );
-    else
-        glDisable ( GL_BLEND );
-    glBlendFunc ( Translate ( CurrentState.Blending.Source ), Translate ( CurrentState.Blending.Destination ) );
-
-    if ( CurrentState.Stencil.Enabled )
-        glEnable ( GL_STENCIL_TEST );
-    else
-        glDisable ( GL_STENCIL_TEST );
-    glStencilMask ( CurrentState.Stencil.Mask );
-    glStencilFunc ( Translate ( CurrentState.Stencil.Function ), CurrentState.Stencil.FunctionReference, CurrentState.Stencil.FunctionMask );
-    glStencilOp ( Translate ( CurrentState.Stencil.OnFail ), Translate ( CurrentState.Stencil.OnFailZ ), Translate ( CurrentState.Stencil.OnPassZ ) );
-
-    if ( CurrentState.Scissor.Enabled )
-        glEnable ( GL_SCISSOR_TEST );
-    else
-        glDisable ( GL_SCISSOR_TEST );
-    glScissor ( CurrentState.Scissor.LowerLeft.x, CurrentState.Scissor.LowerLeft.y, CurrentState.Scissor.Dimensions.x, CurrentState.Scissor.Dimensions.y );
-
-    if ( CurrentState.DepthTest.Enabled )
-        glEnable ( GL_DEPTH_TEST );
-    else
-        glDisable ( GL_DEPTH_TEST );
-    glDepthFunc ( Translate ( CurrentState.DepthTest.Mode ) );
-
-    if ( CurrentState.Viewport.Enabled )
-        glViewport ( CurrentState.Viewport.LowerLeft.x, CurrentState.Viewport.LowerLeft.y, CurrentState.Viewport.Dimensions.x, CurrentState.Viewport.Dimensions.y );
-    else
-        ConfigureViewport ( ViewportSettings() );
-
-//    if ( !CurrentState.Framebuffer.targetFramebuffer )
-//        glBindFramebuffer ( GL_FRAMEBUFFER, OpenGLFlags.defaultFramebuffer );
-//    else
-//        bindFramebuffer ( CurrentState.Framebuffer.targetFramebuffer );
+	CurrentState.Viewport.Dimensions = DefaultViewportSize;
+	bool PreviouslyEnabled = Enabled;
+	Enabled = false;
+	ApplyState ( CurrentState );
+	Enabled = PreviouslyEnabled;
     }
 
 RenderState GetCurrentState ( void )
@@ -244,19 +206,26 @@ void ConfigureScissor ( const ScissorSettings &NewSettings )
 
 void ConfigureViewport ( const ViewportSettings &NewSettings )
     {
+	ViewportSettings TempSettings = NewSettings;
     if ( NewSettings.Enabled == false )
         {
-        ViewportSettings Fullscreen;
-        Fullscreen.Set ( glm::uvec2 ( 0 ), DefaultViewportSize );
-        ConfigureViewport ( Fullscreen );
+		if ( DefaultViewportSize == CurrentState.Viewport.Dimensions )
         return;
+		TempSettings.Enabled = false;
+		TempSettings.LowerLeft = glm::uvec2 ( 0, 0 );
+		TempSettings.Dimensions = DefaultViewportSize;
         }
+	else
+		{
     if ( CurrentState.Viewport == NewSettings )
         return;
-
-    CurrentState.Viewport = NewSettings;
+		TempSettings = NewSettings;
+		}
+	if ( CurrentState.Viewport == TempSettings )
+		return;
 //    LOG_DEBUG ( "Setting viewport to %d %d %d %d", CurrentState.Viewport.LowerLeft.x, CurrentState.Viewport.LowerLeft.y, CurrentState.Viewport.Dimensions.x, CurrentState.Viewport.Dimensions.y );
-    glViewport ( CurrentState.Viewport.LowerLeft.x, CurrentState.Viewport.LowerLeft.y, CurrentState.Viewport.Dimensions.x, CurrentState.Viewport.Dimensions.y );
+	glViewport ( TempSettings.LowerLeft.x, TempSettings.LowerLeft.y, TempSettings.Dimensions.x, TempSettings.Dimensions.y );
+	CurrentState.Viewport = TempSettings;
     CheckError();
     }
 

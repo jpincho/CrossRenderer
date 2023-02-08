@@ -13,20 +13,20 @@ extern void ( *SetWindowPosition ) ( const RenderWindowHandle &Handle, const glm
 extern glm::ivec2 ( *GetWindowPosition ) ( const RenderWindowHandle &Handle );
 extern void ( *SetWindowSize ) ( const RenderWindowHandle &Handle, const glm::uvec2 &NewSize );
 extern glm::uvec2 ( *GetWindowSize ) ( const RenderWindowHandle &Handle );
-extern void ( *SetWindowTitle ) ( const RenderWindowHandle &Handle, const std::string &NewTitle );
-extern std::string ( *GetWindowTitle ) ( const RenderWindowHandle &Handle );
-extern bool ( *SetWindowFullscreen ) ( const RenderWindowHandle &Handle, const bool NewState );
-extern bool ( *IsWindowFullscreen ) ( const RenderWindowHandle &Handle );
+extern void ( *SetWindowTitle ) ( const RenderWindowHandle &Handle, const char *NewTitle );
+extern const char *( *GetWindowTitle ) ( const RenderWindowHandle &Handle );
+extern bool (*SetWindowState )( const RenderWindowHandle &Handle, const WindowState NewState );
+extern WindowState (*GetWindowState) ( const RenderWindowHandle &Handle );
 
-extern void ( *ProcessEvents ) ( void );
-
-extern uint32_t ( *GetKeyCode ) ( const std::string KeyName );
-extern uint32_t ( *GetKeyScanCode ) ( const std::string KeyName );
-extern const char * ( *GetKeyName ) ( const uint32_t KeyCode );
+extern void (*SetMouseCursorState) ( const RenderWindowHandle &Handle, const bool NewState );
+extern bool (*GetMouseCursorState) ( const RenderWindowHandle &Handle );
 extern glm::ivec2 ( *GetMousePosition ) ( void );
 extern uint32_t ( *GetMouseButtonStatus ) ( void );
-extern std::string ( *GetErrorDescription ) ( void );
+extern void (*MakeGLActive) ( const RenderWindowHandle &Handle );
+extern void (*SwapGLWindowBuffer) ( const RenderWindowHandle &Handle );
+
 extern std::unordered_set<RenderWindowHandle> WindowList;
+void CreateNewWindowManager ( const WindowManagerBackend &Backend );
 
 void AddEventListener ( void ( *Function ) ( const WindowEvent & ) );
 void DeleteEventListener ( void ( *Function ) ( const WindowEvent & ) );

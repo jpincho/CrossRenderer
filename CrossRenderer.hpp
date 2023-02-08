@@ -1,7 +1,7 @@
 #pragma once
 #include <CrossRendererConfig.hpp>
 #include "WindowManager/WindowManager.hpp"
-#include "Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace CrossRenderer
 {

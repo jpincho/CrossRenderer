@@ -1,7 +1,7 @@
 #pragma once
-#include "GLMHeaders.hpp"
-#include "RendererHandleTemplate.hpp"
-#include "PixelFormat.hpp"
+#include "../GLMHeaders.hpp"
+#include "../RendererHandleTemplate.hpp"
+#include "../PixelFormat.hpp"
 
 namespace CrossRenderer
 {
@@ -44,6 +44,15 @@ struct TextureFilterSettings
         MinFilter = NewMinFilter;
         MagFilter = NewMagFilter;
         }
+	bool operator == ( const TextureFilterSettings &Other ) const
+		{
+		return ( ( MinFilter == Other.MinFilter ) && ( MagFilter == Other.MagFilter ) );
+		}
+	bool operator != ( const TextureFilterSettings &Other ) const
+		{
+		return !( operator ==( Other ) );
+		}
+
     TextureFilter MinFilter, MagFilter;
 	};
 
@@ -62,6 +71,14 @@ struct TextureWrapSettings
         Horizontal = NewHorizontal;
         Vertical = NewVertical;
         }
+	bool operator == ( const TextureWrapSettings &Other ) const
+		{
+		return ( ( Horizontal == Other.Horizontal ) && ( Vertical == Other.Vertical ) );
+		}
+	bool operator != ( const TextureWrapSettings &Other ) const
+		{
+		return !( operator ==( Other ) );
+		}
     TextureWrapMode Horizontal, Vertical;
 	};
 
@@ -93,9 +110,19 @@ struct TextureBindSettings
     {
     TextureBindSettings ( void ) = default;
     TextureBindSettings ( const TextureHandle NewHandle ) : Handle ( NewHandle )
-        {}
+		{
+		}
     TextureBindSettings ( const TextureHandle NewHandle, const TextureWrapSettings &NewWrapSettings, const TextureFilterSettings &NewFilterSettings ) : Handle ( NewHandle ), WrapSettings ( NewWrapSettings ), FilterSettings ( NewFilterSettings )
-        {}
+		{
+		}
+	bool operator == ( const TextureBindSettings &Other ) const
+		{
+		return ( ( Handle == Other.Handle ) && ( WrapSettings == Other.WrapSettings ) && ( FilterSettings == Other.FilterSettings ) );
+		}
+	bool operator != ( const TextureBindSettings &Other ) const
+		{
+		return !( operator ==( Other ) );
+		}
     TextureHandle Handle;
     TextureWrapSettings WrapSettings;
     TextureFilterSettings FilterSettings;

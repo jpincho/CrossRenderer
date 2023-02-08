@@ -14,10 +14,12 @@ namespace CrossRenderer
 namespace OpenGL
 {
 struct OpenGLInformationStruct
-    {
-    GLint MaxTextureUnits;
-    Version OpenGLVersion, GLSLVersion;
-    };
+	{
+	GLint MaxTextureUnits;
+	Version OpenGLVersion, GLSLVersion;
+	std::string OpenGLRendererString, OpenGLVendorString;
+	std::vector <std::string> Extensions;
+	};
 
 extern OpenGLInformationStruct OpenGLInformation;
 
@@ -109,6 +111,7 @@ GLenum Translate ( const CullingMode Value );
 GLenum Translate ( const CullingFaceWinding Value );
 GLenum Translate ( const ShaderBufferComponentType Value );
 GLenum Translate ( const ShaderBufferAccessType Value );
+GLenum Translate ( const ShaderBufferMapAccessType Value );
 GLenum Translate ( const ShaderBufferType Value );
 GLenum Translate ( const PrimitiveType Value );
 GLint Translate ( const TextureFilter Value );

@@ -1,7 +1,7 @@
 #pragma once
-#include "RendererHandleTemplate.hpp"
+#include "../RendererHandleTemplate.hpp"
+#include "../GLMHeaders.hpp"
 #include <vector>
-#include "GLMHeaders.hpp"
 
 namespace CrossRenderer
 {
@@ -19,6 +19,13 @@ enum class ShaderBufferAccessType : uint8_t
     Dynamic,
     Stream
     };
+
+enum class ShaderBufferMapAccessType : uint8_t
+	{
+	ReadOnly,
+	WriteOnly,
+	ReadWrite
+	};
 
 enum class ShaderBufferType : uint8_t
     {

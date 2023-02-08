@@ -1,4 +1,7 @@
 #include "Renderer.hpp"
+#if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT)
+#include "OpenGL/OpenGLRenderer.hpp"
+#endif
 
 namespace CrossRenderer
 {
@@ -13,17 +16,25 @@ bool ( *EndFrame ) ( const RenderWindowHandle &Handle ) = 0;
 
 bool ( *RunCommand ) ( const RenderCommand &Command ) = 0;
 
+// Shader buffer
 ShaderBufferHandle ( *CreateShaderBuffer ) ( const ShaderBufferDescriptor CreationParameters ) = 0;
 bool ( *DeleteShaderBuffer ) ( const ShaderBufferHandle Handle ) = 0;
-bool ( *ChangeShaderBufferContents ) ( const ShaderBufferHandle Handle, const ShaderBufferDescriptor CreationParameters ) = 0;
+bool ( *ChangeShaderBufferContents )( const ShaderBufferHandle Handle, const size_t Offset, const void *Data, const size_t DataSize ) = 0;
+void *( *MapShaderBuffer )( const ShaderBufferHandle Handle, const ShaderBufferMapAccessType AccessType ) = 0;
+bool ( *UnmapShaderBuffer )( const ShaderBufferHandle Handle ) = 0;
+const ShaderBufferDescriptor ( *GetShaderBufferDescriptor )( const ShaderBufferHandle Handle ) = 0;
 
+// Texture
 TextureHandle ( *CreateTexture ) ( const TextureDescriptor CreationParameters ) = 0;
 bool ( *DeleteTexture ) ( const TextureHandle Handle ) = 0;
 bool ( *Load2DTextureData ) ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data ) = 0;
 bool ( *Update2DTextureRegion ) ( const TextureHandle Handle, const glm::uvec2 LowerLeft, const glm::uvec2 RegionDimensions, const PixelFormat SourcePixelFormat, const void *Data ) = 0;
 bool ( *LoadCubeMapTextureData ) ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, void *Data[6] ) = 0;
 glm::uvec2 ( *GetTextureDimensions ) ( const TextureHandle Handle ) = 0;
+PixelFormat ( *GetTextureFormat )( const TextureHandle Handle ) = 0;
+TextureDescriptor ( *GetTextureDescriptor )( const TextureHandle Handle ) = 0;
 
+// Shader
 ShaderHandle ( *CreateShader ) ( const ShaderCode &NewCode ) = 0;
 bool ( *DeleteShader ) ( const ShaderHandle Handle ) = 0;
 bool ( *ChangeShaderCode ) ( const ShaderHandle Handle, const ShaderCode &NewCode ) = 0;
@@ -33,11 +44,59 @@ void ( *GetShaderAttributeList ) ( const ShaderHandle Handle, std::vector <std::
 ShaderAttributeHandle ( *GetShaderAttributeHandle ) ( const ShaderHandle Handle, const std::string Name ) = 0;
 void ( *GetShaderInformation ) ( const ShaderHandle Handle, ShaderInformation &Information ) = 0;
 
+// Framebuffer
 FramebufferHandle ( *CreateFramebuffer ) ( const FramebufferDescriptor CreationParameters ) = 0;
 bool ( *DeleteFramebuffer ) ( const FramebufferHandle Handle ) = 0;
-glm::uvec2 ( *GetFramebufferSize ) ( const FramebufferHandle Handle ) = 0;
+void ( *SetFramebufferClearColor ) ( const FramebufferHandle Handle, const glm::vec4 ClearColor ) = 0;
+void ( *SetFramebufferClearDepth ) ( const FramebufferHandle Handle, const float ClearDepth ) = 0;
+void ( *ClearFramebuffer ) ( const FramebufferHandle &Handle, const bool ShouldClearColorBuffer, const glm::vec4 Color, const bool ShouldClearDepthBuffer, const float DepthClearValue, const bool ShouldClearStencilBuffer, const int StencilClearValue, const int StencilMask ) = 0;
+glm::uvec2 ( *GetFramebufferSize )( const FramebufferHandle Handle ) = 0;
 TextureHandle ( *GetColorBufferFromFramebuffer ) ( const FramebufferHandle Handle, const size_t Index ) = 0;
 TextureHandle ( *GetDepthBufferFromFramebuffer ) ( const FramebufferHandle Handle ) = 0;
+
+void CreateNewRenderer ( const RendererBackend &Backend )
+	{
+	switch ( Backend )
+		{
+#if defined (CROSS_RENDERER_OPENGL_CORE_SUPPORT)
+		case RendererBackend::OpenGLCore:
+#define ATTRIB(x) x = OpenGL::x
+			ATTRIB ( InitializeRenderer );
+			ATTRIB ( ShutdownRenderer );
+			ATTRIB ( StartRenderToFramebuffer );
+			ATTRIB ( DisplayFramebuffer );
+			ATTRIB ( StartFrame );
+			ATTRIB ( EndFrame );
+			ATTRIB ( RunCommand );
+			ATTRIB ( CreateShaderBuffer );
+			ATTRIB ( DeleteShaderBuffer );
+			ATTRIB ( ChangeShaderBufferContents );
+			ATTRIB ( CreateTexture );
+			ATTRIB ( DeleteTexture );
+			ATTRIB ( Load2DTextureData );
+			ATTRIB ( Update2DTextureRegion );
+			ATTRIB ( LoadCubeMapTextureData );
+			ATTRIB ( GetTextureDimensions );
+			ATTRIB ( CreateShader );
+			ATTRIB ( DeleteShader );
+			ATTRIB ( GetShaderUniformList );
+			ATTRIB ( GetShaderUniformHandle );
+			ATTRIB ( GetShaderAttributeList );
+			ATTRIB ( GetShaderAttributeHandle );
+			ATTRIB ( GetShaderInformation );
+			ATTRIB ( CreateFramebuffer );
+			ATTRIB ( DeleteFramebuffer );
+			ATTRIB ( GetFramebufferSize );
+			ATTRIB ( GetColorBufferFromFramebuffer );
+			ATTRIB ( GetDepthBufferFromFramebuffer );
+#undef ATTRIB
+			break;
+#endif
+		default:
+			LOG_ERROR ( "Renderer backend '%s' is not built", Stringify ( Backend ) );
+			return;
+		}
+	}
 
 bool SanityCheckRenderCommand ( const RenderCommand& Command )
     {
@@ -61,7 +120,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
             }
         }
 
-    // Find Invalid attribute handles
+	// Find invalid attribute handles
     for ( auto &Iterator : Command.ShaderBufferBindings )
         {
         if ( Iterator.AttributeHandle == ShaderAttributeHandle::Invalid )
@@ -72,7 +131,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
             }
         }
 
-    // Find Invalid texture uniform handles
+	// Find invalid texture uniform handles
     for ( auto &Iterator : Command.TextureBindings )
         {
         if ( Iterator.UniformHandle == ShaderUniformHandle::Invalid )
@@ -170,7 +229,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         }
     for ( unsigned Iterator = 0; Iterator < Info.Uniforms.size(); ++Iterator )
         {
-        LOG_ERROR ( "Missing value for uniform '%s'. Type '%s'", Info.Uniforms[Iterator].Name.c_str(), CrossRenderer::Stringify ( Info.Uniforms[Iterator].Type ) );
+		LOG_ERROR ( "Missing value for uniform '%s'. Type '%s'", Info.Uniforms[Iterator].Name.c_str(), Stringify ( Info.Uniforms[Iterator].Type ) );
         Result = false;
         }
     // Find missing attribute bindings
@@ -183,7 +242,7 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
         }
     for ( unsigned Iterator = 0; Iterator < Info.Attributes.size(); ++Iterator )
         {
-        LOG_ERROR ( "Missing binding for attribute '%s'. Type '%s'", Info.Attributes[Iterator].Name.c_str(), CrossRenderer::Stringify ( Info.Attributes[Iterator].Type ) );
+		LOG_ERROR ( "Missing binding for attribute '%s'. Type '%s'", Info.Attributes[Iterator].Name.c_str(), Stringify ( Info.Attributes[Iterator].Type ) );
         Result = false;
         }
     return Result;

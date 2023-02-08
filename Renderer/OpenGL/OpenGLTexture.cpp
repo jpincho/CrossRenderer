@@ -1,5 +1,6 @@
 #include "OpenGLTexture.hpp"
 #include "OpenGLInternals.hpp"
+#include "../Logger.hpp"
 
 namespace CrossRenderer
 {
@@ -26,6 +27,8 @@ static struct
     GLint SizedFormat;
     } PixelFormatData[] =
     {
+		{GL_UNSIGNED_BYTE, GL_RED, GL_R8},// Red8
+		{GL_UNSIGNED_BYTE, GL_RG, GL_RG8},// RedGreen88
         {GL_UNSIGNED_BYTE, GL_RGB, GL_RGB8},// RedGreenBlue888
         {GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA8},// RedGreenBlueAlpha8888
         {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24}// DepthComponent
@@ -47,6 +50,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
             glGenTextures ( 1, &NewTexture.OpenGLID );
             if ( CheckError () == false )
                 {
+				LOG_ERROR ( "Unable to create 2D texture" );
                 return TextureHandle::Invalid;
                 }
             glBindTexture ( GL_TEXTURE_2D, NewTexture.OpenGLID );
@@ -65,6 +69,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
             glGenTextures ( 1, &NewTexture.OpenGLID );
             if ( CheckError () == false )
                 {
+				LOG_ERROR ( "Unable to create cubemap texture" );
                 return TextureHandle::Invalid;
                 }
             glBindTexture ( GL_TEXTURE_CUBE_MAP, NewTexture.OpenGLID );
@@ -80,6 +85,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
             break;
             }
         default:
+			LOG_ERROR ( "Unhandled texture type for creation" );
             return TextureHandle::Invalid;
         }
 
@@ -167,5 +173,16 @@ glm::uvec2 GetTextureDimensions ( const TextureHandle Handle )
     TextureInfo *TextureInformation = &Textures[Handle];
     return TextureInformation->Dimensions;
     }
+
+PixelFormat GetTextureFormat ( const TextureHandle Handle )
+	{
+	TextureInfo *TextureInformation = &Textures[Handle];
+	return TextureInformation->Format;
+	}
+
+TextureDescriptor GetTextureDescriptor ( const TextureHandle Handle )
+	{
+	return Textures[Handle];
+	}
 }
 }

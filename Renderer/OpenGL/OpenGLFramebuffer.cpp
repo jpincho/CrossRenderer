@@ -84,6 +84,18 @@ bool DeleteFramebuffer ( const FramebufferHandle Handle )
     return true;
     }
 
+void SetFramebufferClearColor ( const FramebufferHandle Handle, const glm::vec4 ClearColor )
+	{
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
+	FramebufferInformation->ClearColor = ClearColor;
+	}
+
+void SetFramebufferClearDepth ( const FramebufferHandle Handle, const float ClearDepth )
+	{
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
+	FramebufferInformation->ClearDepth = ClearDepth;
+	}
+
 void ClearFramebuffer ( const FramebufferHandle &Handle, const bool ShouldClearColorBuffer, const glm::vec4 Color, const bool ShouldClearDepthBuffer, const float DepthClearValue, const bool ShouldClearStencilBuffer, const int StencilClearValue, const int StencilMask )
 	{
 	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];

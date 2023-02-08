@@ -53,3 +53,4 @@ build
 
 # Astyle generated files
 *.orig
+*.bak

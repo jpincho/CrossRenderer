@@ -1,65 +1,189 @@
 #include "OpenGLShader.hpp"
 #include "OpenGLInternals.hpp"
 #include "../Logger.hpp"
+#include "../ConsoleTextColor.hpp"
 
 namespace CrossRenderer
 {
 namespace OpenGL
 {
-ShaderUniformType TranslateOpenGLUniformType ( GLenum Type );
-std::string GetInfoLog ( bool IsProgram, GLuint GLID );
-bool BuildShaderObject ( unsigned &Out_ShaderObjectGLID, const unsigned ShaderType, const std::string &ShaderString );
-bool CompileShader ( const GLuint OpenGLID, const ShaderCode &NewCode );
 bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &Uniforms, std::vector <AttributeInfo> &Attributes );
 
-ShaderHandle CreateShader ( const ShaderCode &NewCode )
+ShaderObjectHandle CreateShaderObject ( const ShaderObjectType Type )
+	{
+	GLenum GLShaderTypes[] = { GL_VERTEX_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
+
+	ShaderObjectInfo NewShaderObject;
+	NewShaderObject.OpenGLID = glCreateShader ( GLShaderTypes[ ( int ) Type] );
+	NewShaderObject.Type = Type;
+	ShaderObjectHandle NewHandle ( ShaderObjects.GetFreeIndex () );
+	ShaderObjects[NewHandle] = NewShaderObject;
+	return NewHandle;
+	}
+
+void DeleteShaderObject ( const ShaderObjectHandle Handle )
+	{
+	ShaderObjectInfo *ShaderObjectInformation = &ShaderObjects[Handle];
+
+	glDeleteShader ( ShaderObjectInformation->OpenGLID );
+	ShaderObjects.ReleaseIndex ( Handle );
+	}
+
+bool BuildShaderObject ( const ShaderObjectHandle Handle, const std::string &Code )
+	{
+	ShaderObjectInfo *ShaderObjectInformation = &ShaderObjects[Handle];
+	LOG_DEBUG ( "Compiling shader object" );
+
+	// Loads the shader source code
+	ShaderObjectInformation->Code = Code;
+	const char *Sources[1];
+	Sources[0] = ShaderObjectInformation->Code.c_str ();
+
+	int CompileStatus = 0;
+	glShaderSource ( ShaderObjectInformation->OpenGLID, ( GLsizei ) 1, Sources, nullptr );
+	glCompileShader ( ShaderObjectInformation->OpenGLID );
+	glGetShaderiv ( ShaderObjectInformation->OpenGLID, GL_COMPILE_STATUS, &CompileStatus );
+
+	if ( ( CheckError () == false ) || ( CompileStatus != GL_TRUE ) )
+		{
+		std::string Infolog;
+		int InfoLogLength;
+		glGetShaderiv ( ShaderObjectInformation->OpenGLID, GL_INFO_LOG_LENGTH, &InfoLogLength );
+		if ( InfoLogLength )
+			{
+			Infolog.resize ( InfoLogLength );
+			glGetShaderInfoLog ( ShaderObjectInformation->OpenGLID, InfoLogLength, nullptr, ( GLchar * ) Infolog.c_str () );
+			}
+
+		std::vector <std::string> ErrorStrings;
+		if ( Infolog.length () > 0 )
+			{
+			LOG_ERROR ( "OpenGL error during shader object compilation. '%s'", Infolog.c_str() );
+			return false;
+			}
+		else
+			{
+			LOG_ERROR ( "OpenGL error during shader object compilation. Unable to parse log. '%s'", Infolog.c_str () );
+			LOG_ERROR ( "%s", Code.c_str () );
+			}
+		}
+
+	LOG_DEBUG ( "Shader object successfully compiled" );
+	return true;
+	}
+
+ShaderHandle CreateShader ( void )
     {
     ShaderInfo NewShader;
     NewShader.OpenGLID = glCreateProgram();
     if ( CheckError() == false )
         return ShaderHandle::Invalid;
+	ShaderHandle NewHandle ( Shaders.GetFreeIndex () );
+	Shaders[NewHandle] = NewShader;
+	return NewHandle;
+	}
 
-    if ( CompileShader ( NewShader.OpenGLID, NewCode ) == false )
+ShaderHandle CreateShader ( const ShaderCode &NewCode )
         {
-        glDeleteProgram ( NewShader.OpenGLID );
-        return ShaderHandle::Invalid;
-        }
+	ShaderObjectHandle VertexShader, GeometryShader, FragmentShader;
+	ShaderHandle NewHandle = CreateShader ();
 
-    LOG_DEBUG ( "Created shader program %u", NewShader.OpenGLID );
+	std::vector <ShaderObjectHandle> ShaderObjectsToLink;
 
-    if ( DetectUniformsAndAttributes ( NewShader.OpenGLID, NewShader.Uniforms, NewShader.Attributes ) == false )
+	if ( !NewCode.VertexShader.empty () )
         {
-        LOG_ERROR ( "Error detecting uniforms/attributes" );
-        glDeleteProgram ( NewShader.OpenGLID );
-        return ShaderHandle::Invalid;
+		VertexShader = CreateShaderObject ( ShaderObjectType::Vertex );
+		if ( BuildShaderObject ( VertexShader, NewCode.VertexShader ) == false )
+			goto OnError;
+		ShaderObjectsToLink.push_back ( VertexShader );
+		}
+	if ( !NewCode.GeometryShader.empty () )
+		{
+		GeometryShader = CreateShaderObject ( ShaderObjectType::Geometry );
+		if ( BuildShaderObject ( GeometryShader, NewCode.GeometryShader ) == false )
+			goto OnError;
+		ShaderObjectsToLink.push_back ( GeometryShader );
+		}
+	if ( !NewCode.FragmentShader.empty () )
+		{
+		FragmentShader = CreateShaderObject ( ShaderObjectType::Fragment );
+		if ( BuildShaderObject ( FragmentShader, NewCode.FragmentShader ) == false )
+			goto OnError;
+		ShaderObjectsToLink.push_back ( FragmentShader );
         }
+	if ( LinkShader ( NewHandle, ShaderObjectsToLink ) == false )
+		goto OnError;
 
-    ShaderHandle NewHandle ( Shaders.GetFreeIndex() );
-    Shaders[NewHandle] = NewShader;
     return NewHandle;
+OnError:
+	if ( VertexShader )
+		DeleteShaderObject ( VertexShader );
+	if ( FragmentShader )
+		DeleteShaderObject ( FragmentShader );
+	if ( GeometryShader )
+		DeleteShaderObject ( GeometryShader );
+	if ( NewHandle )
+		DeleteShader ( NewHandle );
+	return ShaderHandle::Invalid;
     }
 
 bool DeleteShader ( const ShaderHandle Handle )
     {
     ShaderInfo *ShaderInformation = &Shaders[Handle];
+	for ( const auto &Iterator : ShaderInformation->AttachedShaderObjects )
+		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator].OpenGLID );
 
     glDeleteProgram ( ShaderInformation->OpenGLID );
     Shaders.ReleaseIndex ( Handle );
     return true;
     }
 
-bool ChangeShaderCode ( const ShaderHandle Handle, const ShaderCode &NewCode )
+bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHandle> &ObjectHandles )
     {
     ShaderInfo *ShaderInformation = &Shaders[Handle];
+	std::vector <GLuint> GLIDs;
+	for ( const auto &Iterator : ShaderInformation->AttachedShaderObjects )
+		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator].OpenGLID );
+	for ( const auto &Iterator : ObjectHandles )
+		glAttachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator].OpenGLID );
+	ShaderInformation->AttachedShaderObjects = ObjectHandles;
 
-    if ( CompileShader ( ShaderInformation->OpenGLID, NewCode ) == false )
+	// Link it, and check it
+	glLinkProgram ( ShaderInformation->OpenGLID );
+
+	GLint LinkStatus;
+	glGetProgramiv ( ShaderInformation->OpenGLID, GL_LINK_STATUS, &LinkStatus );
+	if ( LinkStatus != GL_TRUE )
+		{
+		std::string Infolog;
+		int InfoLogLength;
+		glGetProgramiv ( ShaderInformation->OpenGLID, GL_INFO_LOG_LENGTH, &InfoLogLength );
+		if ( InfoLogLength )
+			{
+			Infolog.resize ( InfoLogLength );
+			glGetProgramInfoLog ( ShaderInformation->OpenGLID, InfoLogLength, nullptr, ( GLchar * ) Infolog.c_str () );
+			}
+
+		LOG_ERROR ( "OpenGL error during shader program linking. '%s'", Infolog.c_str () );
+		for ( const auto &Iterator : ObjectHandles )
+			{
+			GLint length;
+			glGetShaderiv ( ShaderObjects[Iterator].OpenGLID, GL_SHADER_SOURCE_LENGTH, &length );
+			std::string Source;
+			Source.resize ( length );
+			glGetShaderSource ( ShaderObjects[Iterator].OpenGLID, length, &length, ( char * ) Source.c_str () );
+			LOG_ERROR ( "%s", Source.c_str () );
+			}
+
         return false;
-
+		}
+	LOG_DEBUG ( "Linked shader program %u", ShaderInformation->OpenGLID );
     if ( DetectUniformsAndAttributes ( ShaderInformation->OpenGLID, ShaderInformation->Uniforms, ShaderInformation->Attributes ) == false )
         {
         LOG_ERROR ( "Error detecting uniforms/attributes" );
         return false;
         }
+
     return true;
     }
 
@@ -80,7 +204,7 @@ ShaderUniformHandle GetShaderUniformHandle ( const ShaderHandle Handle, const st
         if ( ShaderInformation->Uniforms[cont].Name == Name )
             return ShaderUniformHandle ( cont );
         }
-    LOG_ERROR ( "Invalid uniform '%s' for shader", Name.c_str() );
+	//LOG_ERROR ( "Invalid uniform '%s' for shader", Name.c_str() );
     return ShaderUniformHandle::Invalid;
     }
 
@@ -101,7 +225,7 @@ ShaderAttributeHandle GetShaderAttributeHandle ( const ShaderHandle Handle, cons
         if ( ShaderInformation->Attributes[cont].Name == Name )
             return ShaderAttributeHandle ( cont );
         }
-    LOG_ERROR ( "Invalid attribute '%s' for shader", Name.c_str() );
+	//LOG_ERROR ( "Invalid attribute '%s' for shader", Name.c_str() );
     return ShaderAttributeHandle::Invalid;
     }
 
@@ -124,168 +248,8 @@ void GetShaderInformation ( const ShaderHandle Handle, ShaderInformation &Inform
         Info.Handle = ShaderAttributeHandle ( cont );
         Information.Attributes.push_back ( Info );
         }
+	Information.AttachedShaderObjects = ShaderInformation->AttachedShaderObjects;
     Information.Handle = Handle;
-    }
-
-ShaderUniformType TranslateOpenGLUniformType ( GLenum Type )
-    {
-    switch ( Type )
-        {
-        case GL_FLOAT:
-            return ShaderUniformType::Float;
-        case GL_FLOAT_VEC2:
-            return ShaderUniformType::Float2;
-        case GL_FLOAT_VEC3:
-            return ShaderUniformType::Float3;
-        case GL_FLOAT_VEC4:
-            return ShaderUniformType::Float4;
-
-        case GL_INT:
-            return ShaderUniformType::Integer;
-        case GL_INT_VEC2:
-            return ShaderUniformType::Integer2;
-        case GL_INT_VEC3:
-            return ShaderUniformType::Integer3;
-        case GL_INT_VEC4:
-            return ShaderUniformType::Integer4;
-
-        case GL_UNSIGNED_INT:
-            return ShaderUniformType::UnsignedInteger;
-#if defined GL_UNSIGNED_INT_VEC2
-        case GL_UNSIGNED_INT_VEC2:
-            return ShaderUniformType::UnsignedInteger2;
-        case GL_UNSIGNED_INT_VEC3:
-            return ShaderUniformType::UnsignedInteger3;
-        case GL_UNSIGNED_INT_VEC4:
-            return ShaderUniformType::UnsignedInteger4;
-#endif
-        case GL_BOOL:
-            return ShaderUniformType::Bool;
-        case GL_BOOL_VEC2:
-            return ShaderUniformType::Bool2;
-        case GL_BOOL_VEC3:
-            return ShaderUniformType::Bool3;
-        case GL_BOOL_VEC4:
-            return ShaderUniformType::Bool4;
-
-        case GL_FLOAT_MAT2:
-            return ShaderUniformType::Matrix2;
-        case GL_FLOAT_MAT3:
-            return ShaderUniformType::Matrix3;
-        case GL_FLOAT_MAT4:
-            return ShaderUniformType::Matrix4;
-        case GL_SAMPLER_2D:
-            return ShaderUniformType::Sampler2D;
-        case GL_SAMPLER_3D:
-            return ShaderUniformType::Sampler3D;
-        case GL_SAMPLER_CUBE:
-            return ShaderUniformType::SamplerCube;
-        default:
-            throw std::runtime_error ( "Unhandled shader uniform type" );
-        }
-    }
-
-std::string GetInfoLog ( bool IsProgram, GLuint GLID )
-    {
-    std::string Result;
-    int InfologSize = 0;
-    CheckError();
-    if ( IsProgram )
-        glGetProgramiv ( GLID, GL_INFO_LOG_LENGTH, &InfologSize );
-    else
-        glGetShaderiv ( GLID, GL_INFO_LOG_LENGTH, &InfologSize );
-
-    CheckError();
-    InfologSize = std::min ( InfologSize, 1024 );
-    if ( InfologSize > 0 )
-        {
-        Result.resize ( InfologSize );
-        if ( IsProgram )
-            glGetProgramInfoLog ( GLID, InfologSize, &InfologSize, const_cast <char *> ( Result.data() ) );
-        else
-            glGetShaderInfoLog ( GLID, InfologSize, &InfologSize, const_cast <char *> ( Result.data() ) );
-        }
-    CheckError();
-    return Result;
-    }
-
-bool BuildShaderObject ( unsigned &ShaderObjectGLID, const unsigned ShaderType, const std::string &ShaderString )
-    {
-    int CompileStatus = 0;
-
-    LOG_DEBUG ( "Compiling shader object" );
-    ShaderObjectGLID = glCreateShader ( ShaderType );
-
-    // Loads the shader source code
-    const char *Sources[1];
-    Sources[0] = ShaderString.c_str();
-
-    glShaderSource ( ShaderObjectGLID, ( GLsizei ) 1, Sources, nullptr );
-    glCompileShader ( ShaderObjectGLID );
-    glGetShaderiv ( ShaderObjectGLID, GL_COMPILE_STATUS, &CompileStatus );
-
-    char Infolog[1024];
-    glGetShaderInfoLog ( ShaderObjectGLID, 1024, nullptr, Infolog );
-    if ( CheckError() == false )
-        {
-        LOG_ERROR ( "OpenGL error during shader object compilation" );
-        glDeleteShader ( ShaderObjectGLID );
-        return false;
-        }
-
-    if ( CompileStatus != GL_TRUE )
-        {
-        LOG_ERROR ( "Compilation failed - %s", Infolog );
-        glDeleteShader ( ShaderObjectGLID );
-        return false;
-        }
-
-    LOG_DEBUG ( "Shader object successfully compiled" );
-    return true;
-    }
-
-bool CompileShader ( const GLuint OpenGLID, const ShaderCode &NewCode )
-    {
-    GLuint VertexShaderGLID = 0, GeometryShaderGLID = 0, FragmentShaderGLID = 0;
-    std::vector <GLuint> GLIDs;
-    if ( BuildShaderObject ( VertexShaderGLID, GL_VERTEX_SHADER, NewCode.VertexShader ) == false )
-        return ShaderHandle::Invalid;
-    GLIDs.push_back ( VertexShaderGLID );
-    if ( NewCode.GeometryShader.size() != 0 )
-        {
-        if ( BuildShaderObject ( GeometryShaderGLID, GL_GEOMETRY_SHADER, NewCode.GeometryShader ) == false )
-            goto error;
-        GLIDs.push_back ( GeometryShaderGLID );
-        }
-    if ( BuildShaderObject ( FragmentShaderGLID, GL_FRAGMENT_SHADER, NewCode.FragmentShader ) == false )
-        goto error;
-    GLIDs.push_back ( FragmentShaderGLID );
-
-    for ( auto &id : GLIDs )
-        glAttachShader ( OpenGLID, id );
-
-    // Link it, and check it
-    glLinkProgram ( OpenGLID );
-
-    GLint LinkStatus;
-    glGetProgramiv ( OpenGLID, GL_LINK_STATUS, &LinkStatus );
-    if ( LinkStatus != GL_TRUE )
-        {
-        std::string InfoLog = GetInfoLog ( true, OpenGLID );
-        LOG_ERROR ( "Shader program %u link error. %s", OpenGLID, InfoLog.c_str() );
-        goto error;
-        }
-    LOG_DEBUG ( "Linked shader program %u", OpenGLID );
-
-    for ( auto &id : GLIDs )
-        glDeleteShader ( id );
-
-    return true;
-
-error:
-    for ( auto &id : GLIDs )
-        glDeleteShader ( id );
-    return false;
     }
 
 bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &Uniforms, std::vector <AttributeInfo> &Attributes )
@@ -406,7 +370,5 @@ cleanup:
     delete[] Name;
     return Result;
     }
-
-
 }
 }

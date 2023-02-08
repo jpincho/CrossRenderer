@@ -15,8 +15,8 @@ bool ShutdownRenderer ( void );
 
 bool StartRenderToFramebuffer ( const FramebufferHandle &Handle );
 bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle );
-bool StartFrame ( const RenderWindowHandle &Handle );
-bool EndFrame ( const RenderWindowHandle &Handle );
+bool StartFrame ( const RenderWindowHandle &WindowHandle );
+bool EndFrame ( const RenderWindowHandle &WindowHandle );
 
 bool RunCommand ( const RenderCommand &Command );
 }

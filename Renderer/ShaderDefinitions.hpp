@@ -1,6 +1,6 @@
 #pragma once
-#include "GLMHeaders.hpp"
-#include "RendererHandleTemplate.hpp"
+#include "../GLMHeaders.hpp"
+#include "../RendererHandleTemplate.hpp"
 #include "ShaderBufferDefinitions.hpp"
 #include <stdexcept>
 

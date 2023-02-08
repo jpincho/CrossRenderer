@@ -3,8 +3,8 @@
 An attempt to create a cross-platform cross-graphics api framework
 
 Currently supported platforms:
-- Windows ( through SDL2 )
-- Linux ( through SDL2 )
+- Windows ( through GLFW3 )
+- Linux ( through GLFW3 )
 
 Currently supported graphics APIs:
 - OpenGL Core 3+
@@ -14,7 +14,3 @@ Currently supported graphics APIs:
 	- Multitexturing
 	- Framebuffers
 	- Uniform buffer objects
-
-Uses:
-- glm ( https://github.com/g-truc/glm )
-- SDL2 ( https://www.libsdl.org/ )

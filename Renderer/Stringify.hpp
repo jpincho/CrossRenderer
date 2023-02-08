@@ -4,13 +4,10 @@
 #include "ShaderBufferDefinitions.hpp"
 #include "ShaderDefinitions.hpp"
 #include "TextureDefinitions.hpp"
-#include "WindowManager/WindowManagerDefinitions.hpp"
 
 namespace CrossRenderer
 {
 const char *Stringify ( const RendererBackend Value );
-const char *Stringify ( const WindowEventType Value );
-const char *Stringify ( const WindowManagerBackend Value );
 const char *Stringify ( const PrimitiveType Value );
 const char *Stringify ( const BlendMode Value );
 const char *Stringify ( const StencilFunction Value );

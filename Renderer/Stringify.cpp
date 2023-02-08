@@ -6,7 +6,7 @@ namespace CrossRenderer
 const char *Stringify ( const RendererBackend Value )
 	{
 #define STRINGIFY(X) case RendererBackend::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( OpenGLCore );
 		default:
@@ -15,45 +15,10 @@ const char *Stringify ( const RendererBackend Value )
 #undef STRINGIFY
 	}
 
-const char *Stringify ( const WindowEventType Value )
-	{
-#define STRINGIFY(X) case WindowEventType::X: return #X;
-	switch (Value)
-		{
-		STRINGIFY ( WindowCreated );
-		STRINGIFY ( WindowClosed );
-		STRINGIFY ( WindowMoved );
-		STRINGIFY ( WindowResized );
-		STRINGIFY ( KeyPressed );
-		STRINGIFY ( KeyReleased );
-		STRINGIFY ( ButtonPressed );
-		STRINGIFY ( ButtonReleased );
-		STRINGIFY ( MouseWheel );
-		STRINGIFY ( MouseMoved );
-		STRINGIFY ( Quit );
-		STRINGIFY ( FrameStarted );
-		STRINGIFY ( FrameEnded );
-		STRINGIFY ( TextInput );
-		}
-#undef STRINGIFY
-	throw std::runtime_error ( "Unhandled window event type" );
-	}
-
-const char *Stringify ( const WindowManagerBackend Value )
-	{
-#define STRINGIFY(X) case WindowManagerBackend::X: return #X;
-	switch (Value)
-		{
-		STRINGIFY ( SDL2 );
-		}
-#undef STRINGIFY
-	throw std::runtime_error ( "Unhandled window manager backend type" );
-	}
-
 const char *Stringify ( const PrimitiveType Value )
 	{
 #define STRINGIFY(X) case PrimitiveType::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Points );
 		STRINGIFY ( LineList );
@@ -68,7 +33,7 @@ const char *Stringify ( const PrimitiveType Value )
 const char *Stringify ( const BlendMode Value )
 	{
 #define STRINGIFY(X) case BlendMode::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Zero );
 		STRINGIFY ( One );
@@ -90,7 +55,7 @@ const char *Stringify ( const BlendMode Value )
 const char *Stringify ( const StencilFunction Value )
 	{
 #define STRINGIFY(X) case StencilFunction::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Never );
 		STRINGIFY ( Less );
@@ -108,7 +73,7 @@ const char *Stringify ( const StencilFunction Value )
 const char *Stringify ( const StencilFailAction Value )
 	{
 #define STRINGIFY(X) case StencilFailAction::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Zero );
 		STRINGIFY ( Keep );
@@ -124,7 +89,7 @@ const char *Stringify ( const StencilFailAction Value )
 const char *Stringify ( const CullingMode Value )
 	{
 #define STRINGIFY(X) case CullingMode::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Front );
 		STRINGIFY ( Back );
@@ -137,7 +102,7 @@ const char *Stringify ( const CullingMode Value )
 const char *Stringify ( const CullingFaceWinding Value )
 	{
 #define STRINGIFY(X) case CullingFaceWinding::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Clockwise );
 		STRINGIFY ( CounterClockwise );
@@ -149,7 +114,7 @@ const char *Stringify ( const CullingFaceWinding Value )
 const char *Stringify ( const DepthTestMode Value )
 	{
 #define STRINGIFY(X) case DepthTestMode::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Never );
 		STRINGIFY ( Less );
@@ -167,7 +132,7 @@ const char *Stringify ( const DepthTestMode Value )
 const char *Stringify ( const ShaderUniformType Value )
 	{
 #define STRINGIFY(X) case ShaderUniformType::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Bool );
 		STRINGIFY ( Bool2 );
@@ -201,11 +166,13 @@ const char *Stringify ( const ShaderUniformType Value )
 const char *Stringify ( const PixelFormat Value )
 	{
 #define STRINGIFY(X) case PixelFormat::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
-		STRINGIFY ( DepthComponent );
+		STRINGIFY ( Red8 );
+		STRINGIFY ( RedGreen88 );
 		STRINGIFY ( RedGreenBlue888 );
 		STRINGIFY ( RedGreenBlueAlpha8888 );
+		STRINGIFY ( DepthComponent );
 		}
 #undef STRINGIFY
 	throw std::runtime_error ( "Unhandled pixel format" );
@@ -214,7 +181,7 @@ const char *Stringify ( const PixelFormat Value )
 const char *Stringify ( const ShaderObjectType Value )
 	{
 #define STRINGIFY(X) case ShaderObjectType::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Vertex );
 		STRINGIFY ( Geometry );
@@ -227,7 +194,7 @@ const char *Stringify ( const ShaderObjectType Value )
 const char *Stringify ( const TextureWrapMode Value )
 	{
 #define STRINGIFY(X) case TextureWrapMode::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Repeat );
 		STRINGIFY ( MirroredRepeat );
@@ -241,7 +208,7 @@ const char *Stringify ( const TextureWrapMode Value )
 const char *Stringify ( const TextureFilter Value )
 	{
 #define STRINGIFY(X) case TextureFilter::X: return #X;
-	switch (Value)
+	switch ( Value )
 		{
 		STRINGIFY ( Linear );
 		STRINGIFY ( Nearest );
