@@ -257,7 +257,7 @@ void ConfigureFramebuffer ( const FramebufferHandle &NewFramebuffer )
 		glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	else
 		{
-		FramebufferInfo *info = &Framebuffers[NewFramebuffer];
+		FramebufferInfo *info = &Framebuffers[NewFramebuffer.GetKey ()];
 		glBindFramebuffer ( GL_FRAMEBUFFER, info->OpenGLID );
 		}
 	CurrentBoundFramebuffer = NewFramebuffer;

@@ -17,21 +17,21 @@ ShaderObjectHandle CreateShaderObject ( const ShaderObjectType Type )
 	NewShaderObject.OpenGLID = glCreateShader ( GLShaderTypes[ ( int ) Type] );
 	NewShaderObject.Type = Type;
 	ShaderObjectHandle NewHandle ( ShaderObjects.GetFreeIndex () );
-	ShaderObjects[NewHandle] = NewShaderObject;
+	ShaderObjects[NewHandle.GetKey ()] = NewShaderObject;
 	return NewHandle;
 	}
 
 void DeleteShaderObject ( const ShaderObjectHandle Handle )
 	{
-	ShaderObjectInfo *ShaderObjectInformation = &ShaderObjects[Handle];
+	ShaderObjectInfo *ShaderObjectInformation = &ShaderObjects[Handle.GetKey()];
 
 	glDeleteShader ( ShaderObjectInformation->OpenGLID );
-	ShaderObjects.ReleaseIndex ( Handle );
+	ShaderObjects.ReleaseIndex ( Handle.GetKey () );
 	}
 
 bool BuildShaderObject ( const ShaderObjectHandle Handle, const std::string &Code )
 	{
-	ShaderObjectInfo *ShaderObjectInformation = &ShaderObjects[Handle];
+	ShaderObjectInfo *ShaderObjectInformation = &ShaderObjects[Handle.GetKey ()];
 	LOG_DEBUG ( "Compiling shader object" );
 
 	// Loads the shader source code
@@ -79,7 +79,7 @@ ShaderHandle CreateShader ( void )
     if ( CheckError() == false )
         return ShaderHandle::Invalid;
 	ShaderHandle NewHandle ( Shaders.GetFreeIndex () );
-	Shaders[NewHandle] = NewShader;
+	Shaders[NewHandle.GetKey ()] = NewShader;
 	return NewHandle;
 	}
 
@@ -129,23 +129,23 @@ OnError:
 
 bool DeleteShader ( const ShaderHandle Handle )
     {
-    ShaderInfo *ShaderInformation = &Shaders[Handle];
+    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey()];
 	for ( const auto &Iterator : ShaderInformation->AttachedShaderObjects )
-		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator].OpenGLID );
+		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator.GetKey ()].OpenGLID );
 
     glDeleteProgram ( ShaderInformation->OpenGLID );
-    Shaders.ReleaseIndex ( Handle );
+    Shaders.ReleaseIndex ( Handle.GetKey () );
     return true;
     }
 
 bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHandle> &ObjectHandles )
     {
-    ShaderInfo *ShaderInformation = &Shaders[Handle];
+    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 	std::vector <GLuint> GLIDs;
 	for ( const auto &Iterator : ShaderInformation->AttachedShaderObjects )
-		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator].OpenGLID );
+		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator.GetKey ()].OpenGLID );
 	for ( const auto &Iterator : ObjectHandles )
-		glAttachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator].OpenGLID );
+		glAttachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator.GetKey ()].OpenGLID );
 	ShaderInformation->AttachedShaderObjects = ObjectHandles;
 
 	// Link it, and check it
@@ -168,10 +168,10 @@ bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHand
 		for ( const auto &Iterator : ObjectHandles )
 			{
 			GLint length;
-			glGetShaderiv ( ShaderObjects[Iterator].OpenGLID, GL_SHADER_SOURCE_LENGTH, &length );
+			glGetShaderiv ( ShaderObjects[Iterator.GetKey ()].OpenGLID, GL_SHADER_SOURCE_LENGTH, &length );
 			std::string Source;
 			Source.resize ( length );
-			glGetShaderSource ( ShaderObjects[Iterator].OpenGLID, length, &length, ( char * ) Source.c_str () );
+			glGetShaderSource ( ShaderObjects[Iterator.GetKey ()].OpenGLID, length, &length, ( char * ) Source.c_str () );
 			LOG_ERROR ( "%s", Source.c_str () );
 			}
 
@@ -189,7 +189,7 @@ bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHand
 
 void GetShaderUniformList ( const ShaderHandle Handle, std::vector <std::pair <std::string, ShaderUniformType>> &UniformList )
     {
-    ShaderInfo *ShaderInformation = &Shaders[Handle];
+    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 
     for ( const auto &iterator : ShaderInformation->Uniforms )
         UniformList.push_back ( std::pair <std::string, ShaderUniformType> ( iterator.Name, iterator.Type ) );
@@ -197,7 +197,7 @@ void GetShaderUniformList ( const ShaderHandle Handle, std::vector <std::pair <s
 
 ShaderUniformHandle GetShaderUniformHandle ( const ShaderHandle Handle, const std::string Name )
     {
-    ShaderInfo *ShaderInformation = &Shaders[Handle];
+    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 
     for ( unsigned cont = 0; cont < ShaderInformation->Uniforms.size(); ++cont )
         {
@@ -210,7 +210,7 @@ ShaderUniformHandle GetShaderUniformHandle ( const ShaderHandle Handle, const st
 
 void GetShaderAttributeList ( const ShaderHandle Handle, std::vector <std::pair <std::string, ShaderAttributeType>> &AttributeList )
     {
-    ShaderInfo *ShaderInformation = &Shaders[Handle];
+    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 
     for ( const auto &iterator : ShaderInformation->Attributes )
         AttributeList.push_back ( std::pair <std::string, ShaderAttributeType> ( iterator.Name, iterator.Type ) );
@@ -218,7 +218,7 @@ void GetShaderAttributeList ( const ShaderHandle Handle, std::vector <std::pair 
 
 ShaderAttributeHandle GetShaderAttributeHandle ( const ShaderHandle Handle, const std::string Name )
     {
-    ShaderInfo *ShaderInformation = &Shaders[Handle];
+    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 
     for ( unsigned cont = 0; cont < ShaderInformation->Attributes.size(); ++cont )
         {

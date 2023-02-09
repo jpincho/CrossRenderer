@@ -91,60 +91,60 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
 
 	RenderWindowHandle NewHandle ( Windows.GetFreeIndex () );
 	glfwSetWindowUserPointer ( NewWindow.Window, (void *) NewHandle.GetKey () );
-	Windows[NewHandle] = NewWindow;
+	Windows[NewHandle.GetKey()] = NewWindow;
 	WindowManager::WindowList.insert ( NewHandle );
 	return NewHandle;
 	}
 
 bool DestroyWindow ( const RenderWindowHandle &Handle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey()];
 	glfwDestroyWindow ( WindowInformation->Window );
 	return true;
 	}
 
 void SetWindowPosition ( const RenderWindowHandle &Handle, const glm::ivec2 &NewPosition )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	glfwSetWindowPos ( WindowInformation->Window, NewPosition.x, NewPosition.y );
 	glfwGetWindowPos ( WindowInformation->Window, &WindowInformation->Position.x, &WindowInformation->Position.y );
 	}
 
 glm::ivec2 GetWindowPosition ( const RenderWindowHandle &Handle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	return WindowInformation->Position;
 	}
 
 void SetWindowSize ( const RenderWindowHandle &Handle, const glm::uvec2 &NewSize )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	glfwSetWindowSize ( WindowInformation->Window, NewSize.x, NewSize.y );
 	glfwGetWindowSize ( WindowInformation->Window, (int *) &WindowInformation->Size.x, (int *) &WindowInformation->Size.y );
 	}
 
 glm::uvec2 GetWindowSize ( const RenderWindowHandle &Handle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	return WindowInformation->Size;
 	}
 
 void SetWindowTitle ( const RenderWindowHandle &Handle, const char *NewTitle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	glfwSetWindowTitle ( WindowInformation->Window, NewTitle );
 	WindowInformation->Title.assign ( NewTitle );
 	}
 
 const char *GetWindowTitle ( const RenderWindowHandle &Handle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	return WindowInformation->Title.c_str ();
 	}
 
 bool SetWindowState ( const RenderWindowHandle &Handle, const WindowState NewState )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 
 	if ( WindowInformation->State == NewState )
 		return true;
@@ -173,19 +173,19 @@ bool SetWindowState ( const RenderWindowHandle &Handle, const WindowState NewSta
 
 WindowState GetWindowState ( const RenderWindowHandle &Handle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	return WindowInformation->State;
 	}
 
 void SetMouseCursorState ( const RenderWindowHandle &Handle, const bool NewState )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	glfwSetInputMode ( WindowInformation->Window, GLFW_CURSOR, NewState == true ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED );
 	}
 
 bool GetMouseCursorState ( const RenderWindowHandle &Handle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	int State = glfwGetInputMode ( WindowInformation->Window, GLFW_CURSOR );
 	if ( State == GLFW_CURSOR_DISABLED )
 		return false;
@@ -204,13 +204,13 @@ uint32_t GetMouseButtonStatus ( void )
 
 void MakeGLActive ( const RenderWindowHandle &Handle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	glfwMakeContextCurrent ( WindowInformation->Window );
 	}
 
 void SwapGLWindowBuffer ( const RenderWindowHandle &Handle )
 	{
-	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	glfwSwapBuffers ( WindowInformation->Window );
 	glfwPollEvents ();
 	}
@@ -221,7 +221,6 @@ void SwapGLWindowBuffer ( const RenderWindowHandle &Handle )
 void GLFWWindowPosCallback ( GLFWwindow *GLFWHandle, int NewX, int NewY )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
 	WindowInformation->Position.x = NewX;
@@ -237,7 +236,6 @@ void GLFWWindowPosCallback ( GLFWwindow *GLFWHandle, int NewX, int NewY )
 void GLFWWindowSizeCallback ( GLFWwindow *GLFWHandle, int NewX, int NewY )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
 	WindowInformation->Size.x = NewX;
@@ -253,7 +251,6 @@ void GLFWWindowSizeCallback ( GLFWwindow *GLFWHandle, int NewX, int NewY )
 void GLFWWindowCloseCallback ( GLFWwindow *GLFWHandle )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	WindowEvent NewEvent;
 	NewEvent.EventType = WindowEventType::WindowClosed;
@@ -264,7 +261,6 @@ void GLFWWindowCloseCallback ( GLFWwindow *GLFWHandle )
 void GLFWWindowFocusCallback ( GLFWwindow *GLFWHandle, int State )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	WindowEvent NewEvent;
 	NewEvent.EventType = WindowEventType::WindowFocusChanged;
@@ -276,7 +272,6 @@ void GLFWWindowFocusCallback ( GLFWwindow *GLFWHandle, int State )
 void GLFWWindowIconifyCallback ( GLFWwindow *GLFWHandle, int State )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
 
@@ -294,7 +289,6 @@ void GLFWWindowIconifyCallback ( GLFWwindow *GLFWHandle, int State )
 void GLFWWindowMaximizeCallback ( GLFWwindow *GLFWHandle, int State )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
 	if ( State )
@@ -312,7 +306,6 @@ void GLFWWindowMaximizeCallback ( GLFWwindow *GLFWHandle, int State )
 void GLFWKeyCallback ( GLFWwindow *GLFWHandle, int Key, int Scancode, int Action, int )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	WindowEvent NewEvent;
 	switch ( Action )
@@ -337,7 +330,6 @@ void GLFWKeyCallback ( GLFWwindow *GLFWHandle, int Key, int Scancode, int Action
 void GLFWMouseButtonCallback ( GLFWwindow *GLFWHandle, int Button, int Action, int )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	WindowEvent NewEvent;
 	switch ( Action )
@@ -362,7 +354,6 @@ void GLFWMouseButtonCallback ( GLFWwindow *GLFWHandle, int Button, int Action, i
 void GLFWMouseWheelCallback ( GLFWwindow *GLFWHandle, double XOffset, double YOffset )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	WindowEvent NewEvent;
 	NewEvent.EventType = WindowEventType::MouseWheel;
@@ -375,7 +366,6 @@ void GLFWMouseWheelCallback ( GLFWwindow *GLFWHandle, double XOffset, double YOf
 void GLFWMouseCursorCallback ( GLFWwindow *GLFWHandle, double XOffset, double YOffset )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	WindowEvent NewEvent;
 	NewEvent.EventType = WindowEventType::MouseMoved;
@@ -391,7 +381,6 @@ void GLFWMouseCursorCallback ( GLFWwindow *GLFWHandle, double XOffset, double YO
 void GLFWCharCallback ( GLFWwindow *GLFWHandle, unsigned int Char )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
-	assert ( Handle != 0 );
 
 	WindowEvent NewEvent;
 	NewEvent.EventType = WindowEventType::TextInput;

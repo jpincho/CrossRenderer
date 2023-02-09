@@ -26,14 +26,14 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 		}
 	ActiveWindow = *( WindowManager::WindowList.begin () );
 	WindowManager::MakeGLActive ( ActiveWindow );
+	gladLoadGL ();
+	DetectOpenGLInformation ();
+
 	if ( OpenGLInformation.OpenGLVersion.Lesser ( 3, 0 ) )
 		{
 		LOG_ERROR ( "OpenGL Core 3.0+ needed" );
 		return false;
 		}
-
-	gladLoadGL ();
-	DetectOpenGLInformation ();
 
 	// If necessary, create a VAO
 	glGenVertexArrays ( 1, &GeneralVAO );
@@ -75,7 +75,7 @@ bool ShutdownRenderer ( void )
 
 bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
 	{
-	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey()];
 
 	StateCache::SetDefaultViewportSize ( FramebufferInformation->Dimensions );
 	StateCache::ConfigureScissor ( ScissorSettings () );
@@ -108,7 +108,7 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
 	StateCache::ConfigureViewport ( ViewportSettings () );
 	StateCache::ConfigureStencil ( StencilBufferSettings () );
 
-	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle];
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey()];
 	if ( FramebufferInformation->OpenGLID != 0 )
 		{
 		glBindFramebuffer ( GL_READ_FRAMEBUFFER, FramebufferInformation->OpenGLID );
@@ -153,7 +153,7 @@ bool RunCommand ( const RenderCommand &Command )
 	// Disable active vertex attributes
 	if ( ( ActiveShader ) && ( ActiveShader != Command.Shader ) )
 		{
-		ShaderInfo *OldShaderInfo = &Shaders[ActiveShader];
+		ShaderInfo *OldShaderInfo = &Shaders[ActiveShader.GetKey ()];
 		for ( auto &AttributeIterator : OldShaderInfo->Attributes )
 			{
 			if ( AttributeIterator.Enabled == true )
@@ -165,7 +165,7 @@ bool RunCommand ( const RenderCommand &Command )
 		}
 
 	// Activate new shader
-	ShaderInfo *ShaderInformation = &Shaders[Command.Shader];
+	ShaderInfo *ShaderInformation = &Shaders[Command.Shader.GetKey ()];
 	if ( ActiveShader != Command.Shader )
 		{
 		glUseProgram ( ShaderInformation->OpenGLID );
@@ -232,7 +232,7 @@ bool RunCommand ( const RenderCommand &Command )
 				break;
 			case ShaderUniformType::Block:
 				{
-				ShaderBufferInfo SBInfo = ShaderBuffers[Iterator.UniformValue.BlockValue];
+				ShaderBufferInfo SBInfo = ShaderBuffers[Iterator.UniformValue.BlockValue.GetKey()];
 				glUniformBlockBinding ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, UniformBlockBindingIndex );
 				glBindBufferRange ( GL_UNIFORM_BUFFER, UniformBlockBindingIndex, SBInfo.OpenGLID, 0, SBInfo.DataSize );
 				++UniformBlockBindingIndex;

@@ -24,7 +24,9 @@ template <typename Type> class VectorizedContainer
             if ( NewSize <= TotalCount )
                 return;
             size_t Delta = NewSize - TotalCount;
-            Objects = ( ListNode * ) realloc ( Objects, sizeof ( ListNode ) * NewSize );
+			void *TempPointer = realloc ( Objects, sizeof ( ListNode ) * NewSize );
+			assert ( TempPointer );
+			Objects = (ListNode *) TempPointer;
             assert ( Objects );
             if ( TotalCount == 0 ) // First allocation. Initialize the first node.
                 {

@@ -54,10 +54,6 @@ class RendererHandleTemplate
             {
 			return *this != Invalid;
             }
-        operator intptr_t ( void ) const
-            {
-            return Key;
-            }
 		static const RendererHandleTemplate<TypeTag> Invalid;
     };
 

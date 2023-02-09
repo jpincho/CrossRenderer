@@ -26,21 +26,21 @@ ShaderBufferHandle CreateShaderBuffer ( const ShaderBufferDescriptor CreationPar
         }
 
     ShaderBufferHandle NewHandle ( ShaderBuffers.GetFreeIndex() );
-    ShaderBuffers[NewHandle] = NewBufferInformation;
+    ShaderBuffers[NewHandle.GetKey ()] = NewBufferInformation;
     return NewHandle;
     }
 
 bool DeleteShaderBuffer ( const ShaderBufferHandle Handle )
     {
-    ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
+    ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle.GetKey ()];
     glDeleteBuffers ( 1, &ShaderBufferInformation->OpenGLID );
-    ShaderBuffers.ReleaseIndex ( Handle );
+    ShaderBuffers.ReleaseIndex ( Handle.GetKey () );
     return true;
     }
 
 bool ChangeShaderBufferContents ( const ShaderBufferHandle Handle, const size_t Offset, const void *Data, const size_t DataSize )
     {
-    ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
+    ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle.GetKey ()];
 
 	if ( DataSize > ShaderBufferInformation->DataSize )
 		return false;
@@ -53,7 +53,7 @@ bool ChangeShaderBufferContents ( const ShaderBufferHandle Handle, const size_t 
 
 void *MapShaderBuffer ( const ShaderBufferHandle Handle, const ShaderBufferMapAccessType AccessType )
     {
-    ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
+    ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle.GetKey ()];
     GLenum GLAccessType = Translate ( AccessType );
 
     if ( ( ShaderBufferInformation->MappedPointer ) && ( ShaderBufferInformation->GLMappedAccessType == GLAccessType ) )
@@ -72,7 +72,7 @@ void *MapShaderBuffer ( const ShaderBufferHandle Handle, const ShaderBufferMapAc
 
 bool UnmapShaderBuffer ( const ShaderBufferHandle Handle )
     {
-    ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle];
+    ShaderBufferInfo *ShaderBufferInformation = &ShaderBuffers[Handle.GetKey ()];
 
     if ( ShaderBufferInformation->MappedPointer == nullptr )
         return true;
@@ -86,7 +86,7 @@ bool UnmapShaderBuffer ( const ShaderBufferHandle Handle )
 
 const ShaderBufferDescriptor GetShaderBufferDescriptor ( const ShaderBufferHandle Handle )
 	{
-	return ShaderBuffers[Handle];
+	return ShaderBuffers[Handle.GetKey()];
 	}
 }
 }

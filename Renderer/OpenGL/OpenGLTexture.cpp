@@ -96,28 +96,28 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
         }
 
     TextureHandle NewHandle ( Textures.GetFreeIndex () );
-    Textures[NewHandle] = NewTexture;
+    Textures[NewHandle.GetKey ()] = NewTexture;
     return NewHandle;
     }
 
 bool DeleteTexture ( const TextureHandle Handle )
     {
-    TextureInfo *TextureInformation = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle.GetKey()];
 
     glDeleteTextures ( 1, &TextureInformation->OpenGLID );
-    Textures.ReleaseIndex ( Handle );
+    Textures.ReleaseIndex ( Handle.GetKey () );
     return true;
     }
 
 bool Load2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data )
     {
-    TextureInfo *TextureInformation = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle.GetKey()];
     return Update2DTextureRegion ( Handle, glm::uvec2 ( 0, 0 ), TextureInformation->Dimensions, SourcePixelFormat, Data );
     }
 
 bool Update2DTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerLeft, const glm::uvec2 RegionDimensions, const PixelFormat SourcePixelFormat, const void *Data )
     {
-    TextureInfo *TextureInformation = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle.GetKey ()];
 
     if ( ( LowerLeft.x + RegionDimensions.x > TextureInformation->Dimensions.x ) ||
             ( LowerLeft.y + RegionDimensions.y > TextureInformation->Dimensions.y ) )
@@ -149,7 +149,7 @@ bool Update2DTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerL
 
 bool LoadCubeMapTextureData ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, void *Data[6] )
     {
-    TextureInfo *TextureInformation = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle.GetKey ()];
     glBindTexture ( GL_TEXTURE_CUBE_MAP, TextureInformation->OpenGLID );
     for ( unsigned Face = 0; Face < 6; ++Face )
         {
@@ -170,19 +170,19 @@ bool LoadCubeMapTextureData ( const TextureHandle Handle, const PixelFormat Sour
 
 glm::uvec2 GetTextureDimensions ( const TextureHandle Handle )
     {
-    TextureInfo *TextureInformation = &Textures[Handle];
+    TextureInfo *TextureInformation = &Textures[Handle.GetKey ()];
     return TextureInformation->Dimensions;
     }
 
 PixelFormat GetTextureFormat ( const TextureHandle Handle )
 	{
-	TextureInfo *TextureInformation = &Textures[Handle];
+	TextureInfo *TextureInformation = &Textures[Handle.GetKey ()];
 	return TextureInformation->Format;
 	}
 
 TextureDescriptor GetTextureDescriptor ( const TextureHandle Handle )
 	{
-	return Textures[Handle];
+	return Textures[Handle.GetKey ()];
 	}
 }
 }
