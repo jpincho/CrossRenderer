@@ -62,7 +62,7 @@ void Log ( const char *Filename, const char *PrettyFunctionName, const char *Fun
 		ConsoleTextColor::TextColorReset ( LogLevelFormatStrings[(int) LogLevel::Log] );
 		ConsoleTextColor::TextColorReset ( TextColorResetString );
 
-#if defined ( ILLUSION_TARGET_PLATFORM_WINDOWS )
+#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
 		// Set output mode to handle virtual terminal sequences
 		HANDLE hOut = GetStdHandle ( STD_OUTPUT_HANDLE );
 		HANDLE hIn = GetStdHandle ( STD_INPUT_HANDLE );
@@ -105,7 +105,7 @@ void Log ( const char *Filename, const char *PrettyFunctionName, const char *Fun
 	int Written;
 #if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
 	Written = vsnprintf_s ( Buffer, 1024, _TRUNCATE, Message, args );
-#elif defined ( ILLUSION_TARGET_PLATFORM_LINUX )
+#elif defined ( CROSS_RENDERER_TARGET_PLATFORM_LINUX )
 	Written = vsnprintf ( Buffer, 1024, Message, args );
 #endif
 	if ( Written == -1 )
