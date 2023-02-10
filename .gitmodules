@@ -1,0 +1,3 @@
+[submodule "CMakeUtils"]
+	path = CMakeUtils
+	url = git@github.com:jpincho/CMakeUtils

@@ -1,185 +1,171 @@
 #include "Logger.hpp"
 #include <mutex>
 #include <time.h>
-//#include <memory.h>*/
-#include <iostream>
 #include <CrossRendererConfig.hpp>
-
-namespace ConsoleColor
-{
-enum class Attribute : int8_t
-    {
-    Ignore = -1,
-    Reset = 0,
-    Bright,
-    Dim,
-    Blink,
-    Reverse = 7,
-    Hidden
-    };
-
-enum class Color : int8_t
-    {
-    Ignore = -1,
-    Black = 0,
-    Red,
-    Green,
-    Yellow,
-    Blue,
-    Magenta,
-    Cyan,
-    White
-    };
-
-std::string TextColor ( Color Foreground, Color Background, Attribute Attribute )
-    {
-    static std::string Commands[9][9];
-    if ( Commands[1][1].empty () )
-        {
-        for ( int8_t ForegroundIterator = ( int8_t ) Color::Ignore; ForegroundIterator <= ( int8_t ) Color::White; ++ForegroundIterator )
-            {
-            for ( int8_t BackgroundIterator = ( int8_t ) Color::Ignore; BackgroundIterator <= ( int8_t ) Color::White; ++BackgroundIterator )
-                {
-                Commands[ForegroundIterator + 1][BackgroundIterator + 1].assign ( "" );
-                if ( ForegroundIterator != ( int8_t ) Color::Ignore )
-                    {
-                    char Temp[10];
-                    snprintf ( Temp, 10, ";%d", ( int8_t ) ( ForegroundIterator ) + 30 );
-                    Commands[ForegroundIterator + 1][BackgroundIterator + 1].append ( Temp );
-                    }
-                if ( BackgroundIterator != ( int8_t ) Color::Ignore )
-                    {
-                    char Temp[10];
-                    snprintf ( Temp, 10, ";%d", ( int8_t ) ( BackgroundIterator ) + 40 );
-                    Commands[ForegroundIterator + 1][BackgroundIterator + 1].append ( Temp );
-                    }
-                }
-            }
-        }
-    char command[13] = { 0 };
-    snprintf ( command, 13, "%c[%d%sm", 0x1B, ( int ) Attribute, Commands[ ( int8_t ) Foreground + 1][ ( int8_t ) Background + 1].c_str() );
-    return std::string ( command );
-    }
-
-const std::string &NoTextColor ( void )
-    {
-    static std::string NoColor;
-    if ( NoColor.empty () )
-        {
-        NoColor.resize ( 5 );
-        snprintf ( &NoColor[0], NoColor.length (), "%c[0m", 0x1B );
-        }
-    return NoColor;
-    }
-}
-
+#include "ConsoleTextColor.hpp"
 namespace CrossRenderer
 {
 LoggerOptions Options;
 static std::mutex LoggerMutex;
 
+const char *Stringify ( const LogLevel Value )
+	{
+#define STRINGIFY(X) case LogLevel::X: return #X;
+	switch ( Value )
+		{
+		STRINGIFY ( Error );
+		STRINGIFY ( Warning );
+		STRINGIFY ( Debug );
+		STRINGIFY ( Log );
+		STRINGIFY ( Raw );
+		}
+#undef STRINGIFY
+	throw "Unhandled log level";
+	}
+
 std::string GetTimeString ( void )
-    {
-    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-    time_t tt = std::chrono::system_clock::to_time_t ( now );
-    tm local_tm;
+	{
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now ();
+	time_t tt = std::chrono::system_clock::to_time_t ( now );
+	tm local_tm;
 #if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
-    localtime_s ( &local_tm, &tt );
+	localtime_s ( &local_tm, &tt );
 #else
-    local_tm = *localtime ( &tt );
+	local_tm = *localtime ( &tt );
 #endif
-    static char Tick[100];
-    snprintf ( Tick, sizeof ( Tick ), "%02u-%02u-%04u %02u:%02u:%02u ", local_tm.tm_mday, local_tm.tm_mon + 1, local_tm.tm_year + 1900,
-               local_tm.tm_hour, local_tm.tm_min, local_tm.tm_sec );
-    return Tick;
-    }
+	static char TimeString[100];
+	snprintf ( TimeString, sizeof ( TimeString ), "%02u-%02u-%04u %02u:%02u:%02u ", local_tm.tm_mday, local_tm.tm_mon + 1, local_tm.tm_year + 1900,
+			   local_tm.tm_hour, local_tm.tm_min, local_tm.tm_sec );
+	return TimeString;
+	}
 
-void Log ( const std::string Filename, const std::string PrettyFunctionName, const std::string FunctionName, const unsigned Line, const LogLevel Level, const char* Message, ... )
-    {
-    std::lock_guard<std::mutex> MutexLock ( LoggerMutex );
-    std::string LogMessage;
+void Log ( const char *Filename, const char *PrettyFunctionName, const char *FunctionName, const unsigned Line, const LogLevel Level, const char *Message, ... )
+	{
+	std::lock_guard<std::mutex> MutexLock ( LoggerMutex );
+	static bool Initialized = false;
+	static std::string TimeFormatString, FilenameFormatString, FunctionFormatString;
+	static std::string LogLevelFormatStrings[4], TextColorResetString;
+	static char Buffer[1024];
 
-        {
-        // Formats the string
-        char *Buffer;
-        va_list args;
-        va_start ( args, Message );
+	static std::string FinalString;
 
+	if ( Initialized == false )
+		{
+		FinalString.reserve ( 1024 );
+		ConsoleTextColor::TextColor ( TimeFormatString, ConsoleTextColor::Color::White );
+		ConsoleTextColor::TextColor ( FilenameFormatString, ConsoleTextColor::Color::Magenta );
+		ConsoleTextColor::TextColor ( FilenameFormatString, ConsoleTextColor::Color::Magenta );
+		ConsoleTextColor::TextColor ( FunctionFormatString, ConsoleTextColor::Color::Green );
+		ConsoleTextColor::TextColor ( LogLevelFormatStrings[(int) LogLevel::Error], ConsoleTextColor::Color::Red, ConsoleTextColor::Color::Ignore, ConsoleTextColor::Attribute::Bright );
+		ConsoleTextColor::TextColor ( LogLevelFormatStrings[(int) LogLevel::Warning], ConsoleTextColor::Color::Yellow );
+		ConsoleTextColor::TextColor ( LogLevelFormatStrings[(int) LogLevel::Debug], ConsoleTextColor::Color::Cyan );
+		ConsoleTextColor::TextColorReset ( LogLevelFormatStrings[(int) LogLevel::Log] );
+		ConsoleTextColor::TextColorReset ( TextColorResetString );
+
+#if defined ( ILLUSION_TARGET_PLATFORM_WINDOWS )
+		// Set output mode to handle virtual terminal sequences
+		HANDLE hOut = GetStdHandle ( STD_OUTPUT_HANDLE );
+		HANDLE hIn = GetStdHandle ( STD_INPUT_HANDLE );
+		DWORD dwOriginalOutMode = 0;
+		DWORD dwOriginalInMode = 0;
+
+		if ( ( hOut != INVALID_HANDLE_VALUE ) && ( hIn != INVALID_HANDLE_VALUE ) && ( GetConsoleMode ( hOut, &dwOriginalOutMode ) ) && ( GetConsoleMode ( hIn, &dwOriginalInMode ) ) )
+			{
+			DWORD dwRequestedOutModes = ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+			DWORD dwRequestedInModes = ENABLE_VIRTUAL_TERMINAL_INPUT;
+
+			DWORD dwOutMode = dwOriginalOutMode | dwRequestedOutModes;
+			if ( !SetConsoleMode ( hOut, dwOutMode ) )
+				{
+				// we failed to set both modes, try to step down mode gracefully.
+				dwRequestedOutModes = ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+				dwOutMode = dwOriginalOutMode | dwRequestedOutModes;
+				if ( !SetConsoleMode ( hOut, dwOutMode ) )
+					{
+					// Failed to set any VT mode, can't do anything here.
+					printf ( "Unable to enable virtual terminal properties\n" );
+					}
+				}
+
+			DWORD dwInMode = dwOriginalInMode | dwRequestedInModes;
+			if ( !SetConsoleMode ( hIn, dwInMode ) )
+				{
+				// Failed to set VT input mode, can't do anything here.
+				printf ( "Unable to enable virtual terminal properties\n" );
+				}
+			}
+#endif
+		Initialized = true;
+		}
+
+	// Formats the string
+	va_list args;
+	va_start ( args, Message );
+
+	int Written;
 #if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
-        int Written;
-        int BufferSize = _vscprintf ( Message, args ) + 1;
-        Buffer = ( char * ) malloc ( BufferSize );
-        memset ( Buffer, 0, BufferSize );
-        Written = vsnprintf_s ( Buffer, BufferSize, BufferSize, Message, args );
-        if ( Written == -1 )
-            Buffer[0] = 0;
-#elif defined ( CROSS_RENDERER_TARGET_PLATFORM_LINUX )
-        // Linux just takes care of it... coooooooooool
-        vasprintf ( &Buffer, Message, args );
+	Written = vsnprintf_s ( Buffer, 1024, _TRUNCATE, Message, args );
+#elif defined ( ILLUSION_TARGET_PLATFORM_LINUX )
+	Written = vsnprintf ( Buffer, 1024, Message, args );
 #endif
-        va_end ( args );
-        LogMessage.assign ( Buffer );
-        free ( Buffer );
-        }
+	if ( Written == -1 )
+		Buffer[0] = 0;
+	va_end ( args );
 
-    // Trims \r, \n and spaces from the end
-        {
-        size_t found;
-        found = LogMessage.find_last_not_of ( "\r\n " );
-        if ( found != std::string::npos )
-            LogMessage.erase ( found + 1 );
-        else
-            LogMessage.clear();
-        }
+	FinalString = TextColorResetString;
+	if ( Level != LogLevel::Raw )
+		{
+		// Time stamp
+		if ( Options.ShowTimestamp )
+			{
+			FinalString.append ( TimeFormatString );
+			FinalString.append ( GetTimeString () );
+			FinalString.append ( 1, ' ' );
+			}
 
-    std::string TimeString;
-    if ( Options.ShowTimestamp )
-        {
-        TimeString = ConsoleColor::TextColor ( ConsoleColor::Color::White, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset );
-        TimeString += GetTimeString();
-        }
+		// Log level
+		FinalString.append ( LogLevelFormatStrings[(int) Level] );
+		FinalString.append ( 1, '[' );
+		FinalString.append ( Stringify ( Level ) );
+		FinalString.append ( 1, ']' );
+		FinalString.append ( TextColorResetString );
+		FinalString.append ( 1, ' ' );
 
-    std::string FilenameString;
-    if ( Options.ShowFilename )
-        {
-        FilenameString = ConsoleColor::TextColor ( ConsoleColor::Color::Magenta, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset );
-        FilenameString += Filename + std::string ( " " );
-        }
+		if ( Options.ShowFilename )
+			{
+			FinalString.append ( FilenameFormatString );
+			FinalString.append ( Filename );
+			FinalString.append ( 1, ' ' );
+			}
 
-    std::string FunctionString;
-    switch ( Options.FunctionStyle )
-        {
-        case LoggerOptions::FunctionNameStyle::Short:
-            {
-            FunctionString = ConsoleColor::TextColor ( ConsoleColor::Color::Green, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset );
-            FunctionString += FunctionName + std::string ( " " );
-            break;
-            }
-        case LoggerOptions::FunctionNameStyle::Long:
-            {
-            FunctionString = ConsoleColor::TextColor ( ConsoleColor::Color::Green, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset );
-            FunctionString = PrettyFunctionName + std::string ( " " );
-            break;
-            }
-        default:
-            break;
-        }
-
-    std::string LineNumberString;
-    if ( Options.ShowLineNumber )
-        LineNumberString = std::string ( "[" ) + std::to_string ( Line ) + std::string ( "] " );
-
-    // Get all these strings into static variables
-    static std::string LogLevelStrings[] =
-        {
-        ConsoleColor::TextColor ( ConsoleColor::Color::Black, ConsoleColor::Color::Red, ConsoleColor::Attribute::Bright ) + std::string ( "[ERROR]" ) + ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " ),
-        ConsoleColor::TextColor ( ConsoleColor::Color::Yellow, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[WARN]" ) + ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " ),
-        ConsoleColor::TextColor ( ConsoleColor::Color::Cyan, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[DEBUG]" ) + ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " ),
-        ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( "[MSG]" ) + ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset ) + std::string ( " " )
-        };
-
-    std::cout << TimeString << FilenameString << FunctionString << LineNumberString << LogLevelStrings[ ( int ) Level] << LogMessage << std::endl;
-    std::cout << ConsoleColor::TextColor ( ConsoleColor::Color::Ignore, ConsoleColor::Color::Ignore, ConsoleColor::Attribute::Reset );
-    }
+		std::string FunctionString;
+		switch ( Options.FunctionStyle )
+			{
+			case LoggerOptions::FunctionNameStyle::Short:
+				{
+				FinalString.append ( FunctionFormatString );
+				FinalString.append ( FunctionName );
+				FinalString.append ( TextColorResetString );
+				FinalString.append ( 1, ' ' );
+				break;
+				}
+			case LoggerOptions::FunctionNameStyle::Long:
+				{
+				FinalString.append ( FunctionFormatString );
+				FinalString.append ( PrettyFunctionName );
+				FinalString.append ( TextColorResetString );
+				FinalString.append ( 1, ' ' );
+				break;
+				}
+			default:
+				break;
+			}
+		FinalString.append ( 1, '[' );
+		FinalString.append ( std::to_string ( Line ) );
+		FinalString.append ( "] " );
+		}
+	FinalString.append ( Buffer );
+	printf ( "%s\n\r", FinalString.c_str () );
+	}
 }
 

@@ -1,8 +1,8 @@
 #include <stdexcept>
 #include "CrossRenderer.hpp"
 #include "WindowManager/WindowManager.hpp"
-#include "Stringify.hpp"
-#include "ObjectFactory.hpp"
+#include "Renderer/Stringify.hpp"
+#include "WindowManager/Stringify.hpp"
 
 namespace CrossRenderer
 {
@@ -23,19 +23,19 @@ bool Initialize ( const RendererConfiguration &NewConfiguration )
         return false;
         }
     LOG_DEBUG ( "Initializing with renderer backend '%s' and window manager backend '%s'", Stringify ( NewConfiguration.DesiredRendererBackend ), Stringify ( NewConfiguration.DesiredWindowBackend ) );
-    ObjectFactory::CreateNewWindowManager ( NewConfiguration.DesiredWindowBackend );
-    ObjectFactory::CreateNewRenderer ( NewConfiguration.DesiredRendererBackend );
+    WindowManager::CreateNewWindowManager ( NewConfiguration.DesiredWindowBackend );
+    CreateNewRenderer ( NewConfiguration.DesiredRendererBackend );
 
     return InitializeRenderer ( NewConfiguration );
     }
 
 bool Shutdown ( void )
     {
-    for ( auto &WindowIterator : WindowManager::WindowList )
+	while ( WindowManager::WindowList.size()>0 )
         {
-        WindowManager::DestroyWindow ( WindowIterator );
+        WindowManager::DestroyWindow ( *WindowManager::WindowList.begin() );
         }
-    WindowManager::WindowList.clear();
+	assert ( WindowManager::WindowList.size () == 0 );
     ShutdownRenderer();
     return true;
     }
@@ -61,16 +61,16 @@ RendererBackend GetDefaultRendererBackendType ( void )
 bool GetAvailableWindowManagerBackends ( std::vector <WindowManagerBackend> &AvailableBackends )
     {
     AvailableBackends.clear ();
-#if defined ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
-    AvailableBackends.push_back ( WindowManagerBackend::SDL2 );
+#if defined ( CROSS_RENDERER_GLFW3_BACKEND_SUPPORT )
+    AvailableBackends.push_back ( WindowManagerBackend::GLFW3 );
 #endif
-    return ( AvailableBackends.size() != 0 );
+	return ( AvailableBackends.size() != 0 );
     }
 
 WindowManagerBackend GetDefaultWindowManagerBackendType ( void )
     {
-#if defined ( CROSS_RENDERER_SDL2_BACKEND_SUPPORT )
-    return WindowManagerBackend::SDL2;
+#if defined ( CROSS_RENDERER_GLFW3_BACKEND_SUPPORT )
+    return WindowManagerBackend::GLFW3;
 #endif
-    }
+	}
 }
