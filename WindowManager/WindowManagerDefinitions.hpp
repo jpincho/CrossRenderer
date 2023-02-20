@@ -5,6 +5,8 @@
 
 namespace CrossRenderer
 {
+namespace WindowManager
+{
 struct RenderWindowDescriptor
 	{
 	RenderWindowDescriptor ( const glm::ivec2 NewPosition = glm::ivec2 ( 100, 100 ), const glm::uvec2 NewSize = glm::uvec2 ( 1024, 768 ) )
@@ -235,4 +237,5 @@ enum class WindowManagerBackend
 	{
 	GLFW3
 	};
+}
 }

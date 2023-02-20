@@ -11,7 +11,7 @@ namespace CrossRenderer
 bool Initialize ( void )
     {
     RendererConfiguration NewConfiguration;
-    NewConfiguration.InitialWindowConfigurations.push_back ( RenderWindowDescriptor() );
+    NewConfiguration.InitialWindowConfigurations.push_back ( WindowManager::RenderWindowDescriptor() );
     NewConfiguration.DesiredRendererBackend = GetDefaultRendererBackendType();
     NewConfiguration.DesiredWindowBackend = GetDefaultWindowManagerBackendType();
     return Initialize ( NewConfiguration );
@@ -22,7 +22,7 @@ bool Initialize ( RendererConfiguration &NewConfiguration )
     if ( NewConfiguration.InitialWindowConfigurations.size() == 0 )
         {
         LOG_WARNING ( "Engine must be initialized with at least one window. Adding a default one" );
-		NewConfiguration.InitialWindowConfigurations.push_back ( RenderWindowDescriptor() );
+		NewConfiguration.InitialWindowConfigurations.push_back ( WindowManager::RenderWindowDescriptor() );
         }
     LOG_DEBUG ( "Initializing with renderer backend '%s' and window manager backend '%s'", Stringify ( NewConfiguration.DesiredRendererBackend ), Stringify ( NewConfiguration.DesiredWindowBackend ) );
     CreateNewWindowManager ( NewConfiguration.DesiredWindowBackend );
@@ -60,19 +60,19 @@ RendererBackend GetDefaultRendererBackendType ( void )
 #endif
     }
 
-bool GetAvailableWindowManagerBackends ( std::vector <WindowManagerBackend> &AvailableBackends )
+bool GetAvailableWindowManagerBackends ( std::vector <WindowManager::WindowManagerBackend> &AvailableBackends )
     {
     AvailableBackends.clear ();
 #if defined ( CROSS_RENDERER_GLFW3_BACKEND_SUPPORT )
-    AvailableBackends.push_back ( WindowManagerBackend::GLFW3 );
+    AvailableBackends.push_back ( WindowManager::WindowManagerBackend::GLFW3 );
 #endif
 	return ( AvailableBackends.size() != 0 );
     }
 
-WindowManagerBackend GetDefaultWindowManagerBackendType ( void )
+WindowManager::WindowManagerBackend GetDefaultWindowManagerBackendType ( void )
     {
 #if defined ( CROSS_RENDERER_GLFW3_BACKEND_SUPPORT )
-    return WindowManagerBackend::GLFW3;
+    return WindowManager::WindowManagerBackend::GLFW3;
 #endif
 	}
 }

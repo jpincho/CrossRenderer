@@ -139,24 +139,24 @@ bool SkyboxTest::SpecificFrame ( const float TimeDelta )
 	return true;
 	}
 
-void SkyboxTest::SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
+void SkyboxTest::SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEvent &Event )
 	{
 	switch ( Event.EventType )
 		{
-		case CrossRenderer::WindowEventType::WindowResized:
+		case CrossRenderer::WindowManager::WindowEventType::WindowResized:
 			{
 			ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), (float) Event.EventData.WindowResized.NewSize.x / (float) Event.EventData.WindowResized.NewSize.y, 0.1f, 10.0f );
 			break;
 			}
-		case CrossRenderer::WindowEventType::MouseMoved:
+		case CrossRenderer::WindowManager::WindowEventType::MouseMoved:
 			{
 			MouseMovement.x += Event.EventData.MouseMoved.Delta.x;
 			MouseMovement.y += Event.EventData.MouseMoved.Delta.y;
 			break;
 			}
-		case CrossRenderer::WindowEventType::KeyPressed:
+		case CrossRenderer::WindowManager::WindowEventType::KeyPressed:
 			{
-			if ( Event.EventData.KeyPressed.Key == CrossRenderer::KeyCode::R )
+			if ( Event.EventData.KeyPressed.Key == CrossRenderer::WindowManager::KeyCode::R )
 				ViewMatrix = glm::lookAt ( glm::zero<glm::vec3> (), glm::vec3 ( 0.0f, 0.0f, -1.0f ), glm::vec3 ( 0.0f, 1.0f, 0.0f ) );
 			break;
 			}

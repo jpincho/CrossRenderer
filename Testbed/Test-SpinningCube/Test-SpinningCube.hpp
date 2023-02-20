@@ -14,5 +14,5 @@ class SpinningCubeTest : public TestBase
 		bool SpecificInitialize ( void ) override;
 		bool SpecificShutdown ( void ) override;
 		bool SpecificFrame ( const float TimeDelta ) override;
-		void SpecificOnEvent ( const CrossRenderer::WindowEvent &Event ) override;
+		void SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEvent &Event ) override;
 	};

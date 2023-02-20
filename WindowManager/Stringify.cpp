@@ -3,6 +3,8 @@
 
 namespace CrossRenderer
 {
+namespace WindowManager
+{
 const char *Stringify ( const WindowEventType Value )
 	{
 #define STRINGIFY(X) case WindowEventType::X: return #X;
@@ -37,4 +39,5 @@ const char *Stringify ( const WindowManagerBackend Value )
 #undef STRINGIFY
 	throw std::runtime_error ( "Unhandled window manager backend type" );
 	}
+}
 }

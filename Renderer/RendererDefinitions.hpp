@@ -18,10 +18,10 @@ struct RendererConfiguration
         DepthBits = 24;
         StencilBits = 8;
         DesiredRendererBackend = ( RendererBackend ) 0;
-        DesiredWindowBackend = ( WindowManagerBackend ) 0;
+        DesiredWindowBackend = (WindowManager::WindowManagerBackend ) 0;
         }
-    std::vector <RenderWindowDescriptor> InitialWindowConfigurations;
-    WindowManagerBackend DesiredWindowBackend;
+    std::vector <WindowManager::RenderWindowDescriptor> InitialWindowConfigurations;
+	WindowManager::WindowManagerBackend DesiredWindowBackend;
     RendererBackend DesiredRendererBackend;
     bool VSyncEnabled;
     uint8_t RedBits, GreenBits, BlueBits, AlphaBits, DepthBits, StencilBits;

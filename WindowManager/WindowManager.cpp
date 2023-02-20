@@ -72,12 +72,12 @@ void SendWindowEvent ( const WindowEvent &NewEvent )
 	}
 }
 
-void CreateNewWindowManager ( const WindowManagerBackend &Backend )
+void CreateNewWindowManager ( const WindowManager::WindowManagerBackend &Backend )
 	{
 	switch ( Backend )
 		{
 #if defined (CROSS_RENDERER_GLFW3_BACKEND_SUPPORT)
-		case WindowManagerBackend::GLFW3:
+		case WindowManager::WindowManagerBackend::GLFW3:
 #define ATTRIB(x) WindowManager::x = WindowManager::GLFW3::x
 			ATTRIB ( CreateNewWindow );
 			ATTRIB ( DestroyWindow );

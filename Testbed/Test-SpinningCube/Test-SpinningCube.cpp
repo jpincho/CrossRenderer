@@ -151,11 +151,11 @@ bool SpinningCubeTest::SpecificFrame ( const float TimeDelta )
 	}
 
 
-void SpinningCubeTest::SpecificOnEvent ( const CrossRenderer::WindowEvent &Event )
+void SpinningCubeTest::SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEvent &Event )
 	{
 	switch ( Event.EventType )
 		{
-		case CrossRenderer::WindowEventType::WindowResized:
+		case CrossRenderer::WindowManager::WindowEventType::WindowResized:
 			{
 			CrossRenderer::SetFramebufferClearColor ( Framebuffer, glm::vec4 ( 0.5f, 0.5f, 0.5f, 1.0f ) );
 			break;

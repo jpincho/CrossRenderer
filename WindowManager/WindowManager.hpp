@@ -42,5 +42,5 @@ void AddEventListener ( EventListener *Listener );
 void DeleteEventListener ( EventListener *Listener );
 void SendWindowEvent ( const WindowEvent &NewEvent );
 }
-void CreateNewWindowManager ( const WindowManagerBackend &Backend );
+void CreateNewWindowManager ( const WindowManager::WindowManagerBackend &Backend );
 }

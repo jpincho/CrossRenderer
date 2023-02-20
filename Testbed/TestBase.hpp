@@ -1,7 +1,7 @@
 #pragma once
 #include "../CrossRenderer.hpp"
 
-class TestBase : public CrossRenderer::EventListener
+class TestBase : public CrossRenderer::WindowManager::EventListener
 	{
 	protected:
 		bool ShouldQuit;
@@ -12,12 +12,12 @@ class TestBase : public CrossRenderer::EventListener
 		bool Shutdown ( void );
 		bool Run ( void );
 	private:
-		void OnEvent ( const CrossRenderer::WindowEvent &Event );
+		void OnEvent ( const CrossRenderer::WindowManager::WindowEvent &Event );
 	protected:
 		virtual bool SpecificInitialize ( void ) = 0;
 		virtual bool SpecificShutdown ( void ) = 0;
 		virtual bool SpecificFrame ( const float TimeDelta ) = 0;
-		virtual void SpecificOnEvent ( const CrossRenderer::WindowEvent & ) {};
+		virtual void SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEvent & ) {};
 	};
 
 CrossRenderer::ShaderHandle LoadShader ( const std::string &VertexFile, const std::string &GeometryFile, const std::string &FragmentFile );

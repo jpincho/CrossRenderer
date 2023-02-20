@@ -21,7 +21,7 @@ bool TestBase::Initialize ( void )
 	// CrossRenderer initialization
 	CrossRenderer::RendererConfiguration NewConfiguration;
 	NewConfiguration.DesiredRendererBackend = CrossRenderer::GetDefaultRendererBackendType ();
-	NewConfiguration.InitialWindowConfigurations.push_back ( CrossRenderer::RenderWindowDescriptor ( glm::ivec2 ( 100, 100 ), glm::uvec2 ( 1920, 1080 ) ) );
+	NewConfiguration.InitialWindowConfigurations.push_back ( CrossRenderer::WindowManager::RenderWindowDescriptor ( glm::ivec2 ( 100, 100 ), glm::uvec2 ( 1920, 1080 ) ) );
 	NewConfiguration.DesiredWindowBackend = CrossRenderer::GetDefaultWindowManagerBackendType ();
 	if ( CrossRenderer::Initialize ( NewConfiguration ) == false )
 		return false;
@@ -61,26 +61,26 @@ bool TestBase::Run ( void )
 	return true;
 	}
 
-void TestBase::OnEvent ( const CrossRenderer::WindowEvent &Event )
+void TestBase::OnEvent ( const CrossRenderer::WindowManager::WindowEvent &Event )
 	{
 	switch ( Event.EventType )
 		{
-		case CrossRenderer::WindowEventType::KeyPressed:
+		case CrossRenderer::WindowManager::WindowEventType::KeyPressed:
 			{
-			if ( Event.EventData.KeyPressed.Key == CrossRenderer::KeyCode::Escape )
+			if ( Event.EventData.KeyPressed.Key == CrossRenderer::WindowManager::KeyCode::Escape )
 				{
 				ShouldQuit = true;
 				}
 			break;
 			}
-		case CrossRenderer::WindowEventType::WindowResized:
+		case CrossRenderer::WindowManager::WindowEventType::WindowResized:
 			{
 			CrossRenderer::DeleteFramebuffer ( Framebuffer );
 			CrossRenderer::FramebufferDescriptor NewFramebufferDescriptor ( Event.EventData.WindowResized.NewSize );
 			Framebuffer = CrossRenderer::CreateFramebuffer ( NewFramebufferDescriptor );
 			break;
 			}
-		case CrossRenderer::WindowEventType::WindowClosed:
+		case CrossRenderer::WindowManager::WindowEventType::WindowClosed:
 			{
 			CrossRenderer::WindowManager::DestroyWindow ( Event.OwnerHandle );
 			if ( CrossRenderer::WindowManager::WindowList.size () == 0 )
