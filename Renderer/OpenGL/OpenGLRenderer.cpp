@@ -124,7 +124,7 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
 	return CheckError ();
 	}
 
-bool StartFrame ( const RenderWindowHandle &WindowHandle )
+bool StartRenderToWindow ( const RenderWindowHandle &WindowHandle )
 	{
 	ActiveWindow = WindowHandle;
 	StateCache::SetDefaultViewportSize ( WindowManager::GetWindowSize ( WindowHandle ) );
@@ -137,7 +137,7 @@ bool StartFrame ( const RenderWindowHandle &WindowHandle )
 	return CheckError ();
 	}
 
-bool EndFrame ( const RenderWindowHandle &WindowHandle )
+bool DisplayWindow ( const RenderWindowHandle &WindowHandle )
 	{
 	StateCache::ConfigureScissor (ScissorSettings ());
 	StateCache::ConfigureViewport ( ViewportSettings () );

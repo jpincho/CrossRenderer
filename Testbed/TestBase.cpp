@@ -48,6 +48,7 @@ bool TestBase::Run ( void )
 
 	while ( ShouldQuit == false )
 		{
+		CrossRenderer::StartRenderToWindow ( *CrossRenderer::WindowManager::WindowList.begin () );
 		CrossRenderer::StartRenderToFramebuffer ( Framebuffer );
 
 		if ( SpecificFrame ( TimeDelta ) == false )
@@ -56,7 +57,7 @@ bool TestBase::Run ( void )
 			break;
 			}
 		CrossRenderer::DisplayFramebuffer ( Framebuffer, *CrossRenderer::WindowManager::WindowList.begin () );
-		CrossRenderer::EndFrame ( *CrossRenderer::WindowManager::WindowList.begin () );
+		CrossRenderer::DisplayWindow ( *CrossRenderer::WindowManager::WindowList.begin () );
 		}
 	return true;
 	}

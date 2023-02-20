@@ -24,8 +24,8 @@ DECLARE_INTERFACE_FUNCTION ( bool, ShutdownRenderer, void );
 DECLARE_INTERFACE_FUNCTION ( bool, StartRenderToFramebuffer, const FramebufferHandle &Handle );
 DECLARE_INTERFACE_FUNCTION ( bool, DisplayFramebuffer, const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle );
 
-DECLARE_INTERFACE_FUNCTION ( bool, StartFrame, const RenderWindowHandle &Handle );
-DECLARE_INTERFACE_FUNCTION ( bool, EndFrame, const RenderWindowHandle &Handle );
+DECLARE_INTERFACE_FUNCTION ( bool, StartRenderToWindow, const RenderWindowHandle &Handle );
+DECLARE_INTERFACE_FUNCTION ( bool, DisplayWindow, const RenderWindowHandle &Handle );
 
 DECLARE_INTERFACE_FUNCTION ( bool, RunCommand, const RenderCommand &Command );
 
