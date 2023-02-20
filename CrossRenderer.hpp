@@ -1,12 +1,11 @@
 #pragma once
-#include <CrossRendererConfig.hpp>
 #include "WindowManager/WindowManager.hpp"
 #include "Renderer/Renderer.hpp"
 
 namespace CrossRenderer
 {
 bool Initialize ( void );
-bool Initialize ( const RendererConfiguration &NewConfiguration );
+bool Initialize ( RendererConfiguration &NewConfiguration );
 bool Shutdown ( void );
 bool GetAvailableRendererBackends ( std::vector <RendererBackend> &AvailableBackends );
 RendererBackend GetDefaultRendererBackendType ( void );

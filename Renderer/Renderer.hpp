@@ -1,5 +1,4 @@
 #pragma once
-#include <CrossRendererConfig.hpp>
 #include "RendererDefinitions.hpp"
 #include "ShaderBufferDefinitions.hpp"
 #include "TextureDefinitions.hpp"
@@ -7,7 +6,6 @@
 #include "FramebufferDefinitions.hpp"
 #include "RenderCommandDefinitions.hpp"
 #include "Stringify.hpp"
-#include "../Logger.hpp"
 
 namespace CrossRenderer
 {

@@ -1,4 +1,6 @@
+#include <CrossRendererConfig.hpp>
 #include "TestBase.hpp"
+#include "../Logger.hpp"
 #include <fstream>
 #define STB_IMAGE_IMPLEMENTATION
 #if ( defined CROSS_RENDERER_COMPILER_GNU )

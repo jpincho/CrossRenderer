@@ -1,4 +1,5 @@
 #include "WindowManager.hpp"
+#include <CrossRendererConfig.hpp>
 #if defined (CROSS_RENDERER_GLFW3_BACKEND_SUPPORT)
 #include "GLFW3/GLFW3Backend.hpp"
 #endif
@@ -40,6 +41,37 @@ typedef std::unordered_set <EventListener *> TClassWindowEventListeners;
 TWindowEventListeners WindowEventListeners;
 TClassWindowEventListeners ClassEventListeners;
 
+void AddEventListener ( void ( *Function ) ( const WindowEvent & ) )
+	{
+	WindowEventListeners.insert ( Function );
+	}
+
+void DeleteEventListener ( void ( *Function ) ( const WindowEvent & ) )
+	{
+	TWindowEventListeners::iterator FindResult = WindowEventListeners.find ( Function );
+	if ( FindResult != WindowEventListeners.end () )
+		WindowEventListeners.erase ( FindResult );
+	}
+
+void AddEventListener ( EventListener *Listener )
+	{
+	ClassEventListeners.insert ( Listener );
+	}
+
+void DeleteEventListener ( EventListener *Listener )
+	{
+	ClassEventListeners.erase ( Listener );
+	}
+
+void SendWindowEvent ( const WindowEvent &NewEvent )
+	{
+	for ( auto Iterator : WindowEventListeners )
+		Iterator ( NewEvent );
+	for ( auto &Iterator : ClassEventListeners )
+		Iterator->OnEvent ( NewEvent );
+	}
+}
+
 void CreateNewWindowManager ( const WindowManagerBackend &Backend )
 	{
 	switch ( Backend )
@@ -71,35 +103,4 @@ void CreateNewWindowManager ( const WindowManagerBackend &Backend )
 			return;
 		}
 	}
-
-void AddEventListener ( void ( *Function ) ( const WindowEvent & ) )
-	{
-	WindowEventListeners.insert ( Function );
-	}
-
-void DeleteEventListener ( void ( *Function ) ( const WindowEvent & ) )
-	{
-	TWindowEventListeners::iterator FindResult = WindowEventListeners.find ( Function );
-	if ( FindResult != WindowEventListeners.end () )
-		WindowEventListeners.erase ( FindResult );
-	}
-
-void AddEventListener ( EventListener *Listener )
-	{
-	ClassEventListeners.insert ( Listener );
-	}
-
-void DeleteEventListener ( EventListener *Listener )
-	{
-	ClassEventListeners.erase ( Listener );
-	}
-
-void SendWindowEvent ( const WindowEvent &NewEvent )
-	{
-	for ( auto Iterator : WindowEventListeners )
-		Iterator ( NewEvent );
-	for ( auto &Iterator : ClassEventListeners )
-		Iterator->OnEvent ( NewEvent );
-	}
-}
 }

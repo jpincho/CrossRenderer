@@ -1,3 +1,4 @@
+#include <CrossRendererConfig.hpp>
 #include "OpenGLInternals.hpp"
 #include <stdexcept>
 #include "../Logger.hpp"

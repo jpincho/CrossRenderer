@@ -1,14 +1,13 @@
 #pragma once
-#include <CrossRendererConfig.hpp>
-#include <string>
 #include "../RendererHandleTemplate.hpp"
 #include "../GLMHeaders.hpp"
+#include <string>
 
 namespace CrossRenderer
 {
 struct RenderWindowDescriptor
 	{
-	RenderWindowDescriptor ( const glm::ivec2 NewPosition = glm::ivec2 ( 0, 0 ), const glm::uvec2 NewSize = glm::uvec2 ( 640, 480 ) )
+	RenderWindowDescriptor ( const glm::ivec2 NewPosition = glm::ivec2 ( 100, 100 ), const glm::uvec2 NewSize = glm::uvec2 ( 1024, 768 ) )
 		{
 		Position = NewPosition;
 		Size = NewSize;

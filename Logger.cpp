@@ -1,8 +1,12 @@
+#include <CrossRendererConfig.hpp>
 #include "Logger.hpp"
+#include "ConsoleTextColor.hpp"
+#if defined (CROSS_RENDERER_TARGET_PLATFORM_WINDOWS)
+#include <Windows.h>
+#endif
 #include <mutex>
 #include <time.h>
-#include <CrossRendererConfig.hpp>
-#include "ConsoleTextColor.hpp"
+
 namespace CrossRenderer
 {
 LoggerOptions Options;

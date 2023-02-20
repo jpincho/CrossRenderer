@@ -1,6 +1,7 @@
 #include "OpenGLRenderer.hpp"
 #include "OpenGLInternals.hpp"
 #include "../WindowManager/WindowManager.hpp"
+#include "../Logger.hpp"
 #include "../Renderer.hpp"
 #include <algorithm>
 
@@ -138,7 +139,7 @@ bool StartFrame ( const RenderWindowHandle &WindowHandle )
 
 bool EndFrame ( const RenderWindowHandle &WindowHandle )
 	{
-	StateCache::ConfigureScissor ( ScissorSettings () );
+	StateCache::ConfigureScissor (ScissorSettings ());
 	StateCache::ConfigureViewport ( ViewportSettings () );
 	StateCache::ConfigureStencil ( StencilBufferSettings () );
 	WindowManager::SwapGLWindowBuffer ( WindowHandle );

@@ -1,8 +1,10 @@
-#include <stdexcept>
+#include <CrossRendererConfig.hpp>
 #include "CrossRenderer.hpp"
+#include "Logger.hpp"
 #include "WindowManager/WindowManager.hpp"
 #include "Renderer/Stringify.hpp"
 #include "WindowManager/Stringify.hpp"
+#include <stdexcept>
 
 namespace CrossRenderer
 {
@@ -15,15 +17,15 @@ bool Initialize ( void )
     return Initialize ( NewConfiguration );
     }
 
-bool Initialize ( const RendererConfiguration &NewConfiguration )
+bool Initialize ( RendererConfiguration &NewConfiguration )
     {
     if ( NewConfiguration.InitialWindowConfigurations.size() == 0 )
         {
-        LOG_ERROR ( "Engine must be initialized with at least one window" );
-        return false;
+        LOG_WARNING ( "Engine must be initialized with at least one window. Adding a default one" );
+		NewConfiguration.InitialWindowConfigurations.push_back ( RenderWindowDescriptor() );
         }
     LOG_DEBUG ( "Initializing with renderer backend '%s' and window manager backend '%s'", Stringify ( NewConfiguration.DesiredRendererBackend ), Stringify ( NewConfiguration.DesiredWindowBackend ) );
-    WindowManager::CreateNewWindowManager ( NewConfiguration.DesiredWindowBackend );
+    CreateNewWindowManager ( NewConfiguration.DesiredWindowBackend );
     CreateNewRenderer ( NewConfiguration.DesiredRendererBackend );
 
     return InitializeRenderer ( NewConfiguration );

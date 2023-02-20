@@ -1,5 +1,4 @@
 #pragma once
-#include <CrossRendererConfig.hpp>
 #include "WindowManagerDefinitions.hpp"
 #include <unordered_set>
 
@@ -36,7 +35,6 @@ DECLARE_INTERFACE_FUNCTION ( void, SwapGLWindowBuffer, const RenderWindowHandle 
 #undef DECLARE_INTERFACE_FUNCTION
 
 extern std::unordered_set<RenderWindowHandle> WindowList;
-void CreateNewWindowManager ( const WindowManagerBackend &Backend );
 
 void AddEventListener ( void ( *Function ) ( const WindowEvent & ) );
 void DeleteEventListener ( void ( *Function ) ( const WindowEvent & ) );
@@ -44,4 +42,5 @@ void AddEventListener ( EventListener *Listener );
 void DeleteEventListener ( EventListener *Listener );
 void SendWindowEvent ( const WindowEvent &NewEvent );
 }
+void CreateNewWindowManager ( const WindowManagerBackend &Backend );
 }
