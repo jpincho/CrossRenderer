@@ -1,7 +1,7 @@
 #include "OpenGLRenderer.hpp"
 #include "OpenGLInternals.hpp"
 #include "../WindowManager/WindowManager.hpp"
-#include "../Logger.hpp"
+#include "../Internal/Logger.hpp"
 #include "../Renderer.hpp"
 #include <algorithm>
 

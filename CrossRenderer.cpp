@@ -1,6 +1,6 @@
 #include <CrossRendererConfig.hpp>
 #include "CrossRenderer.hpp"
-#include "Logger.hpp"
+#include "Internal/Logger.hpp"
 #include "WindowManager/WindowManager.hpp"
 #include "Renderer/Stringify.hpp"
 #include "WindowManager/Stringify.hpp"

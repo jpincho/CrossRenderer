@@ -1,7 +1,7 @@
 #include <CrossRendererConfig.hpp>
 #include "OpenGLInternals.hpp"
 #include <stdexcept>
-#include "../Logger.hpp"
+#include "../Internal/Logger.hpp"
 
 namespace CrossRenderer
 {

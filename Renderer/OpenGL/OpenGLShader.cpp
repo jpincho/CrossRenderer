@@ -1,7 +1,6 @@
 #include "OpenGLShader.hpp"
 #include "OpenGLInternals.hpp"
-#include "../Logger.hpp"
-#include "../ConsoleTextColor.hpp"
+#include "../Internal/Logger.hpp"
 
 namespace CrossRenderer
 {

@@ -4,7 +4,7 @@
 #include "GLFW3/GLFW3Backend.hpp"
 #endif
 #include "Stringify.hpp"
-#include "../Logger.hpp"
+#include "../Internal/Logger.hpp"
 #include <unordered_set>
 
 namespace CrossRenderer

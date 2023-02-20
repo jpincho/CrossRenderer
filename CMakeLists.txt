@@ -8,7 +8,7 @@ set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/output/bin" )
 set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/output/lib" )
 set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/output/bin" )
 
-list ( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/CMakeUtils )
+list ( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/../CMakeUtils )
 list ( APPEND CMAKE_MODULE_PATH ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/cmake )
 
 include ( LocalPackage )
@@ -46,8 +46,8 @@ set ( CROSS_RENDERER_CPU_${CROSS_RENDERER_CPU_BITS} TRUE )
 string ( TOUPPER ${CMAKE_CXX_COMPILER_ID} CROSS_RENDERER_UPPERCASE_COMPILER )
 set ( CROSS_RENDERER_COMPILER_${CROSS_RENDERER_UPPERCASE_COMPILER} TRUE )
 
-message ( STATUS "${PROJECT_NAME} - Build host ${ILLUSION_HOST_PLATFORM}")
-message ( STATUS "${PROJECT_NAME} - Build target ${ILLUSION_TARGET_PLATFORM}")
+message ( STATUS "${PROJECT_NAME} - Build host ${CROSS_RENDERER_HOST_PLATFORM}")
+message ( STATUS "${PROJECT_NAME} - Build target ${CROSS_RENDERER_TARGET_PLATFORM}")
 
 # GLFW3
 if ( GLFW3_FOUND )
@@ -97,7 +97,7 @@ endif()
 
 # Main library
 configure_file ( CrossRendererConfig.hpp.in CrossRendererConfig.hpp )
-file ( GLOB SOURCES "*.cpp" "*.hpp" "Renderer/*.cpp" "Renderer/*.hpp" "WindowManager/*.cpp" "WindowManager/*.hpp" CrossRendererConfig.hpp.in AstyleConfig.astylerc )
+file ( GLOB SOURCES "*.cpp" "*.hpp" "Renderer/*.cpp" "Renderer/*.hpp" "WindowManager/*.cpp" "WindowManager/*.hpp" "Internal/*" CrossRendererConfig.hpp.in AstyleConfig.astylerc )
 list ( APPEND CROSS_RENDERER_SOURCE_FILES ${SOURCES} )
 add_library ( CrossRenderer ${CROSS_RENDERER_SOURCE_FILES} )
 target_include_directories ( CrossRenderer PUBLIC ${CROSS_RENDERER_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} ${GLM_INCLUDE_DIRS} ExternalModules )

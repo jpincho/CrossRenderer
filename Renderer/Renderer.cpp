@@ -1,6 +1,6 @@
 #include <CrossRendererConfig.hpp>
 #include "Renderer.hpp"
-#include "../Logger.hpp"
+#include "../Internal/Logger.hpp"
 #if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT)
 #include "OpenGL/OpenGLRenderer.hpp"
 #endif

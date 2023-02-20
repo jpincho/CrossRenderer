@@ -6,7 +6,7 @@
 #include "../ShaderDefinitions.hpp"
 #include "../FramebufferDefinitions.hpp"
 #include "../Version.hpp"
-#include "../VectorizedContainer.hpp"
+#include "../Internal/VectorizedContainer.hpp"
 #include "OpenGLStateCache.hpp"
 
 namespace CrossRenderer

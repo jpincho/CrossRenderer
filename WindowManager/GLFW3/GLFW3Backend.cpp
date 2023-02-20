@@ -1,7 +1,7 @@
 #include "GLFW3Backend.hpp"
 #include <GLFW/glfw3.h>
-#include "../../Logger.hpp"
-#include "../../VectorizedContainer.hpp"
+#include "../../Internal/Logger.hpp"
+#include "../../Internal/VectorizedContainer.hpp"
 
 namespace CrossRenderer
 {
