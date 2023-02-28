@@ -24,3 +24,5 @@ CrossRenderer::ShaderHandle LoadShader ( const std::string &VertexFile, const st
 bool LoadFileContents ( const std::string &Path, std::vector <uint8_t> &Contents );
 CrossRenderer::TextureHandle LoadTexture ( const std::string &ImageFile, const bool Flip = true );
 CrossRenderer::TextureHandle LoadCubemapTexture ( const std::string ImageFile[6], const bool Flip = true );
+double GetSeconds ( void );
+

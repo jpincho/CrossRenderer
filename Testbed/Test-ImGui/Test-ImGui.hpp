@@ -27,6 +27,7 @@ class ImGuiTest : public TestBase
 			bool DeferredRendering;
 			}ImGuiData;
 
+		float TotalTime;
 		bool SpecificInitialize ( void ) override;
 		bool SpecificShutdown ( void ) override;
 		bool SpecificFrame ( const float TimeDelta ) override;

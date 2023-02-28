@@ -13,6 +13,7 @@
 #include <stb/stb_image.h>
 #endif
 
+static double LastEndFrameSeconds = 0.0;
 bool TestBase::Initialize ( void )
 	{
 	ShouldQuit = true;
@@ -31,6 +32,7 @@ bool TestBase::Initialize ( void )
 	if ( !Framebuffer )
 		return false;
 	ShouldQuit = false;
+	LastEndFrameSeconds = GetSeconds ();
 	return SpecificInitialize ();
 	}
 
@@ -44,14 +46,15 @@ bool TestBase::Shutdown ( void )
 
 bool TestBase::Run ( void )
 	{
-	const float TimeDelta = 1.0f / 60;
-
 	while ( ShouldQuit == false )
 		{
+		double Seconds = GetSeconds ();
+		double TimeDelta = Seconds - LastEndFrameSeconds;
+		LastEndFrameSeconds = Seconds;
 		CrossRenderer::StartRenderToWindow ( *CrossRenderer::WindowManager::WindowList.begin () );
 		CrossRenderer::StartRenderToFramebuffer ( Framebuffer );
 
-		if ( SpecificFrame ( TimeDelta ) == false )
+		if ( SpecificFrame ( (float) TimeDelta ) == false )
 			{
 			ShouldQuit = true;
 			break;
@@ -241,3 +244,31 @@ End:
 		stbi_image_free ( Images[Face] );
 	return Result;
 	}
+
+#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
+#include <windows.h>
+#include <sysinfoapi.h>
+LARGE_INTEGER Now, Frequency = { 0, 0 };
+double GetSeconds ( void )
+	{
+	if ( Frequency.QuadPart == 0 )
+		{
+		QueryPerformanceFrequency ( &Frequency );
+		}
+	QueryPerformanceCounter ( &Now );
+	return (double) Now.QuadPart / (double) Frequency.QuadPart;
+	}
+
+#else
+#include <time.h>
+double GetSeconds ( void )
+	{
+	struct timespec spec;
+	static double NanoDivisor = 1.0 / 1.0e9;
+	clock_gettime ( CLOCK_MONOTONIC, &spec );
+	double Result = spec.tv_nsec;
+	Result *= NanoDivisor;
+	Result += spec.tv_sec;
+	return Result;
+	}
+#endif

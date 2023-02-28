@@ -116,6 +116,7 @@ bool ImGuiTest::SpecificInitialize ( void )
 	CubeData.RenderCommand.IndexBufferStream = IndexStream;
 	CubeData.RenderCommand.State.DepthTest.Set ( CrossRenderer::DepthTestMode::Less );
 	assert ( CrossRenderer::SanityCheckRenderCommand ( CubeData.RenderCommand ) );
+	TotalTime = 0.0f;
 	return InitializeImGui ();
 	}
 
@@ -169,6 +170,7 @@ bool ImGuiTest::SpecificFrame ( const float TimeDelta )
 	{
 	ImGuiIO &io = ImGui::GetIO ();
 	io.DeltaTime = TimeDelta;
+	TotalTime += TimeDelta;
 
 	ImGui::NewFrame ();
 
@@ -176,6 +178,8 @@ bool ImGuiTest::SpecificFrame ( const float TimeDelta )
 
 	ImGui::Begin ( "Status" );
 	CrossRenderer::RenderWindowHandle WindowHandle = *CrossRenderer::WindowManager::WindowList.begin ();
+	ImGui::LabelText ( "Time delta", "%f", TimeDelta );
+	ImGui::LabelText ( "Total time", "%f", TotalTime );
 	ImGui::LabelText ( "Window size", "%ux%u", CrossRenderer::WindowManager::GetWindowSize ( WindowHandle ).x, CrossRenderer::WindowManager::GetWindowSize ( WindowHandle ).y );
 	ImGui::LabelText ( "Window pos", "%dx%d", CrossRenderer::WindowManager::GetWindowPosition ( WindowHandle ).x, CrossRenderer::WindowManager::GetWindowPosition ( WindowHandle ).y );
 	bool Fullscreen = ( CrossRenderer::WindowManager::GetWindowState ( WindowHandle ) == CrossRenderer::WindowManager::WindowState::Maximized );
@@ -183,8 +187,8 @@ bool ImGuiTest::SpecificFrame ( const float TimeDelta )
 		{
 		CrossRenderer::WindowManager::SetWindowState ( WindowHandle, Fullscreen ? CrossRenderer::WindowManager::WindowState::Maximized : CrossRenderer::WindowManager::WindowState::Windowed );
 		}
-	ImGui::Checkbox( "Deferred", &ImGuiData.DeferredRendering );
-
+	ImGui::Checkbox ( "Deferred", &ImGuiData.DeferredRendering );
+	ImGui::LabelText ( "Mouse pos", "%ux%u", CrossRenderer::WindowManager::GetMousePosition ().x, CrossRenderer::WindowManager::GetMousePosition ().y );
 
 	ImGui::End ();
 	EndImGuiFrame ();
@@ -373,21 +377,6 @@ bool ImGuiTest::InitializeImGui ( void )
 
 	return true;
 	}
-
-	bool operator == ( const ImVec2 &first, const ImVec2 &second )
-		{
-		return ( ( first.x == second.x ) && ( first.x == second.x ) );
-		}
-
-	bool operator == ( const ImDrawVert &first, const ImDrawVert &second )
-		{
-		return ( ( first.pos == second.pos ) && ( first.uv == second.uv ) && ( first.col == second.col ) );
-		}
-
-	bool operator != ( const ImDrawVert &first, const ImDrawVert &second )
-		{
-		return !( first == second );
-		}
 
 void ImGuiTest::EndImGuiFrame ( void )
 	{
