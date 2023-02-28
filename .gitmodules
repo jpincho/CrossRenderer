@@ -1,6 +1,6 @@
 [submodule "CMakeUtils"]
 	path = CMakeUtils
 	url = git@github.com:jpincho/CMakeUtils
-[submodule "Testbed/ExternalModules/imgui"]
-	path = Testbed/ExternalModules/imgui
+[submodule "ExternalModules/imgui"]
+	path = ExternalModules/imgui
 	url = https://github.com/ocornut/imgui
