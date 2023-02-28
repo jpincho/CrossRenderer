@@ -136,5 +136,12 @@ if ( CROSS_RENDERER_BUILD_TESTS )
     target_warning_options ( Test-Skybox HIGH AS_ERRORS )
     target_include_directories ( Test-Skybox PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Testbed/ExternalModules )
     target_compile_definitions ( Test-Skybox PRIVATE TESTBED_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/Testbed/Data/" TEST_PATH="${CMAKE_CURRENT_LIST_DIR}/Testbed/Test-Skybox/" )
+
+    file ( GLOB TEST_SOURCES "Testbed/Test-ImGui/*" "Testbed/TestBase.*" "Testbed/ExternalModules/imgui/*" )
+    add_executable ( Test-ImGui ${TEST_SOURCES} )
+    target_link_libraries ( Test-ImGui CrossRenderer )
+    target_warning_options ( Test-ImGui HIGH AS_ERRORS )
+    target_include_directories ( Test-ImGui PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Testbed/ExternalModules )
+    target_compile_definitions ( Test-ImGui PRIVATE TESTBED_DATA_PATH="${CMAKE_CURRENT_LIST_DIR}/Testbed/Data/" TEST_PATH="${CMAKE_CURRENT_LIST_DIR}/Testbed/Test-ImGui/" )
 endif()
 
