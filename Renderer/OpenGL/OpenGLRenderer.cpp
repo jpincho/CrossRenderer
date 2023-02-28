@@ -343,7 +343,7 @@ bool RunCommand ( const RenderCommand &Command )
 		glDrawElements ( Translate ( Command.Primitive ),
 						 (GLint) Command.VertexCount,
 						 Translate ( Command.IndexBufferStream.ComponentType ),
-						 reinterpret_cast <void *> ( Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ) );
+						 reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ) );
 		}
 	else
 		{
