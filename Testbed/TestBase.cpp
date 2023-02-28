@@ -76,6 +76,8 @@ void TestBase::OnEvent ( const CrossRenderer::WindowManager::WindowEvent &Event 
 			}
 		case CrossRenderer::WindowManager::WindowEventType::WindowResized:
 			{
+			if ( Event.EventData.WindowResized.NewSize == glm::zero<glm::uvec2> () )
+				break;
 			CrossRenderer::DeleteFramebuffer ( Framebuffer );
 			CrossRenderer::FramebufferDescriptor NewFramebufferDescriptor ( Event.EventData.WindowResized.NewSize );
 			Framebuffer = CrossRenderer::CreateFramebuffer ( NewFramebufferDescriptor );
