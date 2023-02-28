@@ -152,16 +152,19 @@ bool SetWindowState ( const RenderWindowHandle &Handle, const WindowState NewSta
 		return true;
 	switch ( NewState )
 		{
+		case WindowState::Minimized:
+			{
+			glfwIconifyWindow ( WindowInformation->Window );
+			break;
+			}
 		case WindowState::Windowed:
 			{
-			glfwSetWindowMonitor ( WindowInformation->Window, glfwGetPrimaryMonitor (), WindowInformation->Position.x, WindowInformation->Position.y, WindowInformation->Size.x, WindowInformation->Size.y, 0 );
+			glfwRestoreWindow ( WindowInformation->Window );
 			break;
 			}
 		case WindowState::Maximized:
 			{
-			glm::ivec2 WorkAreaPosition, WorkAreaDimensions;
-			glfwGetMonitorWorkarea ( glfwGetPrimaryMonitor (), &WorkAreaPosition.x, &WorkAreaPosition.y, &WorkAreaDimensions.x, &WorkAreaDimensions.y );
-			glfwSetWindowMonitor ( WindowInformation->Window, glfwGetPrimaryMonitor (), WorkAreaPosition.x, WorkAreaPosition.y, WorkAreaDimensions.x, WorkAreaDimensions.y, 0 );
+			glfwMaximizeWindow ( WindowInformation->Window );
 			break;
 			}
 		default:
