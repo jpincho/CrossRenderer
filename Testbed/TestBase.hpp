@@ -1,6 +1,21 @@
 #pragma once
 #include "../CrossRenderer.hpp"
 
+#define GET_UNIFORM(VARIABLE,SHADER,NAME)\
+                VARIABLE = CrossRenderer::GetShaderUniformHandle ( SHADER, NAME );\
+                if ( !VARIABLE )\
+                    {\
+                    LOG_ERROR ( "Uniform %s not found", NAME );\
+                    return false;\
+                    }
+#define GET_ATTRIBUTE(VARIABLE,SHADER,NAME)\
+                VARIABLE = CrossRenderer::GetShaderAttributeHandle ( SHADER, NAME );\
+                if ( !VARIABLE )\
+                    {\
+                    LOG_ERROR ( "Attribute %s not found", NAME );\
+                    return false;\
+                    }
+
 class TestBase : public CrossRenderer::WindowManager::EventListener
 	{
 	protected:

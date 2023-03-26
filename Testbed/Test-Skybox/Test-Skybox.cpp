@@ -85,10 +85,11 @@ bool SkyboxTest::SpecificInitialize ( void )
 														  sizeof ( glm::vec3 ),
 														  CrossRenderer::ShaderBufferComponentType::Float,
 														  3 );
-	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle = CrossRenderer::GetShaderAttributeHandle ( SkyboxShaderHandle, "a_VertexPosition" );
-	CrossRenderer::ShaderUniformHandle TextureUniformHandle = CrossRenderer::GetShaderUniformHandle ( SkyboxShaderHandle, "u_SkyboxTexture" );
+	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle,TextureUniformHandle;
 	CrossRenderer::TextureBindSettings TextureBindSettings ( SkyboxTextureHandle );
-	MVPUniformHandle = CrossRenderer::GetShaderUniformHandle ( SkyboxShaderHandle, "u_MVP" );
+	GET_ATTRIBUTE (PositionAttributeHandle, SkyboxShaderHandle, "a_VertexPosition");
+	GET_UNIFORM ( TextureUniformHandle, SkyboxShaderHandle, "u_SkyboxTexture" );
+	GET_UNIFORM ( MVPUniformHandle, SkyboxShaderHandle, "u_MVP" );
 	SkyboxRenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
 	SkyboxRenderCommand.Shader = SkyboxShaderHandle;
 	SkyboxRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( PositionAttributeHandle, PositionStream ) );

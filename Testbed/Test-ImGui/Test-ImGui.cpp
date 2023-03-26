@@ -99,10 +99,11 @@ bool ImGuiTest::SpecificInitialize ( void )
 														sizeof ( uint16_t ),
 														CrossRenderer::ShaderBufferComponentType::Unsigned16,
 														1 );
-	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle = CrossRenderer::GetShaderAttributeHandle ( CubeData.ShaderHandle, "a_VertexPosition" );
-	CrossRenderer::ShaderAttributeHandle TexCoordAttributeHandle = CrossRenderer::GetShaderAttributeHandle ( CubeData.ShaderHandle, "a_TexCoord" );
-	CrossRenderer::ShaderUniformHandle TextureUniformHandle = CrossRenderer::GetShaderUniformHandle ( CubeData.ShaderHandle, "u_Texture" );
-	CubeData.MVPUniformHandle = CrossRenderer::GetShaderUniformHandle ( CubeData.ShaderHandle, "u_MVP" );
+	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
+	GET_ATTRIBUTE ( PositionAttributeHandle, CubeData.ShaderHandle, "a_VertexPosition" );
+	GET_ATTRIBUTE ( TexCoordAttributeHandle, CubeData.ShaderHandle, "a_TexCoord" );
+	GET_UNIFORM ( TextureUniformHandle, CubeData.ShaderHandle, "u_Texture" );
+	GET_UNIFORM ( CubeData.MVPUniformHandle, CubeData.ShaderHandle, "u_MVP" );
 	CrossRenderer::TextureBindSettings TextureBindSettings ( CubeData.TextureHandle );
 
 	CubeData.RenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;

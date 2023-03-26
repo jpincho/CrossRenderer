@@ -43,10 +43,14 @@ bool TexturedQuadTest::SpecificInitialize ( void )
 														  sizeof ( Vertex ),
 														  CrossRenderer::ShaderBufferComponentType::Float,
 														  2 );
-	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle = CrossRenderer::GetShaderAttributeHandle ( ShaderHandle, "a_VertexPosition" );
-	CrossRenderer::ShaderAttributeHandle TexCoordAttributeHandle = CrossRenderer::GetShaderAttributeHandle ( ShaderHandle, "a_TexCoord" );
-	CrossRenderer::ShaderUniformHandle TextureUniformHandle = CrossRenderer::GetShaderUniformHandle ( ShaderHandle, "u_Texture" );
-	CrossRenderer::ShaderUniformHandle MVPUniformHandle = CrossRenderer::GetShaderUniformHandle ( ShaderHandle, "u_MVP" );
+
+	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
+	CrossRenderer::ShaderUniformHandle TextureUniformHandle, MVPUniformHandle;
+	GET_ATTRIBUTE ( PositionAttributeHandle, ShaderHandle, "a_VertexPosition" );
+	GET_ATTRIBUTE ( TexCoordAttributeHandle, ShaderHandle, "a_TexCoord" );
+	GET_UNIFORM ( TextureUniformHandle, ShaderHandle, "u_Texture" );
+	GET_UNIFORM ( MVPUniformHandle, ShaderHandle, "u_MVP" );
+
 	CrossRenderer::TextureBindSettings TextureBindSettings ( TextureHandle );
 	RenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleStrip;
 	RenderCommand.Shader = ShaderHandle;
@@ -55,7 +59,7 @@ bool TexturedQuadTest::SpecificInitialize ( void )
 	RenderCommand.StartVertex = 0;
 	RenderCommand.VertexCount = 4;
 	RenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( TextureUniformHandle, TextureBindSettings ) );
-	RenderCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( MVPUniformHandle, ProjectionMatrix * ViewMatrix * ModelMatrix) );
+	RenderCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( MVPUniformHandle, ProjectionMatrix * ViewMatrix * ModelMatrix ) );
 	assert ( CrossRenderer::SanityCheckRenderCommand ( RenderCommand ) );
 	return true;
 	}

@@ -97,10 +97,11 @@ bool SpinningCubeTest::SpecificInitialize ( void )
 														sizeof ( uint16_t ),
 														CrossRenderer::ShaderBufferComponentType::Unsigned16,
 														1 );
-	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle = CrossRenderer::GetShaderAttributeHandle ( ShaderHandle, "a_VertexPosition" );
-	CrossRenderer::ShaderAttributeHandle TexCoordAttributeHandle = CrossRenderer::GetShaderAttributeHandle ( ShaderHandle, "a_TexCoord" );
-	CrossRenderer::ShaderUniformHandle TextureUniformHandle = CrossRenderer::GetShaderUniformHandle ( ShaderHandle, "u_Texture" );
-	MVPUniformHandle = CrossRenderer::GetShaderUniformHandle ( ShaderHandle, "u_MVP" );
+	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
+	GET_ATTRIBUTE ( PositionAttributeHandle, ShaderHandle, "a_VertexPosition" );
+	GET_ATTRIBUTE ( TexCoordAttributeHandle, ShaderHandle, "a_TexCoord" );
+	GET_UNIFORM ( TextureUniformHandle, ShaderHandle, "u_Texture" );
+	GET_UNIFORM ( MVPUniformHandle, ShaderHandle, "u_MVP" );
 	CrossRenderer::TextureBindSettings TextureBindSettings ( TextureHandle );
 
 	RenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
