@@ -1,10 +1,10 @@
+#version 400
 uniform mat4 u_MVP;
 
 in vec3 a_VertexPosition;
 in vec2 a_TexCoord;
 
 out vec2 v_TexCoord;
-
 
 void main()
     {

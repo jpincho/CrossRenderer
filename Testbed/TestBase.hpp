@@ -1,5 +1,6 @@
 #pragma once
 #include "../CrossRenderer.hpp"
+#include "../Internal/Logger.hpp"
 
 #define GET_UNIFORM(VARIABLE,SHADER,NAME)\
                 VARIABLE = CrossRenderer::GetShaderUniformHandle ( SHADER, NAME );\

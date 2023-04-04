@@ -30,9 +30,9 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 	gladLoadGL ();
 	DetectOpenGLInformation ();
 
-	if ( OpenGLInformation.OpenGLVersion.Lesser ( 3, 0 ) )
+	if ( OpenGLInformation.OpenGLVersion.Lesser ( 4, 0 ) )
 		{
-		LOG_ERROR ( "OpenGL Core 3.0+ needed" );
+		LOG_ERROR ( "OpenGL Core 4.0+ needed" );
 		return false;
 		}
 

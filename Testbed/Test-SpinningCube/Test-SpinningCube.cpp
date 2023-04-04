@@ -98,6 +98,7 @@ bool SpinningCubeTest::SpecificInitialize ( void )
 														CrossRenderer::ShaderBufferComponentType::Unsigned16,
 														1 );
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
+	CrossRenderer::ShaderUniformHandle TextureUniformHandle;
 	GET_ATTRIBUTE ( PositionAttributeHandle, ShaderHandle, "a_VertexPosition" );
 	GET_ATTRIBUTE ( TexCoordAttributeHandle, ShaderHandle, "a_TexCoord" );
 	GET_UNIFORM ( TextureUniformHandle, ShaderHandle, "u_Texture" );

@@ -100,6 +100,7 @@ bool ImGuiTest::SpecificInitialize ( void )
 														CrossRenderer::ShaderBufferComponentType::Unsigned16,
 														1 );
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
+	CrossRenderer::ShaderUniformHandle TextureUniformHandle;
 	GET_ATTRIBUTE ( PositionAttributeHandle, CubeData.ShaderHandle, "a_VertexPosition" );
 	GET_ATTRIBUTE ( TexCoordAttributeHandle, CubeData.ShaderHandle, "a_TexCoord" );
 	GET_UNIFORM ( TextureUniformHandle, CubeData.ShaderHandle, "u_Texture" );

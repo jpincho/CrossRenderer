@@ -85,7 +85,8 @@ bool SkyboxTest::SpecificInitialize ( void )
 														  sizeof ( glm::vec3 ),
 														  CrossRenderer::ShaderBufferComponentType::Float,
 														  3 );
-	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle,TextureUniformHandle;
+	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle;
+	CrossRenderer::ShaderUniformHandle TextureUniformHandle;
 	CrossRenderer::TextureBindSettings TextureBindSettings ( SkyboxTextureHandle );
 	GET_ATTRIBUTE (PositionAttributeHandle, SkyboxShaderHandle, "a_VertexPosition");
 	GET_UNIFORM ( TextureUniformHandle, SkyboxShaderHandle, "u_SkyboxTexture" );

@@ -1,3 +1,4 @@
+#version 400
 out vec4 FragOutput;
 
 in vec2 v_TexCoord;
