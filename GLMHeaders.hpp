@@ -1,7 +1,6 @@
 #pragma once
-#include <CrossRendererConfig.hpp>
 
-#if defined ( CROSS_RENDERER_COMPILER_MSVC )
+#if defined ( _MSC_VER  )
 #pragma warning ( push )
 #pragma warning ( disable:4201 4301 4310 )
 #endif
@@ -15,6 +14,6 @@
 #include <glm/ext.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#if defined ( CROSS_RENDERER_COMPILER_MSVC )
+#if defined ( _MSC_VER  )
 #pragma warning ( pop )
 #endif

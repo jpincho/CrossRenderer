@@ -1,11 +1,14 @@
 #include "OpenGLShader.hpp"
 #include "OpenGLInternals.hpp"
 #include "../Internal/Logger.hpp"
+#include "../Internal/ConsoleTextColor.hpp"
+#include "../Internal/StringUtils.hpp"
 
 namespace CrossRenderer
 {
 namespace OpenGL
 {
+bool ParseErrorMessages ( const std::string &Code, const std::string &Infolog, std::vector <std::string> &Output );
 bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &Uniforms, std::vector <AttributeInfo> &Attributes );
 
 ShaderObjectHandle CreateShaderObject ( const ShaderObjectType Type )
@@ -55,9 +58,11 @@ bool BuildShaderObject ( const ShaderObjectHandle Handle, const std::string &Cod
 			}
 
 		std::vector <std::string> ErrorStrings;
-		if ( Infolog.length () > 0 )
+		if ( ( Infolog.length () > 0 ) && ( ParseErrorMessages ( Code, Infolog, ErrorStrings ) ) )
 			{
-			LOG_ERROR ( "OpenGL error during shader object compilation. '%s'", Infolog.c_str() );
+			LOG_ERROR ( "OpenGL error during shader object compilation" );
+			for ( const auto &ErrorStringIterator : ErrorStrings )
+				LOG_RAW ( "%s", ErrorStringIterator.c_str () );
 			return false;
 			}
 		else
@@ -68,6 +73,40 @@ bool BuildShaderObject ( const ShaderObjectHandle Handle, const std::string &Cod
 		}
 
 	LOG_DEBUG ( "Shader object successfully compiled" );
+	return true;
+	}
+
+bool ParseErrorMessages ( const std::string &Code, const std::string &Infolog, std::vector <std::string> &Output )
+	{
+	std::string TextColorReset, TextColorError;
+	ConsoleTextColor::TextColor ( TextColorError, ConsoleTextColor::Color::Red );
+	ConsoleTextColor::TextColorReset ( TextColorReset );
+
+	std::vector <std::string> ErrorStrings;
+	std::vector <std::string> SourceLines;
+	StringUtils::Split ( Code, '\n', SourceLines );
+	StringUtils::Split ( Infolog, '\n', ErrorStrings );
+	size_t LastPrintedLine = 0;
+	if ( ErrorStrings.size () == 0 )
+		return false;
+	for ( const auto &ErrorStringIterator : ErrorStrings )
+		{
+		unsigned long Column, Line;
+#if defined (CROSS_RENDERER_TARGET_PLATFORM_WINDOWS)
+		if ( sscanf_s ( ErrorStringIterator.c_str (), "ERROR: %lu:%lu", &Column, &Line ) == 2 )
+#elif defined (CROSS_RENDERER_TARGET_PLATFORM_LINUX)
+		if ( sscanf ( ErrorStringIterator.c_str (), "ERROR: %lu:%lu", &Column, &Line ) == 2 )
+#endif
+			{
+			for ( ; LastPrintedLine < Line; ++LastPrintedLine )
+				Output.push_back ( SourceLines[LastPrintedLine] );
+			Output.push_back ( TextColorError + ErrorStringIterator + TextColorReset );
+			}
+		else
+			Output.push_back ( TextColorError + ErrorStringIterator + TextColorReset );
+		}
+	for ( ; LastPrintedLine < SourceLines.size (); ++LastPrintedLine )
+		Output.push_back ( SourceLines[LastPrintedLine] );
 	return true;
 	}
 
