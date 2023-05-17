@@ -338,6 +338,20 @@ GLint Translate ( const TextureWrapMode Value )
     return Values[ static_cast <unsigned> ( Value )];
     }
 
+GLenum Translate ( const PolygonMode Value )
+	{
+	static GLenum Values[] =
+		{
+		GL_POINT,
+		GL_LINE,
+		GL_FILL
+		};
+	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
+	if ( static_cast <unsigned> ( Value ) >= Count )
+		throw std::runtime_error ( std::string ( "Invalid polygon mode" ) );
+	return Values[static_cast <unsigned> ( Value )];
+	}
+
 ShaderUniformType TranslateOpenGLUniformType ( GLenum Type )
 	{
     switch (Type)

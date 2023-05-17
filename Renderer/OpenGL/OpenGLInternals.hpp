@@ -116,6 +116,7 @@ GLenum Translate ( const ShaderBufferType Value );
 GLenum Translate ( const PrimitiveType Value );
 GLint Translate ( const TextureFilter Value );
 GLint Translate ( const TextureWrapMode Value );
+GLenum Translate ( const PolygonMode Value );
 ShaderUniformType TranslateOpenGLUniformType ( GLenum Type );
 GLenum TranslateUniformType ( ShaderUniformType Type );
 

@@ -20,4 +20,5 @@ const char *Stringify ( const PixelFormat Value );
 const char *Stringify ( const ShaderObjectType Value );
 const char *Stringify ( const TextureWrapMode Value );
 const char *Stringify ( const TextureFilter Value );
+const char *Stringify ( const PolygonMode Value );
 }

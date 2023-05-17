@@ -26,6 +26,7 @@ void ApplyState ( const RenderState &NewState )
 		ConfigureScissor ( NewState.Scissor );
 		ConfigureViewport ( NewState.Viewport );
 		ConfigureDepthTest ( NewState.DepthTest );
+		ConfigurePolygonMode ( NewState.PolygonMode );
 		}
 	else
 		{
@@ -64,6 +65,8 @@ void ApplyState ( const RenderState &NewState )
 		else
 			glDisable ( GL_DEPTH_TEST );
 		glDepthFunc ( Translate ( CurrentState.DepthTest.Mode ) );
+
+		glPolygonMode ( GL_FRONT_AND_BACK, Translate (CurrentState.PolygonMode.State) );
 		}
 	}
 
@@ -74,6 +77,7 @@ void Invalidate ( void )
 	bool PreviouslyEnabled = Enabled;
 	Enabled = false;
 	ApplyState ( CurrentState );
+	CheckError ();
 	Enabled = PreviouslyEnabled;
 	}
 
@@ -251,7 +255,7 @@ void ConfigureDepthTest ( const DepthTestSettings &NewSettings )
 
 void ConfigureFramebuffer ( const FramebufferHandle &NewFramebuffer )
 	{
-	if ( ( Enabled ) && ( NewFramebuffer == CurrentBoundFramebuffer ) )
+	if ( NewFramebuffer == CurrentBoundFramebuffer )
 		return;
 	if ( !NewFramebuffer )
 		glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
@@ -261,6 +265,14 @@ void ConfigureFramebuffer ( const FramebufferHandle &NewFramebuffer )
 		glBindFramebuffer ( GL_FRAMEBUFFER, info->OpenGLID );
 		}
 	CurrentBoundFramebuffer = NewFramebuffer;
+	}
+
+void ConfigurePolygonMode ( const PolygonModeSettings &NewSettings )
+	{
+	if ( CurrentState.PolygonMode == NewSettings )
+		return;
+	glPolygonMode ( GL_FRONT_AND_BACK, Translate ( CurrentState.PolygonMode.State ) );
+	CurrentState.PolygonMode = NewSettings;
 	}
 }
 }

@@ -80,6 +80,13 @@ enum class DepthTestMode : uint8_t
 	Always
 	};
 
+enum class PolygonMode: uint8_t
+	{
+	Point = 0,
+	Line,
+	Fill
+	};
+
 struct BlendSettings
 	{
 	BlendSettings ( void )
@@ -98,9 +105,9 @@ struct BlendSettings
 		Source = NewSource;
 		Destination = NewDestination;
 		}
-	bool operator == ( const BlendSettings &other ) const
+	bool operator == ( const BlendSettings &Other ) const
 		{
-		return ( ( Enabled == other.Enabled ) && ( Source == other.Source ) && ( Destination == other.Destination ) );
+		return ( ( Enabled == Other.Enabled ) && ( Source == Other.Source ) && ( Destination == Other.Destination ) );
 		}
 	bool Enabled;
 	BlendMode Source, Destination;
@@ -116,10 +123,10 @@ struct StencilBufferSettings
 		FunctionReference = FunctionMask = std::numeric_limits <unsigned>::max();
 		OnFail = OnFailZ = OnPassZ = StencilFailAction::Keep;
 		}
-	bool operator == ( const StencilBufferSettings &other ) const
+	bool operator == ( const StencilBufferSettings &Other ) const
 		{
-		return ( ( Enabled == other.Enabled ) && ( Mask == other.Mask ) && ( Function == other.Function ) && ( FunctionReference == other.FunctionReference ) && ( FunctionMask == other.FunctionMask ) &&
-		         ( OnFail == other.OnFail ) && ( OnFailZ == other.OnFailZ ) && ( OnPassZ == other.OnPassZ ) );
+		return ( ( Enabled == Other.Enabled ) && ( Mask == Other.Mask ) && ( Function == Other.Function ) && ( FunctionReference == Other.FunctionReference ) && ( FunctionMask == Other.FunctionMask ) &&
+		         ( OnFail == Other.OnFail ) && ( OnFailZ == Other.OnFailZ ) && ( OnPassZ == Other.OnPassZ ) );
 		}
 	bool Enabled;
 	unsigned Mask;
@@ -140,9 +147,9 @@ struct ScissorSettings
 		LowerLeft = NewLowerLeft;
 		Dimensions = NewDimensions;
 		}
-	bool operator == ( const ScissorSettings &other ) const
+	bool operator == ( const ScissorSettings &Other ) const
 		{
-		return ( ( Enabled == other.Enabled ) && ( LowerLeft == other.LowerLeft ) && ( Dimensions == other.Dimensions ) );
+		return ( ( Enabled == Other.Enabled ) && ( LowerLeft == Other.LowerLeft ) && ( Dimensions == Other.Dimensions ) );
 		}
 	bool Enabled;
 	glm::uvec2 LowerLeft, Dimensions;
@@ -160,9 +167,9 @@ struct ViewportSettings
 		LowerLeft = NewLowerLeft;
 		Dimensions = NewDimensions;
 		}
-	bool operator == ( const ViewportSettings &other ) const
+	bool operator == ( const ViewportSettings &Other ) const
 		{
-		return ( ( Enabled == other.Enabled ) && ( LowerLeft == other.LowerLeft ) && ( Dimensions == other.Dimensions ) );
+		return ( ( Enabled == Other.Enabled ) && ( LowerLeft == Other.LowerLeft ) && ( Dimensions == Other.Dimensions ) );
 		}
 	bool Enabled;
 	glm::uvec2 LowerLeft, Dimensions;
@@ -182,9 +189,9 @@ struct CullingSettings
 		Mode = NewMode;
 		Winding = NewWinding;
 		}
-	bool operator == ( const CullingSettings &other ) const
+	bool operator == ( const CullingSettings &Other ) const
 		{
-		return ( ( Enabled == other.Enabled ) && ( Mode == other.Mode ) && ( Winding == other.Winding ) );
+		return ( ( Enabled == Other.Enabled ) && ( Mode == Other.Mode ) && ( Winding == Other.Winding ) );
 		}
 	bool Enabled;
 	CullingMode Mode;
@@ -203,9 +210,9 @@ struct DepthTestSettings
 		Enabled = true;
 		Mode = NewMode;
 		}
-	bool operator == ( const DepthTestSettings &other ) const
+	bool operator == ( const DepthTestSettings &Other ) const
 		{
-		return ( ( Enabled == other.Enabled ) && ( Mode == other.Mode ) );
+		return ( ( Enabled == Other.Enabled ) && ( Mode == Other.Mode ) );
 		}
 	bool Enabled;
 	DepthTestMode Mode;
@@ -220,6 +227,23 @@ struct FramebufferSettings
 	FramebufferHandle TargetFramebuffer;
 	};
 
+struct PolygonModeSettings
+	{
+	PolygonModeSettings ( void )
+		{
+		State = PolygonMode::Fill;
+		}
+	void Set ( const PolygonMode NewState )
+		{
+		State = NewState;
+		}
+	bool operator == ( const PolygonModeSettings &Other ) const
+		{
+		return ( State == Other.State );
+		}
+	PolygonMode State;
+	};
+
 struct RenderState
 	{
 	BlendSettings Blending;
@@ -228,6 +252,7 @@ struct RenderState
 	ScissorSettings Scissor;
 	ViewportSettings Viewport;
 	DepthTestSettings DepthTest;
+	PolygonModeSettings PolygonMode;
 	};
 	
 struct ShaderTextureBindPair

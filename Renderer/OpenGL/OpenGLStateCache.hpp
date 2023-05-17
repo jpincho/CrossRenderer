@@ -19,6 +19,7 @@ void ConfigureScissor ( const ScissorSettings &NewSettings );
 void ConfigureViewport ( const ViewportSettings &NewSettings );
 void ConfigureDepthTest ( const DepthTestSettings &NewSettings );
 void ConfigureFramebuffer ( const FramebufferHandle &NewFramebuffer );
+void ConfigurePolygonMode ( const PolygonModeSettings &NewSettings );
 }
 }
 }

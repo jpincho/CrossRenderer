@@ -220,4 +220,17 @@ const char *Stringify ( const TextureFilter Value )
 #undef STRINGIFY
 	throw std::runtime_error ( "Unhandled texture filter" );
 	}
+
+const char *Stringify ( const PolygonMode Value )
+	{
+#define STRINGIFY(X) case PolygonMode::X: return #X;
+	switch ( Value )
+		{
+		STRINGIFY ( Point );
+		STRINGIFY ( Line );
+		STRINGIFY ( Fill );
+		}
+#undef STRINGIFY
+	throw std::runtime_error ( "Unhandled polygon mode" );
+	}
 }
