@@ -66,7 +66,8 @@ void ApplyState ( const RenderState &NewState )
 			glDisable ( GL_DEPTH_TEST );
 		glDepthFunc ( Translate ( CurrentState.DepthTest.Mode ) );
 
-		glPolygonMode ( GL_FRONT_AND_BACK, Translate (CurrentState.PolygonMode.State) );
+		glPolygonMode ( GL_FRONT_AND_BACK, Translate ( CurrentState.PolygonMode.State ) );
+		CheckError ();
 		}
 	}
 
@@ -77,7 +78,6 @@ void Invalidate ( void )
 	bool PreviouslyEnabled = Enabled;
 	Enabled = false;
 	ApplyState ( CurrentState );
-	CheckError ();
 	Enabled = PreviouslyEnabled;
 	}
 
@@ -265,6 +265,7 @@ void ConfigureFramebuffer ( const FramebufferHandle &NewFramebuffer )
 		glBindFramebuffer ( GL_FRAMEBUFFER, info->OpenGLID );
 		}
 	CurrentBoundFramebuffer = NewFramebuffer;
+	CheckError ();
 	}
 
 void ConfigurePolygonMode ( const PolygonModeSettings &NewSettings )
@@ -273,6 +274,7 @@ void ConfigurePolygonMode ( const PolygonModeSettings &NewSettings )
 		return;
 	glPolygonMode ( GL_FRONT_AND_BACK, Translate ( CurrentState.PolygonMode.State ) );
 	CurrentState.PolygonMode = NewSettings;
+	CheckError ();
 	}
 }
 }
