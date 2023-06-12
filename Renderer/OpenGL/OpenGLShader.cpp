@@ -122,7 +122,7 @@ ShaderHandle CreateShader ( void )
 	}
 
 ShaderHandle CreateShader ( const ShaderCode &NewCode )
-        {
+    {
 	ShaderObjectHandle VertexShader, GeometryShader, FragmentShader;
 	ShaderHandle NewHandle = CreateShader ();
 

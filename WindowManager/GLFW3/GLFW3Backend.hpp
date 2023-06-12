@@ -23,6 +23,7 @@ bool GetMouseCursorState ( const RenderWindowHandle &Handle );
 glm::ivec2 GetMousePosition ( void );
 uint32_t GetMouseButtonStatus ( void );
 
+void *GetPlatformWindowHandle ( const RenderWindowHandle &Handle );
 void MakeGLActive ( const RenderWindowHandle &Handle );
 void SwapGLWindowBuffer ( const RenderWindowHandle &Handle );
 }

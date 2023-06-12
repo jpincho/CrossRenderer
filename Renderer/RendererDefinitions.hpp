@@ -7,6 +7,7 @@ namespace CrossRenderer
 enum class RendererBackend
     {
     OpenGLCore,
+	Direct3D11
     };
 
 struct RendererConfiguration

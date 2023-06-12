@@ -48,12 +48,17 @@ bool GetAvailableRendererBackends ( std::vector <RendererBackend> &AvailableBack
 #if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT )
     AvailableBackends.push_back ( RendererBackend::OpenGLCore );
 #endif
+#if defined ( CROSS_RENDERER_DIRECT3D11_SUPPORT )
+	AvailableBackends.push_back ( RendererBackend::Direct3D11 );
+#endif
     return ( AvailableBackends.size() != 0 );
     }
 
 RendererBackend GetDefaultRendererBackendType ( void )
     {
-#if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT )
+#if defined ( CROSS_RENDERER_DIRECT3D11_SUPPORT )
+	return RendererBackend::Direct3D11;
+#elif defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT )
     return RendererBackend::OpenGLCore;
 #else
     throw std::runtime_error ( std::string ( "No rendering backend available" ) );

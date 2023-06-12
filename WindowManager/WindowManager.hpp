@@ -30,6 +30,7 @@ DECLARE_INTERFACE_FUNCTION ( void, SetMouseCursorState, const RenderWindowHandle
 DECLARE_INTERFACE_FUNCTION ( bool, GetMouseCursorState, const RenderWindowHandle &Handle );
 DECLARE_INTERFACE_FUNCTION ( glm::ivec2, GetMousePosition, void );
 DECLARE_INTERFACE_FUNCTION ( uint32_t, GetMouseButtonStatus, void );
+DECLARE_INTERFACE_FUNCTION ( void *, GetPlatformWindowHandle, const RenderWindowHandle &Handle );
 DECLARE_INTERFACE_FUNCTION ( void, MakeGLActive, const RenderWindowHandle &Handle );
 DECLARE_INTERFACE_FUNCTION ( void, SwapGLWindowBuffer, const RenderWindowHandle &Handle );
 #undef DECLARE_INTERFACE_FUNCTION

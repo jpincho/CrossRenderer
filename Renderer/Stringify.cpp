@@ -9,6 +9,7 @@ const char *Stringify ( const RendererBackend Value )
 	switch ( Value )
 		{
 		STRINGIFY ( OpenGLCore );
+		STRINGIFY ( Direct3D11 );
 		default:
 			throw std::runtime_error ( "Unhandled graphics API" );
 		}

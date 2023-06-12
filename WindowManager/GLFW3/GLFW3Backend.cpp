@@ -1,5 +1,7 @@
 #include "GLFW3Backend.hpp"
 #include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 #include "../../Internal/Logger.hpp"
 #include "../../Internal/VectorizedContainer.hpp"
 
@@ -205,6 +207,12 @@ glm::ivec2 GetMousePosition ( void )
 uint32_t GetMouseButtonStatus ( void )
 	{
 	return MouseButtons;
+	}
+
+void *GetPlatformWindowHandle ( const RenderWindowHandle &Handle )
+	{
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
+	return glfwGetWin32Window ( WindowInformation->Window );
 	}
 
 void MakeGLActive ( const RenderWindowHandle &Handle )

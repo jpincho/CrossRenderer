@@ -4,6 +4,9 @@
 #if defined ( CROSS_RENDERER_OPENGL_CORE_SUPPORT)
 #include "OpenGL/OpenGLRenderer.hpp"
 #endif
+#if defined ( CROSS_RENDERER_DIRECT3D11_SUPPORT )
+#include "Direct3D11/Direct3D11Renderer.hpp"
+#endif
 
 namespace CrossRenderer
 {
@@ -107,6 +110,53 @@ void CreateNewRenderer ( const RendererBackend &Backend )
 			ATTRIB ( GetFramebufferSize );
 			ATTRIB ( GetColorBufferFromFramebuffer );
 			ATTRIB ( GetDepthBufferFromFramebuffer );
+#undef ATTRIB
+			break;
+#endif
+
+#if defined (CROSS_RENDERER_DIRECT3D11_SUPPORT)
+		case RendererBackend::Direct3D11:
+#define ATTRIB(x) x = Direct3D11::x
+			ATTRIB ( InitializeRenderer );
+			ATTRIB ( ShutdownRenderer );
+			ATTRIB ( StartRenderToFramebuffer );
+			ATTRIB ( DisplayFramebuffer );
+			ATTRIB ( StartRenderToWindow );
+			ATTRIB ( DisplayWindow );
+			ATTRIB ( RunCommand );
+			/*
+			ATTRIB ( CreateShaderBuffer );
+			ATTRIB ( DeleteShaderBuffer );
+			ATTRIB ( ChangeShaderBufferContents );
+			ATTRIB ( MapShaderBuffer );
+			ATTRIB ( UnmapShaderBuffer );
+			ATTRIB ( GetShaderBufferDescriptor );
+
+			ATTRIB ( CreateTexture );
+			ATTRIB ( DeleteTexture );
+			ATTRIB ( Load2DTextureData );
+			ATTRIB ( Update2DTextureRegion );
+			ATTRIB ( LoadCubeMapTextureData );
+			ATTRIB ( GetTextureDimensions );
+			ATTRIB ( GetTextureFormat );
+			ATTRIB ( GetTextureDimensions );
+
+			ATTRIB ( CreateShader );
+			ATTRIB ( DeleteShader );
+			ATTRIB ( GetShaderUniformList );
+			ATTRIB ( GetShaderUniformHandle );
+			ATTRIB ( GetShaderAttributeList );
+			ATTRIB ( GetShaderAttributeHandle );
+			ATTRIB ( GetShaderInformation );
+
+			ATTRIB ( CreateFramebuffer );
+			ATTRIB ( DeleteFramebuffer );
+			ATTRIB ( SetFramebufferClearColor );
+			ATTRIB ( SetFramebufferClearDepth );
+			ATTRIB ( ClearFramebuffer );
+			ATTRIB ( GetFramebufferSize );
+			ATTRIB ( GetColorBufferFromFramebuffer );
+			ATTRIB ( GetDepthBufferFromFramebuffer );*/
 #undef ATTRIB
 			break;
 #endif
