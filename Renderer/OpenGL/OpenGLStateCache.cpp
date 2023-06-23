@@ -272,8 +272,8 @@ void ConfigurePolygonMode ( const PolygonModeSettings &NewSettings )
 	{
 	if ( CurrentState.PolygonMode == NewSettings )
 		return;
-	glPolygonMode ( GL_FRONT_AND_BACK, Translate ( CurrentState.PolygonMode.State ) );
 	CurrentState.PolygonMode = NewSettings;
+	glPolygonMode ( GL_FRONT_AND_BACK, Translate ( CurrentState.PolygonMode.State ) );
 	CheckError ();
 	}
 }
