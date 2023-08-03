@@ -289,6 +289,7 @@ struct RenderCommand
     PrimitiveType Primitive;
     size_t VertexCount, StartVertex;
 
+	size_t InstanceCount;
     RenderState State;
 	};
 }

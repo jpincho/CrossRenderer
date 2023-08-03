@@ -1,6 +1,6 @@
-#include "Test-SpinningCube.hpp"
+#include "Test-InstancedSpinningCubes.hpp"
 
-bool SpinningCubeTest::SpecificInitialize ( void )
+bool InstancedSpinningCubesTest::SpecificInitialize ( void )
 	{
 	struct Vertex
 		{
@@ -63,8 +63,16 @@ bool SpinningCubeTest::SpecificInitialize ( void )
 
 	glm::uvec2 WindowSize = CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () );
 	ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), (float) WindowSize.x / (float) WindowSize.y, 0.1f, 10.0f );
-	ModelMatrix = glm::identity<glm::mat4> ();
 	ViewMatrix = glm::lookAt ( glm::vec3 ( 0.0f, 0.0f, -2.0f ), glm::zero<glm::vec3> (), glm::vec3 ( 0.0f, 1.0f, 0.0f ) );
+	for ( unsigned Index = 0; Index < 100; ++Index )
+		{
+		Rotations[Index].x = (float) rand ();
+		Rotations[Index].y = (float) rand ();
+		Rotations[Index].z = (float) rand ();
+		Rotations[Index] = glm::normalize ( Rotations[Index] );
+		ModelMatrices[Index] = glm::identity<glm::mat4> ();
+		}
+
 
 	CrossRenderer::ShaderBufferDescriptor DataDescriptor ( Vertices, sizeof ( Vertices ) );
 	DataBufferHandle = CrossRenderer::CreateShaderBuffer ( DataDescriptor );
@@ -72,8 +80,8 @@ bool SpinningCubeTest::SpecificInitialize ( void )
 	IndexBufferHandle = CrossRenderer::CreateShaderBuffer ( IndexDescriptor );
 
 	ShaderHandle = LoadShader (
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.vert" ), "",
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.frag" ) );
+				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedSpinningCubesTest.vert" ), "",
+				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedSpinningCubesTest.frag" ) );
 	if ( !ShaderHandle )
 		return false;
 
@@ -102,7 +110,6 @@ bool SpinningCubeTest::SpecificInitialize ( void )
 	GET_ATTRIBUTE ( PositionAttributeHandle, ShaderHandle, "a_VertexPosition" );
 	GET_ATTRIBUTE ( TexCoordAttributeHandle, ShaderHandle, "a_TexCoord" );
 	GET_UNIFORM ( TextureUniformHandle, ShaderHandle, "u_Texture" );
-	GET_UNIFORM ( MVPUniformHandle, ShaderHandle, "u_MVP" );
 	CrossRenderer::TextureBindSettings TextureBindSettings ( TextureHandle );
 
 	RenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
@@ -111,16 +118,23 @@ bool SpinningCubeTest::SpecificInitialize ( void )
 	RenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( TexCoordAttributeHandle, TexCoordStream ) );
 	RenderCommand.StartVertex = 0;
 	RenderCommand.VertexCount = 36;
-	RenderCommand.InstanceCount = 0;
+	RenderCommand.InstanceCount = 100;
 	RenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( TextureUniformHandle, TextureBindSettings ) );
-	RenderCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( MVPUniformHandle, ProjectionMatrix * ViewMatrix * ModelMatrix ) );
+	for ( unsigned Index = 0; Index < 100; ++Index )
+		{
+		char Name[30];
+		sprintf_s ( Name, "u_MVP[%u]", Index );
+		CrossRenderer::ShaderUniformHandle MVPUniformHandle;
+		GET_UNIFORM ( MVPUniformHandle, ShaderHandle, Name );
+		RenderCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( MVPUniformHandle, ModelMatrices[Index] ) );
+		}
 	RenderCommand.IndexBufferStream = IndexStream;
 	RenderCommand.State.DepthTest.Set ( CrossRenderer::DepthTestMode::Less );
 	assert ( CrossRenderer::SanityCheckRenderCommand ( RenderCommand ) );
 	return true;
 	}
 
-bool SpinningCubeTest::SpecificShutdown ( void )
+bool InstancedSpinningCubesTest::SpecificShutdown ( void )
 	{
 	if ( DataBufferHandle )
 		{
@@ -145,16 +159,32 @@ bool SpinningCubeTest::SpecificShutdown ( void )
 	return true;
 	}
 
-bool SpinningCubeTest::SpecificFrame ( const float TimeDelta )
+bool InstancedSpinningCubesTest::SpecificFrame ( const float TimeDelta )
 	{
-	ModelMatrix = glm::rotate ( glm::quarter_pi<float> () * TimeDelta, glm::vec3 ( 0.0f, 1.0f, 0.0f ) ) * ModelMatrix;
-	RenderCommand.UniformValues[0].UniformValue = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	for ( unsigned Index = 0; Index < 100; ++Index )
+		{
+		glm::vec3 Offset ( -1.0f, -1.0f, -3.0f );
+		Offset.x = (float) ( Index / 10 );
+		Offset.x /= 5.0f;
+		Offset.y = (float) ( Index % 10 );
+		Offset.y /= 5.0f;
+		Offset.x -= 1.0f;
+		Offset.y -= 1.0f;
+		Offset.x *= 1.5f;
+		Offset.y *= 1.5f;
+		Offset.z = -1.0f;
+		//LOG_DEBUG ( "%u %s", Index, glm::to_string(Offset).c_str() );
+		ModelMatrices[Index] = glm::rotate ( glm::quarter_pi<float> () * TimeDelta, Rotations[Index] ) * ModelMatrices[Index];
+		RenderCommand.UniformValues[Index].UniformValue = ProjectionMatrix * 
+			glm::translate ( glm::identity<glm::mat4> (), Offset ) *
+			ModelMatrices[Index] *
+			glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
+		}
 	CrossRenderer::RunCommand ( RenderCommand );
 	return true;
 	}
 
-
-void SpinningCubeTest::SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEvent &Event )
+void InstancedSpinningCubesTest::SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEvent &Event )
 	{
 	switch ( Event.EventType )
 		{
@@ -169,7 +199,7 @@ void SpinningCubeTest::SpecificOnEvent ( const CrossRenderer::WindowManager::Win
 	}
 int main ( void )
 	{
-	SpinningCubeTest Test;
+	InstancedSpinningCubesTest Test;
 	if ( Test.Initialize () == false )
 		return -1;
 	if ( Test.Run () == false )

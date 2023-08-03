@@ -263,7 +263,7 @@ bool RunCommand ( const RenderCommand &Command )
 
 		if ( BufferInformation->MappedPointer )
 			{
-			UnmapShaderBuffer ( Iterator.DataStream.BufferHandle );
+			OpenGL::UnmapShaderBuffer ( Iterator.DataStream.BufferHandle );
 			}
 
 		glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
@@ -340,14 +340,38 @@ bool RunCommand ( const RenderCommand &Command )
 
 		ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBufferStream.BufferHandle.GetKey ()];
 		glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, BufferToUse->OpenGLID );
-		glDrawElements ( Translate ( Command.Primitive ),
-						 (GLint) Command.VertexCount,
-						 Translate ( Command.IndexBufferStream.ComponentType ),
-						 reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ) );
+
+		if ( Command.InstanceCount )
+			{
+			glDrawElementsInstanced ( Translate ( Command.Primitive ),
+							 static_cast <GLsizei> ( Command.VertexCount ),
+							 Translate ( Command.IndexBufferStream.ComponentType ),
+							 reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ),
+							 static_cast <GLsizei> ( Command.InstanceCount ) );
+			}
+		else
+			{
+			glDrawElements ( Translate ( Command.Primitive ),
+							 static_cast <GLsizei> ( Command.VertexCount ),
+							 Translate ( Command.IndexBufferStream.ComponentType ),
+							 reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ) );
+			}
 		}
 	else
 		{
-		glDrawArrays ( Translate ( Command.Primitive ), (GLint) Command.StartVertex, static_cast <GLsizei> ( Command.VertexCount ) );
+		if ( Command.InstanceCount )
+			{
+			glDrawArraysInstanced ( Translate ( Command.Primitive ),
+								   static_cast<GLint> ( Command.StartVertex ),
+								   static_cast <GLsizei> ( Command.VertexCount ),
+								   static_cast <GLsizei> ( Command.InstanceCount ) );
+			}
+		else
+			{
+			glDrawArrays ( Translate ( Command.Primitive ),
+						   static_cast<GLint> ( Command.StartVertex ),
+						   static_cast <GLsizei> ( Command.VertexCount ) );
+			}
 		}
 	return CheckError ();
 	}

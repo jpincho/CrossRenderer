@@ -122,14 +122,14 @@ ShaderHandle CreateShader ( void )
 	}
 
 ShaderHandle CreateShader ( const ShaderCode &NewCode )
-        {
+	{
 	ShaderObjectHandle VertexShader, GeometryShader, FragmentShader;
 	ShaderHandle NewHandle = CreateShader ();
 
 	std::vector <ShaderObjectHandle> ShaderObjectsToLink;
 
 	if ( !NewCode.VertexShader.empty () )
-        {
+		{
 		VertexShader = CreateShaderObject ( ShaderObjectType::Vertex );
 		if ( BuildShaderObject ( VertexShader, NewCode.VertexShader ) == false )
 			goto OnError;
@@ -148,11 +148,11 @@ ShaderHandle CreateShader ( const ShaderCode &NewCode )
 		if ( BuildShaderObject ( FragmentShader, NewCode.FragmentShader ) == false )
 			goto OnError;
 		ShaderObjectsToLink.push_back ( FragmentShader );
-        }
+		}
 	if ( LinkShader ( NewHandle, ShaderObjectsToLink ) == false )
 		goto OnError;
 
-    return NewHandle;
+	return NewHandle;
 OnError:
 	if ( VertexShader )
 		DeleteShaderObject ( VertexShader );
@@ -163,22 +163,22 @@ OnError:
 	if ( NewHandle )
 		DeleteShader ( NewHandle );
 	return ShaderHandle::Invalid;
-    }
+	}
 
 bool DeleteShader ( const ShaderHandle Handle )
-    {
-    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey()];
+	{
+	ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 	for ( const auto &Iterator : ShaderInformation->AttachedShaderObjects )
 		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator.GetKey ()].OpenGLID );
 
-    glDeleteProgram ( ShaderInformation->OpenGLID );
-    Shaders.ReleaseIndex ( Handle.GetKey () );
-    return true;
-    }
+	glDeleteProgram ( ShaderInformation->OpenGLID );
+	Shaders.ReleaseIndex ( Handle.GetKey () );
+	return true;
+	}
 
 bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHandle> &ObjectHandles )
-    {
-    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
+	{
+	ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 	std::vector <GLuint> GLIDs;
 	for ( const auto &Iterator : ShaderInformation->AttachedShaderObjects )
 		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator.GetKey ()].OpenGLID );
@@ -199,7 +199,7 @@ bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHand
 		if ( InfoLogLength )
 			{
 			Infolog.resize ( InfoLogLength );
-			glGetProgramInfoLog ( ShaderInformation->OpenGLID, InfoLogLength, nullptr, ( GLchar * ) Infolog.c_str () );
+			glGetProgramInfoLog ( ShaderInformation->OpenGLID, InfoLogLength, nullptr, (GLchar *) Infolog.c_str () );
 			}
 
 		LOG_ERROR ( "OpenGL error during shader program linking. '%s'", Infolog.c_str () );
@@ -209,204 +209,225 @@ bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHand
 			glGetShaderiv ( ShaderObjects[Iterator.GetKey ()].OpenGLID, GL_SHADER_SOURCE_LENGTH, &length );
 			std::string Source;
 			Source.resize ( length );
-			glGetShaderSource ( ShaderObjects[Iterator.GetKey ()].OpenGLID, length, &length, ( char * ) Source.c_str () );
+			glGetShaderSource ( ShaderObjects[Iterator.GetKey ()].OpenGLID, length, &length, (char *) Source.c_str () );
 			LOG_ERROR ( "%s", Source.c_str () );
 			}
 
-        return false;
+		return false;
 		}
 	LOG_DEBUG ( "Linked shader program %u", ShaderInformation->OpenGLID );
-    if ( DetectUniformsAndAttributes ( ShaderInformation->OpenGLID, ShaderInformation->Uniforms, ShaderInformation->Attributes ) == false )
-        {
-        LOG_ERROR ( "Error detecting uniforms/attributes" );
-        return false;
-        }
+	if ( DetectUniformsAndAttributes ( ShaderInformation->OpenGLID, ShaderInformation->Uniforms, ShaderInformation->Attributes ) == false )
+		{
+		LOG_ERROR ( "Error detecting uniforms/attributes" );
+		return false;
+		}
 
-    return true;
-    }
+	return true;
+	}
 
 void GetShaderUniformList ( const ShaderHandle Handle, std::vector <std::pair <std::string, ShaderUniformType>> &UniformList )
-    {
-    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
+	{
+	ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 
-    for ( const auto &iterator : ShaderInformation->Uniforms )
-        UniformList.push_back ( std::pair <std::string, ShaderUniformType> ( iterator.Name, iterator.Type ) );
-    }
+	for ( const auto &iterator : ShaderInformation->Uniforms )
+		UniformList.push_back ( std::pair <std::string, ShaderUniformType> ( iterator.Name, iterator.Type ) );
+	}
 
 ShaderUniformHandle GetShaderUniformHandle ( const ShaderHandle Handle, const std::string Name )
-    {
-    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
+	{
+	ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 
-    for ( unsigned cont = 0; cont < ShaderInformation->Uniforms.size(); ++cont )
-        {
-        if ( ShaderInformation->Uniforms[cont].Name == Name )
-            return ShaderUniformHandle ( cont );
-        }
+	for ( unsigned cont = 0; cont < ShaderInformation->Uniforms.size (); ++cont )
+		{
+		if ( ShaderInformation->Uniforms[cont].Name == Name )
+			return ShaderUniformHandle ( cont );
+		}
 	//LOG_ERROR ( "Invalid uniform '%s' for shader", Name.c_str() );
-    return ShaderUniformHandle::Invalid;
-    }
+	return ShaderUniformHandle::Invalid;
+	}
 
 void GetShaderAttributeList ( const ShaderHandle Handle, std::vector <std::pair <std::string, ShaderAttributeType>> &AttributeList )
-    {
-    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
+	{
+	ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 
-    for ( const auto &iterator : ShaderInformation->Attributes )
-        AttributeList.push_back ( std::pair <std::string, ShaderAttributeType> ( iterator.Name, iterator.Type ) );
-    }
+	for ( const auto &iterator : ShaderInformation->Attributes )
+		AttributeList.push_back ( std::pair <std::string, ShaderAttributeType> ( iterator.Name, iterator.Type ) );
+	}
 
 ShaderAttributeHandle GetShaderAttributeHandle ( const ShaderHandle Handle, const std::string Name )
-    {
-    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
+	{
+	ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 
-    for ( unsigned cont = 0; cont < ShaderInformation->Attributes.size(); ++cont )
-        {
-        if ( ShaderInformation->Attributes[cont].Name == Name )
-            return ShaderAttributeHandle ( cont );
-        }
+	for ( unsigned cont = 0; cont < ShaderInformation->Attributes.size (); ++cont )
+		{
+		if ( ShaderInformation->Attributes[cont].Name == Name )
+			return ShaderAttributeHandle ( cont );
+		}
 	//LOG_ERROR ( "Invalid attribute '%s' for shader", Name.c_str() );
-    return ShaderAttributeHandle::Invalid;
-    }
+	return ShaderAttributeHandle::Invalid;
+	}
 
 void GetShaderInformation ( const ShaderHandle Handle, ShaderInformation &Information )
-    {
-    ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey()];
-    for ( unsigned cont = 0; cont < ShaderInformation->Uniforms.size(); ++cont )
-        {
-        ShaderInformation::ShaderUniformInformation Info;
-        Info.Name = ShaderInformation->Uniforms[cont].Name;
-        Info.Type = ShaderInformation->Uniforms[cont].Type;
-        Info.Handle = ShaderUniformHandle ( cont );
-        Information.Uniforms.push_back ( Info );
-        }
-    for ( unsigned cont = 0; cont < ShaderInformation->Attributes.size(); ++cont )
-        {
-        ShaderInformation::ShaderAttributeInformation Info;
-        Info.Name = ShaderInformation->Attributes[cont].Name;
-        Info.Type = ShaderInformation->Attributes[cont].Type;
-        Info.Handle = ShaderAttributeHandle ( cont );
-        Information.Attributes.push_back ( Info );
-        }
+	{
+	ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
+	for ( unsigned cont = 0; cont < ShaderInformation->Uniforms.size (); ++cont )
+		{
+		ShaderInformation::ShaderUniformInformation Info;
+		Info.Name = ShaderInformation->Uniforms[cont].Name;
+		Info.Type = ShaderInformation->Uniforms[cont].Type;
+		Info.Handle = ShaderUniformHandle ( cont );
+		Information.Uniforms.push_back ( Info );
+		}
+	for ( unsigned cont = 0; cont < ShaderInformation->Attributes.size (); ++cont )
+		{
+		ShaderInformation::ShaderAttributeInformation Info;
+		Info.Name = ShaderInformation->Attributes[cont].Name;
+		Info.Type = ShaderInformation->Attributes[cont].Type;
+		Info.Handle = ShaderAttributeHandle ( cont );
+		Information.Attributes.push_back ( Info );
+		}
 	Information.AttachedShaderObjects = ShaderInformation->AttachedShaderObjects;
-    Information.Handle = Handle;
-    }
+	Information.Handle = Handle;
+	}
 
 bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &Uniforms, std::vector <AttributeInfo> &Attributes )
-    {
-    GLint UniformCount, MaxUniformNameLength, UniformBlockCount;
-    GLint AttributeCount, MaxAttributeNameLength;
-    bool Result = false;
+	{
+	GLint UniformCount, MaxUniformNameLength, UniformBlockCount;
+	GLint AttributeCount, MaxAttributeNameLength;
+	bool Result = false;
 
-    glGetProgramiv ( OpenGLID, GL_ACTIVE_UNIFORMS, &UniformCount );
-    glGetProgramiv ( OpenGLID, GL_ACTIVE_ATTRIBUTES, &AttributeCount );
-    glGetProgramiv ( OpenGLID, GL_ACTIVE_UNIFORM_BLOCKS, &UniformBlockCount );
+	glGetProgramiv ( OpenGLID, GL_ACTIVE_UNIFORMS, &UniformCount );
+	glGetProgramiv ( OpenGLID, GL_ACTIVE_ATTRIBUTES, &AttributeCount );
+	glGetProgramiv ( OpenGLID, GL_ACTIVE_UNIFORM_BLOCKS, &UniformBlockCount );
 
-    if ( !CheckError() )
-        return false;
-    if ( ( UniformCount == 0 ) && ( AttributeCount == 0 ) && ( UniformBlockCount == 0 ) )
-        return true;
+	if ( !CheckError () )
+		return false;
+	if ( ( UniformCount == 0 ) && ( AttributeCount == 0 ) && ( UniformBlockCount == 0 ) )
+		return true;
 
-    glGetProgramiv ( OpenGLID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &MaxUniformNameLength );
-    glGetProgramiv ( OpenGLID, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &MaxAttributeNameLength );
-    if ( !CheckError() )
-        return false;
+	glGetProgramiv ( OpenGLID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &MaxUniformNameLength );
+	glGetProgramiv ( OpenGLID, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &MaxAttributeNameLength );
+	if ( !CheckError () )
+		return false;
 
-    size_t NameLength = std::max ( MaxUniformNameLength, MaxAttributeNameLength );
-    char *Name = new char [NameLength];
+	size_t NameLength = std::max ( MaxUniformNameLength, MaxAttributeNameLength );
+	char *Name = new char[NameLength];
 
-    Uniforms.clear();
-    for ( int cont = 0; cont < UniformBlockCount; ++cont )
-        {
-        GLint Location;
+	Uniforms.clear ();
+	for ( int cont = 0; cont < UniformBlockCount; ++cont )
+		{
+		GLint Location;
 
-        glGetActiveUniformBlockName ( OpenGLID, cont, ( GLsizei ) NameLength, nullptr, Name );
-        if ( !CheckError() )
-            goto cleanup;
-        if ( strncmp ( "gl_", Name, 3 ) == 0 )
-            continue;
+		glGetActiveUniformBlockName ( OpenGLID, cont, (GLsizei) NameLength, nullptr, Name );
+		if ( !CheckError () )
+			goto cleanup;
+		if ( strncmp ( "gl_", Name, 3 ) == 0 )
+			continue;
 
-        Location = glGetUniformBlockIndex ( OpenGLID, Name );
-        if ( !CheckError() )
-            goto cleanup;
-        if ( Location == -1 )
-            {
-            LOG_ERROR ( "Unable to get location for uniform block '%s'", Name );
-            continue;
-            }
+		Location = glGetUniformBlockIndex ( OpenGLID, Name );
+		if ( !CheckError () )
+			goto cleanup;
+		if ( Location == -1 )
+			{
+			LOG_ERROR ( "Unable to get location for uniform block '%s'", Name );
+			continue;
+			}
 
-        UniformInfo NewUniform;
-        NewUniform.Name.assign ( Name );
-        NewUniform.Type = ShaderUniformType::Block;
-        NewUniform.OpenGLID = Location;
-        Uniforms.push_back ( NewUniform );
-        }
+		UniformInfo NewUniform;
+		NewUniform.Name.assign ( Name );
+		NewUniform.Type = ShaderUniformType::Block;
+		NewUniform.OpenGLID = Location;
+		Uniforms.push_back ( NewUniform );
+		}
 
-    for ( int cont = 0; cont < UniformCount; ++cont )
-        {
-        GLenum GLType;
-        GLint Location;
-        GLint UniformSize;
-        ShaderUniformType Type;
+	for ( int cont = 0; cont < UniformCount; ++cont )
+		{
+		GLenum GLType;
+		GLint Location;
+		GLint UniformSize;
+		ShaderUniformType Type;
 
-        glGetActiveUniform ( OpenGLID, cont, ( GLsizei ) NameLength, nullptr, &UniformSize, &GLType, Name );
-        if ( !CheckError() )
-            goto cleanup;
-        if ( strncmp ( "gl_", Name, 3 ) == 0 )
-            continue;
+		glGetActiveUniform ( OpenGLID, cont, (GLsizei) NameLength, nullptr, &UniformSize, &GLType, Name );
+		if ( !CheckError () )
+			goto cleanup;
+		if ( strncmp ( "gl_", Name, 3 ) == 0 )
+			continue;
 
-        Location = glGetUniformLocation ( OpenGLID, Name );
-        if ( !CheckError() )
-            goto cleanup;
-        if ( Location == -1 )
-            {
-            // TODO Check if this is part of an uniform block
-            LOG_ERROR ( "Unable to get location for uniform '%s'", Name );
-            continue;
-            }
+		Location = glGetUniformLocation ( OpenGLID, Name );
+		if ( !CheckError () )
+			goto cleanup;
+		if ( Location == -1 )
+			{
+			// TODO Check if this is part of an uniform block
+			LOG_ERROR ( "Unable to get location for uniform '%s'", Name );
+			continue;
+			}
 
-        Type = TranslateOpenGLUniformType ( GLType );
-        UniformInfo NewUniform;
-        NewUniform.Name.assign ( Name );
-        NewUniform.Type = Type;
-        NewUniform.OpenGLID = Location;
-        Uniforms.push_back ( NewUniform );
-        }
+		// If this is uniform is an array, add all other elements to the list
+		if ( UniformSize != 1 )
+			{
+			char *BracketPos = strchr ( Name, '[' );
+			*BracketPos = 0;
+			for ( int Index = 0; Index < UniformSize; ++Index )
+				{
+				Type = TranslateOpenGLUniformType ( GLType );
+				UniformInfo NewUniform;
+				NewUniform.Name.assign ( Name );
+				NewUniform.Name.append ( "[" );
+				NewUniform.Name.append ( std::to_string ( Index ) );
+				NewUniform.Name.append ( "]" );
+				NewUniform.Type = Type;
+				NewUniform.OpenGLID = Location + Index;
+				Uniforms.push_back ( NewUniform );
+				}
+			}
+		else
+			{
+			Type = TranslateOpenGLUniformType ( GLType );
+			UniformInfo NewUniform;
+			NewUniform.Name.assign ( Name );
+			NewUniform.Type = Type;
+			NewUniform.OpenGLID = Location;
+			Uniforms.push_back ( NewUniform );
+			}
+		}
 
-    Attributes.clear();
-    for ( int cont = 0; cont < AttributeCount; ++cont )
-        {
-        GLenum GLType;
-        GLint Location;
-        GLint AttributeSize;
-        ShaderAttributeType Type;
+	Attributes.clear ();
+	for ( int cont = 0; cont < AttributeCount; ++cont )
+		{
+		GLenum GLType;
+		GLint Location;
+		GLint AttributeSize;
+		ShaderAttributeType Type;
 
-        glGetActiveAttrib ( OpenGLID, cont, ( GLsizei ) NameLength, nullptr, &AttributeSize, &GLType, Name );
-        if ( !CheckError() )
-            goto cleanup;
-        if ( strncmp ( "gl_", Name, 3 ) == 0 )
-            continue;
+		glGetActiveAttrib ( OpenGLID, cont, (GLsizei) NameLength, nullptr, &AttributeSize, &GLType, Name );
+		if ( !CheckError () )
+			goto cleanup;
+		if ( strncmp ( "gl_", Name, 3 ) == 0 )
+			continue;
 
-        Location = glGetAttribLocation ( OpenGLID, Name );
-        if ( !CheckError() )
-            goto cleanup;
-        if ( Location == -1 )
-            {
-            LOG_ERROR ( "Unable to get location for attribute '%s'", Name );
-            goto cleanup;
-            }
+		Location = glGetAttribLocation ( OpenGLID, Name );
+		if ( !CheckError () )
+			goto cleanup;
+		if ( Location == -1 )
+			{
+			LOG_ERROR ( "Unable to get location for attribute '%s'", Name );
+			goto cleanup;
+			}
 
-        Type = TranslateOpenGLUniformType ( GLType );
-        AttributeInfo NewAttribute;
-        NewAttribute.Name.assign ( Name );
-        NewAttribute.Type = Type;
-        NewAttribute.OpenGLID = Location;
-        NewAttribute.Enabled = false;
-        Attributes.push_back ( NewAttribute );
-        }
-    Result = true;
+		Type = TranslateOpenGLUniformType ( GLType );
+		AttributeInfo NewAttribute;
+		NewAttribute.Name.assign ( Name );
+		NewAttribute.Type = Type;
+		NewAttribute.OpenGLID = Location;
+		NewAttribute.Enabled = false;
+		Attributes.push_back ( NewAttribute );
+		}
+	Result = true;
 
 cleanup:
-    delete[] Name;
-    return Result;
-    }
+	delete[] Name;
+	return Result;
+	}
 }
 }
