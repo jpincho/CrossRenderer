@@ -96,7 +96,7 @@ bool SkyboxTest::SpecificInitialize ( void )
 	SkyboxRenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( PositionAttributeHandle, PositionStream ) );
 	SkyboxRenderCommand.StartVertex = 0;
 	SkyboxRenderCommand.VertexCount = 36;
-	SkyboxRenderCommand.InstanceCount = 0;
+	SkyboxRenderCommand.InstanceCount = 1;
 	SkyboxRenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( TextureUniformHandle, TextureBindSettings ) );
 	SkyboxRenderCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( MVPUniformHandle, ProjectionMatrix * ViewMatrix ) );
 	assert ( CrossRenderer::SanityCheckRenderCommand ( SkyboxRenderCommand ) );

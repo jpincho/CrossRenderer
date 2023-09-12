@@ -113,7 +113,7 @@ bool ImGuiTest::SpecificInitialize ( void )
 	CubeData.RenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( TexCoordAttributeHandle, TexCoordStream ) );
 	CubeData.RenderCommand.StartVertex = 0;
 	CubeData.RenderCommand.VertexCount = 36;
-	CubeData.RenderCommand.InstanceCount = 0;
+	CubeData.RenderCommand.InstanceCount = 1;
 	CubeData.RenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( TextureUniformHandle, TextureBindSettings ) );
 	CubeData.RenderCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( CubeData.MVPUniformHandle, CubeData.ProjectionMatrix * CubeData.ViewMatrix * CubeData.ModelMatrix ) );
 	CubeData.RenderCommand.IndexBufferStream = IndexStream;
@@ -461,7 +461,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 			Command.Primitive = CrossRenderer::PrimitiveType::TriangleList;
 			Command.IndexBufferStream = ImGuiData.IndexBufferStream;
 			Command.IndexBufferStream.StartOffset = IndexBufferOffset;
-			Command.InstanceCount = 0;
+			Command.InstanceCount = 1;
 			CrossRenderer::ShaderBufferDataStream VertexStream = ImGuiData.VertexStream;
 			VertexStream.StartOffset = offsetof ( ImDrawVert, pos ) + VertexBufferOffset;
 			CrossRenderer::ShaderBufferDataStream TexCoordStream = ImGuiData.TexCoordStream;
@@ -539,7 +539,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 			Command.Shader = ImGuiData.ShaderHandle;
 			Command.Primitive = CrossRenderer::PrimitiveType::TriangleList;
 			Command.IndexBufferStream = ImGuiData.IndexBufferStream;
-			Command.InstanceCount = 0;
+			Command.InstanceCount = 1;
 			Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiData.PositionShaderAttribute, ImGuiData.VertexStream ) );
 			Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiData.TexCoordShaderAttribute, ImGuiData.TexCoordStream ) );
 			Command.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( ImGuiData.ColorShaderAttribute, ImGuiData.ColorStream ) );

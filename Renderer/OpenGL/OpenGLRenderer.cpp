@@ -161,8 +161,12 @@ bool RunCommand ( const RenderCommand &Command )
 			{
 			if ( AttributeIterator.Enabled == true )
 				{
+				unsigned RowCount = 1;
+				if ( AttributeIterator.Type == ShaderAttributeType::Matrix4 )
+					RowCount = 4;
 				AttributeIterator.Enabled = false;
-				glDisableVertexAttribArray ( AttributeIterator.OpenGLID );
+				for ( unsigned Row = 0; Row < RowCount; ++Row )
+					glDisableVertexAttribArray ( AttributeIterator.OpenGLID + Row );
 				}
 			}
 		}
@@ -255,24 +259,52 @@ bool RunCommand ( const RenderCommand &Command )
 		AttributeInfo *AttributeInformation = &( ShaderInformation->Attributes[Iterator.AttributeHandle.GetKey ()] );
 		ShaderBufferInfo *BufferInformation = &( ShaderBuffers[Iterator.DataStream.BufferHandle.GetKey ()] );
 
-		if ( AttributeInformation->Enabled == false )
-			{
-			glEnableVertexAttribArray ( AttributeInformation->OpenGLID );
-			AttributeInformation->Enabled = true;
-			}
-
 		if ( BufferInformation->MappedPointer )
 			{
 			OpenGL::UnmapShaderBuffer ( Iterator.DataStream.BufferHandle );
 			}
 
-		glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
-		glVertexAttribPointer ( AttributeInformation->OpenGLID,
-								(GLint) Iterator.DataStream.ComponentsPerElement,
-								Translate ( Iterator.DataStream.ComponentType ),
-								Iterator.DataStream.NormalizeData,
-								(GLsizei) Iterator.DataStream.Stride,
-								(void *) Iterator.DataStream.StartOffset );
+		// In case this is a matrix array TODO Other array types
+		if ( AttributeInformation->Type == ShaderAttributeType::Matrix4 )
+			{
+			glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
+			if ( AttributeInformation->Enabled == false )
+				{
+				for ( unsigned RowCount = 0; RowCount < 4; ++RowCount )
+					{
+					glEnableVertexAttribArray ( AttributeInformation->OpenGLID + RowCount );
+					glVertexAttribDivisor ( AttributeInformation->OpenGLID + RowCount, 1 );
+					CheckError ();
+					}
+				AttributeInformation->Enabled = true;
+				}
+			for ( unsigned RowCount = 0; RowCount < 4; ++RowCount )
+				{
+				glVertexAttribPointer ( AttributeInformation->OpenGLID + RowCount,
+										4,//(GLint) Iterator.DataStream.ComponentsPerElement,
+										Translate ( Iterator.DataStream.ComponentType ),
+										Iterator.DataStream.NormalizeData,
+										(GLsizei) Iterator.DataStream.Stride,
+										(void *) ( (uint8_t *) Iterator.DataStream.StartOffset + ( sizeof ( glm::vec4 ) * RowCount ) ) );
+				CheckError ();
+				}
+			}
+		else
+			{
+			if ( AttributeInformation->Enabled == false )
+				{
+				glEnableVertexAttribArray ( AttributeInformation->OpenGLID );
+				glVertexAttribDivisor ( AttributeInformation->OpenGLID, 0 );
+				AttributeInformation->Enabled = true;
+				}
+			glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
+			glVertexAttribPointer ( AttributeInformation->OpenGLID,
+									(GLint) Iterator.DataStream.ComponentsPerElement,
+									Translate ( Iterator.DataStream.ComponentType ),
+									Iterator.DataStream.NormalizeData,
+									(GLsizei) Iterator.DataStream.Stride,
+									(void *) Iterator.DataStream.StartOffset );
+			}
 		}
 	if ( CheckError () == false )
 		return false;
@@ -340,38 +372,18 @@ bool RunCommand ( const RenderCommand &Command )
 
 		ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBufferStream.BufferHandle.GetKey ()];
 		glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, BufferToUse->OpenGLID );
-
-		if ( Command.InstanceCount )
-			{
-			glDrawElementsInstanced ( Translate ( Command.Primitive ),
-							 static_cast <GLsizei> ( Command.VertexCount ),
-							 Translate ( Command.IndexBufferStream.ComponentType ),
-							 reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ),
-							 static_cast <GLsizei> ( Command.InstanceCount ) );
-			}
-		else
-			{
-			glDrawElements ( Translate ( Command.Primitive ),
-							 static_cast <GLsizei> ( Command.VertexCount ),
-							 Translate ( Command.IndexBufferStream.ComponentType ),
-							 reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ) );
-			}
+		glDrawElementsInstanced ( Translate ( Command.Primitive ),
+						 static_cast <GLsizei> ( Command.VertexCount ),
+						 Translate ( Command.IndexBufferStream.ComponentType ),
+						 reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ),
+						 static_cast <GLsizei> ( Command.InstanceCount ) );
 		}
 	else
 		{
-		if ( Command.InstanceCount )
-			{
-			glDrawArraysInstanced ( Translate ( Command.Primitive ),
-								   static_cast<GLint> ( Command.StartVertex ),
-								   static_cast <GLsizei> ( Command.VertexCount ),
-								   static_cast <GLsizei> ( Command.InstanceCount ) );
-			}
-		else
-			{
-			glDrawArrays ( Translate ( Command.Primitive ),
-						   static_cast<GLint> ( Command.StartVertex ),
-						   static_cast <GLsizei> ( Command.VertexCount ) );
-			}
+		glDrawArraysInstanced ( Translate ( Command.Primitive ),
+							   static_cast<GLint> ( Command.StartVertex ),
+							   static_cast <GLsizei> ( Command.VertexCount ),
+							   static_cast <GLsizei> ( Command.InstanceCount ) );
 		}
 	return CheckError ();
 	}

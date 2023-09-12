@@ -58,7 +58,7 @@ bool TexturedQuadTest::SpecificInitialize ( void )
 	RenderCommand.ShaderBufferBindings.push_back ( CrossRenderer::ShaderBufferBindPair ( TexCoordAttributeHandle, TexCoordStream ) );
 	RenderCommand.StartVertex = 0;
 	RenderCommand.VertexCount = 4;
-	RenderCommand.InstanceCount = 0;
+	RenderCommand.InstanceCount = 1;
 	RenderCommand.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( TextureUniformHandle, TextureBindSettings ) );
 	RenderCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( MVPUniformHandle, ProjectionMatrix * ViewMatrix * ModelMatrix ) );
 	assert ( CrossRenderer::SanityCheckRenderCommand ( RenderCommand ) );
