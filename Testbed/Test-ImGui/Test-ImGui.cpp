@@ -515,7 +515,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 			const ImDrawList *CommandList = DrawData->CmdLists[CommandListIndex];
 
 			// Upload both buffers to GPU
-			if ( sizeof ( ImDrawVert ) * CommandList->VtxBuffer.size () > ( int ) ImGuiData.LastDataBufferSize )
+            if ( sizeof ( ImDrawVert ) * CommandList->VtxBuffer.size () > ImGuiData.LastDataBufferSize )
 				{
 				if ( ImGuiData.DataBufferHandle )
 					CrossRenderer::DeleteShaderBuffer ( ImGuiData.DataBufferHandle );
@@ -523,7 +523,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 				ImGuiData.LastDataBufferSize = sizeof ( ImDrawVert ) * CommandList->VtxBuffer.size ();
 				ImGuiData.VertexStream.BufferHandle = ImGuiData.TexCoordStream.BufferHandle = ImGuiData.ColorStream.BufferHandle = ImGuiData.DataBufferHandle;
 				}
-			if ( sizeof ( ImDrawIdx ) * CommandList->IdxBuffer.size () > (int) ImGuiData.LastIndexBufferSize )
+            if ( sizeof ( ImDrawIdx ) * CommandList->IdxBuffer.size () > ImGuiData.LastIndexBufferSize )
 				{
 				if ( ImGuiData.IndexBufferHandle )
 					CrossRenderer::DeleteShaderBuffer ( ImGuiData.IndexBufferHandle );
