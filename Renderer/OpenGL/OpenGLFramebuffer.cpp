@@ -8,72 +8,72 @@ namespace CrossRenderer
 namespace OpenGL
 {
 FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParameters )
-    {
-    FramebufferInfo NewFramebuffer;
-    GLenum FramebufferStatus;
+	{
+	FramebufferInfo NewFramebuffer;
+	GLenum FramebufferStatus;
 
-    NewFramebuffer = CreationParameters;
+	NewFramebuffer = CreationParameters;
 
-    if ( CreationParameters.DepthEnabled )
-        {
-        TextureDescriptor NewTextureDescriptor;
-        NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
-        NewTextureDescriptor.Format = CreationParameters.DepthFormat;
-        NewTextureDescriptor.Type = TextureType::Texture2D;
-        NewFramebuffer.DepthTexture = CreateTexture ( NewTextureDescriptor );
-        if ( !NewFramebuffer.DepthTexture )
-            return FramebufferHandle::Invalid;
-        }
-    for ( unsigned cont = 0; cont < CreationParameters.ColorAttachments; ++cont )
-        {
-        TextureDescriptor NewTextureDescriptor;
-        NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
-        NewTextureDescriptor.Format = CreationParameters.ColorAttachmentFormat;
-        NewTextureDescriptor.Type = TextureType::Texture2D;
-        TextureHandle NewTexture = CreateTexture ( NewTextureDescriptor );
-        if ( !NewTexture )
-            goto error;
-        NewFramebuffer.ColorTextures.push_back ( NewTexture );
-        }
+	if ( CreationParameters.DepthEnabled )
+		{
+		TextureDescriptor NewTextureDescriptor;
+		NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
+		NewTextureDescriptor.Format = CreationParameters.DepthFormat;
+		NewTextureDescriptor.Type = TextureType::Texture2D;
+		NewFramebuffer.DepthTexture = CreateTexture ( NewTextureDescriptor );
+		if ( !NewFramebuffer.DepthTexture )
+			return FramebufferHandle::Invalid;
+		}
+	for ( unsigned cont = 0; cont < CreationParameters.ColorAttachments; ++cont )
+		{
+		TextureDescriptor NewTextureDescriptor;
+		NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
+		NewTextureDescriptor.Format = CreationParameters.ColorAttachmentFormat;
+		NewTextureDescriptor.Type = TextureType::Texture2D;
+		TextureHandle NewTexture = CreateTexture ( NewTextureDescriptor );
+		if ( !NewTexture )
+			goto error;
+		NewFramebuffer.ColorTextures.push_back ( NewTexture );
+		}
 
-    glGenFramebuffers ( 1, &NewFramebuffer.OpenGLID );
-    glBindFramebuffer ( GL_FRAMEBUFFER, NewFramebuffer.OpenGLID );
-    if  ( CreationParameters.DepthEnabled )
-        glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Textures[NewFramebuffer.DepthTexture.GetKey ()].OpenGLID, 0 );
-    for ( unsigned cont = 0; cont < CreationParameters.ColorAttachments; ++cont )
-        glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + cont, GL_TEXTURE_2D, Textures[NewFramebuffer.ColorTextures[cont].GetKey ()].OpenGLID, 0 );
+	glGenFramebuffers ( 1, &NewFramebuffer.OpenGLID );
+	glBindFramebuffer ( GL_FRAMEBUFFER, NewFramebuffer.OpenGLID );
+	if ( CreationParameters.DepthEnabled )
+		glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Textures[NewFramebuffer.DepthTexture.GetKey ()].OpenGLID, 0 );
+	for ( unsigned cont = 0; cont < CreationParameters.ColorAttachments; ++cont )
+		glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + cont, GL_TEXTURE_2D, Textures[NewFramebuffer.ColorTextures[cont].GetKey ()].OpenGLID, 0 );
 
-    if ( CheckError() == false )
-        goto error;
+	if ( CheckError () == false )
+		goto error;
 
-    FramebufferStatus = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+	FramebufferStatus = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
 
-    if ( FramebufferStatus != GL_FRAMEBUFFER_COMPLETE )
-        {
-        LOG_ERROR ( "Unable to create framebuffer. %s", StringifyOpenGL ( FramebufferStatus ) );
-        goto error;
-        }
+	if ( FramebufferStatus != GL_FRAMEBUFFER_COMPLETE )
+		{
+		LOG_ERROR ( "Unable to create framebuffer. %s", StringifyOpenGL ( FramebufferStatus ) );
+		goto error;
+		}
 
-        {
-        FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex() );
-        Framebuffers[NewHandle.GetKey ()] = NewFramebuffer;
-		CurrentBoundFramebuffer = NewHandle;
-        return NewHandle;
-        }
+	{
+	FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex () );
+	Framebuffers[NewHandle.GetKey ()] = NewFramebuffer;
+	CurrentBoundFramebuffer = NewHandle;
+	return NewHandle;
+	}
 
 error:
-    if ( NewFramebuffer.DepthTexture )
-        DeleteTexture ( NewFramebuffer.DepthTexture );
-    for ( size_t cont = 0; cont < NewFramebuffer.ColorTextures.size(); ++cont )
-        DeleteTexture ( NewFramebuffer.ColorTextures[cont] );
-    glDeleteFramebuffers ( 1, &NewFramebuffer.OpenGLID );
+	if ( NewFramebuffer.DepthTexture )
+		DeleteTexture ( NewFramebuffer.DepthTexture );
+	for ( size_t cont = 0; cont < NewFramebuffer.ColorTextures.size (); ++cont )
+		DeleteTexture ( NewFramebuffer.ColorTextures[cont] );
+	glDeleteFramebuffers ( 1, &NewFramebuffer.OpenGLID );
 	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 	CurrentBoundFramebuffer = FramebufferHandle::Invalid;
 	return FramebufferHandle::Invalid;
-    }
+	}
 
 bool DeleteFramebuffer ( const FramebufferHandle Handle )
-    {
+	{
 	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
 
 	if ( FramebufferInformation->DepthTexture )
@@ -82,9 +82,9 @@ bool DeleteFramebuffer ( const FramebufferHandle Handle )
 		DeleteTexture ( FramebufferInformation->ColorTextures[cont] );
 
 	glDeleteFramebuffers ( 1, &FramebufferInformation->OpenGLID );
-    Framebuffers.ReleaseIndex ( Handle.GetKey () );
-    return true;
-    }
+	Framebuffers.ReleaseIndex ( Handle.GetKey () );
+	return true;
+	}
 
 void SetFramebufferClearColor ( const FramebufferHandle Handle, const glm::vec4 ClearColor )
 	{
@@ -105,7 +105,7 @@ void ClearFramebuffer ( const FramebufferHandle &Handle, const bool ShouldClearC
 	if ( ( ( FramebufferInformation->OpenGLID == 0 ) || ( FramebufferInformation->ColorTextures.size () ) ) && ( ShouldClearColorBuffer ) )
 		{
 		BitMask |= GL_COLOR_BUFFER_BIT;
-		glClearColor ( Color.r, Color.g, Color.b, Color.a );
+		glClearColor ( Color[0], Color[1], Color[2], Color[3] );
 		}
 	if ( ( ( FramebufferInformation->OpenGLID == 0 ) || ( FramebufferInformation->DepthTexture ) ) && ( ShouldClearDepthBuffer ) )
 		{
@@ -135,26 +135,26 @@ void ClearFramebuffer ( const FramebufferHandle &Handle, const bool ShouldClearC
 	}
 
 glm::uvec2 GetFramebufferSize ( const FramebufferHandle Handle )
-    {
+	{
 	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
 
 	return FramebufferInformation->Dimensions;
-    }
+	}
 
 TextureHandle GetColorBufferFromFramebuffer ( const FramebufferHandle Handle, const size_t Index )
-    {
+	{
 	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
 
 	if ( Index > FramebufferInformation->ColorTextures.size () )
 		return TextureHandle::Invalid;
 	return FramebufferInformation->ColorTextures[Index];
-    }
+	}
 
 TextureHandle GetDepthBufferFromFramebuffer ( const FramebufferHandle Handle )
-    {
+	{
 	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
 
 	return FramebufferInformation->DepthTexture;
-    }
+	}
 }
 }

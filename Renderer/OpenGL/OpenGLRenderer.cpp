@@ -40,7 +40,7 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 	glGenVertexArrays ( 1, &GeneralVAO );
 	glBindVertexArray ( GeneralVAO );
 
-	StateCache::SetDefaultViewportSize ( WindowManager::GetWindowSize(ActiveWindow) );
+	StateCache::SetDefaultViewportSize ( WindowManager::GetWindowSize ( ActiveWindow ) );
 	StateCache::Invalidate ();
 
 	glClearColor ( 0, 0, 0, 0 );
@@ -76,7 +76,7 @@ bool ShutdownRenderer ( void )
 
 bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
 	{
-	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey()];
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
 
 	StateCache::SetDefaultViewportSize ( FramebufferInformation->Dimensions );
 	StateCache::ConfigureScissor ( ScissorSettings () );
@@ -87,7 +87,7 @@ bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
 	if ( FramebufferInformation->ColorTextures.size () )
 		{
 		BitMask |= GL_COLOR_BUFFER_BIT;
-		glClearColor ( FramebufferInformation->ClearColor.r, FramebufferInformation->ClearColor.g, FramebufferInformation->ClearColor.b, FramebufferInformation->ClearColor.a );
+		glClearColor ( FramebufferInformation->ClearColor[0], FramebufferInformation->ClearColor[1], FramebufferInformation->ClearColor[2], FramebufferInformation->ClearColor[3] );
 		}
 	if ( FramebufferInformation->DepthTexture )
 		{
@@ -109,7 +109,7 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
 	StateCache::ConfigureViewport ( ViewportSettings () );
 	StateCache::ConfigureStencil ( StencilBufferSettings () );
 
-	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey()];
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
 	if ( FramebufferInformation->OpenGLID != 0 )
 		{
 		glBindFramebuffer ( GL_READ_FRAMEBUFFER, FramebufferInformation->OpenGLID );
@@ -139,7 +139,7 @@ bool StartRenderToWindow ( const RenderWindowHandle &WindowHandle )
 
 bool DisplayWindow ( const RenderWindowHandle &WindowHandle )
 	{
-	StateCache::ConfigureScissor (ScissorSettings ());
+	StateCache::ConfigureScissor ( ScissorSettings () );
 	StateCache::ConfigureViewport ( ViewportSettings () );
 	StateCache::ConfigureStencil ( StencilBufferSettings () );
 	WindowManager::SwapGLWindowBuffer ( WindowHandle );
@@ -239,7 +239,7 @@ bool RunCommand ( const RenderCommand &Command )
 				break;
 			case ShaderUniformType::Block:
 				{
-				ShaderBufferInfo SBInfo = ShaderBuffers[Iterator.UniformValue.BlockValue.GetKey()];
+				ShaderBufferInfo SBInfo = ShaderBuffers[Iterator.UniformValue.BlockValue.GetKey ()];
 				glUniformBlockBinding ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, UniformBlockBindingIndex );
 				glBindBufferRange ( GL_UNIFORM_BUFFER, UniformBlockBindingIndex, SBInfo.OpenGLID, 0, SBInfo.DataSize );
 				++UniformBlockBindingIndex;
