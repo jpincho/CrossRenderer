@@ -9,6 +9,7 @@ ShaderObjectHandle CreateShaderObject ( const ShaderObjectType Type );
 void DeleteShaderObject ( const ShaderObjectHandle Handle );
 bool BuildShaderObject ( const ShaderObjectHandle Handle, const std::string &Code );
 ShaderHandle CreateShader ( const ShaderCode &NewCode );
+ShaderHandle CreateComputeShader ( const std::string &Code );
 bool DeleteShader ( const ShaderHandle Handle );
 bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHandle> &ObjectHandles );
 void GetShaderUniformList ( const ShaderHandle Handle, std::vector<std::pair<std::string, ShaderUniformType> > &UniformList );

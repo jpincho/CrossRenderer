@@ -15,7 +15,8 @@ enum class ShaderObjectType
     {
     Vertex,
     Geometry,
-    Fragment
+    Fragment,
+	Compute
     };
 
 enum class ShaderUniformType
@@ -43,6 +44,10 @@ enum class ShaderUniformType
     Sampler2D,
     Sampler3D,
     SamplerCube,
+
+	Image2D,
+	Image3D,
+
     Block,
     Unknown
     };

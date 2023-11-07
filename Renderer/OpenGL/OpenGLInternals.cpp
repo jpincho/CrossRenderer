@@ -405,6 +405,14 @@ ShaderUniformType TranslateOpenGLUniformType ( GLenum Type )
 			return ShaderUniformType::Sampler3D;
 		case GL_SAMPLER_CUBE:
 			return ShaderUniformType::SamplerCube;
+
+		// Compute shader
+#if defined GL_IMAGE_2D
+		case GL_IMAGE_2D:
+			return ShaderUniformType::Image2D;
+		case GL_IMAGE_3D:
+			return ShaderUniformType::Image3D;
+#endif
 		default:
 			throw std::runtime_error ( "Unhandled shader uniform type" );
 		}
@@ -465,6 +473,15 @@ GLenum TranslateUniformType ( ShaderUniformType Type )
 			return GL_SAMPLER_3D;
 		case ShaderUniformType::SamplerCube:
 			return GL_SAMPLER_CUBE;
+
+		// Compute shader
+#if defined GL_IMAGE_2D
+		case ShaderUniformType::Image2D:
+			return GL_IMAGE_2D;
+		case ShaderUniformType::Image3D:
+			return GL_IMAGE_3D;
+#endif
+
 		default:
 			throw "Unhandled shader uniform type";
 		}

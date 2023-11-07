@@ -30,6 +30,7 @@ DECLARE_INTERFACE_FUNCTION(TextureDescriptor, GetTextureDescriptor, const Textur
 // Shader
 DECLARE_INTERFACE_FUNCTION(ShaderHandle, CreateShader, const ShaderCode &NewCode);
 DECLARE_INTERFACE_FUNCTION(bool, DeleteShader, const ShaderHandle Handle);
+DECLARE_INTERFACE_FUNCTION(ShaderHandle, CreateComputeShader, const std::string &NewCode);
 DECLARE_INTERFACE_FUNCTION(void, GetShaderUniformList, const ShaderHandle Handle, std::vector<std::pair<std::string, ShaderUniformType> > &UniformList);
 DECLARE_INTERFACE_FUNCTION(ShaderUniformHandle, GetShaderUniformHandle, const ShaderHandle Handle, const std::string Name);
 DECLARE_INTERFACE_FUNCTION(void, GetShaderAttributeList, const ShaderHandle Handle, std::vector <std::pair <std::string, ShaderAttributeType>> &AttributeList);

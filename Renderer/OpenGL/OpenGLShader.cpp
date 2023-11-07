@@ -13,7 +13,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 
 ShaderObjectHandle CreateShaderObject ( const ShaderObjectType Type )
 	{
-	GLenum GLShaderTypes[] = { GL_VERTEX_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
+	GLenum GLShaderTypes[] = { GL_VERTEX_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER, GL_COMPUTE_SHADER };
 
 	ShaderObjectInfo NewShaderObject;
 	NewShaderObject.OpenGLID = glCreateShader ( GLShaderTypes[ ( int ) Type] );
@@ -174,6 +174,33 @@ bool DeleteShader ( const ShaderHandle Handle )
 	glDeleteProgram ( ShaderInformation->OpenGLID );
 	Shaders.ReleaseIndex ( Handle.GetKey () );
 	return true;
+	}
+
+ShaderHandle CreateComputeShader ( const std::string &Code )
+	{
+	if ( Code.empty())
+		return ShaderHandle::Invalid;
+
+	ShaderHandle NewHandle = CreateShader ();
+
+	ShaderObjectHandle ComputeShader;
+	std::vector <ShaderObjectHandle> ShaderObjectsToLink;
+
+	ComputeShader = CreateShaderObject ( ShaderObjectType::Compute );
+	if ( BuildShaderObject ( ComputeShader, Code )== false )
+		goto OnError;
+	ShaderObjectsToLink.push_back ( ComputeShader );
+	
+	if ( LinkShader ( NewHandle, ShaderObjectsToLink ) == false )
+		goto OnError;
+
+	return NewHandle;
+OnError:
+	if ( ComputeShader )
+		DeleteShaderObject ( ComputeShader );
+	if ( NewHandle )
+		DeleteShader ( NewHandle );
+	return ShaderHandle::Invalid;
 	}
 
 bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHandle> &ObjectHandles )

@@ -156,6 +156,8 @@ const char *Stringify ( const ShaderUniformType Value )
 		STRINGIFY ( Sampler2D );
 		STRINGIFY ( Sampler3D );
 		STRINGIFY ( SamplerCube );
+		STRINGIFY ( Image2D );
+		STRINGIFY ( Image3D );
 		STRINGIFY ( Block );
 		STRINGIFY ( Unknown );
 		}
@@ -186,6 +188,7 @@ const char *Stringify ( const ShaderObjectType Value )
 		STRINGIFY ( Vertex );
 		STRINGIFY ( Geometry );
 		STRINGIFY ( Fragment );
+		STRINGIFY ( Compute );
 		}
 #undef STRINGIFY
 	throw std::runtime_error ( "Unhandled shader object type" );
