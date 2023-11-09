@@ -9,6 +9,8 @@ enum class PixelFormat : uint8_t
 	RedGreen88,
     RedGreenBlue888,
     RedGreenBlueAlpha8888,
+	AlphaRedGreenBlue8888,
+	RedGreenBlue565,
     DepthComponent,
     };
 }

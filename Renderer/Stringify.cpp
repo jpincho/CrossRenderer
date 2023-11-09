@@ -172,6 +172,8 @@ const char *Stringify ( const PixelFormat Value )
 		STRINGIFY ( RedGreen88 );
 		STRINGIFY ( RedGreenBlue888 );
 		STRINGIFY ( RedGreenBlueAlpha8888 );
+		STRINGIFY ( AlphaRedGreenBlue8888 );
+		STRINGIFY ( RedGreenBlue565 );
 		STRINGIFY ( DepthComponent );
 		}
 #undef STRINGIFY

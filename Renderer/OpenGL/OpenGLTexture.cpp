@@ -31,6 +31,8 @@ static struct
 		{GL_UNSIGNED_BYTE, GL_RG, GL_RG8},// RedGreen88
         {GL_UNSIGNED_BYTE, GL_RGB, GL_RGB8},// RedGreenBlue888
         {GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA8},// RedGreenBlueAlpha8888
+		{GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA8},// AlphaRedGreenBlue8888
+		{GL_UNSIGNED_SHORT, GL_RGB, GL_RGB565},// RedGreenBlue565
         {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24}// DepthComponent
     };
 
