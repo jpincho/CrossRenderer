@@ -18,15 +18,14 @@ foreach ( DIR_ITERATOR ${CMAKE_SUBFOLDERS} )
 endforeach()
 list ( APPEND CMAKE_PREFIX_PATH ${CMAKE_MODULE_PATH} )
 include ( LocalPackage )
-
 set ( LOCAL_PACKAGE_ALLOW_SYSTEM TRUE )
-set_local_package_install_location ( "${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/${CMAKE_BUILD_TYPE}" )
+set_local_package_install_location ( "${PROJECT_BINARY_DIR}/output/" )
 
 list ( APPEND CROSS_RENDERER_NECESSARY_DEPENDENCIES glfw3 )
 list ( APPEND CROSS_RENDERER_NECESSARY_DEPENDENCIES glm )
 
 foreach ( DEPENDENCY ${CROSS_RENDERER_NECESSARY_DEPENDENCIES} )
-    find_local_package ( ${DEPENDENCY} )
+    find_local_package ( ${DEPENDENCY} QUIET )
     string ( TOUPPER ${DEPENDENCY} UPPERCASE_DEPENDENCY )
     if (( NOT ${UPPERCASE_DEPENDENCY}_FOUND ) AND ( NOT ${DEPENDENCY}_DIR ))
         install_local_package ( ${DEPENDENCY} )
