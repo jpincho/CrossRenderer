@@ -298,12 +298,25 @@ bool RunCommand ( const RenderCommand &Command )
 				AttributeInformation->Enabled = true;
 				}
 			glBindBuffer ( GL_ARRAY_BUFFER, BufferInformation->OpenGLID );
-			glVertexAttribPointer ( AttributeInformation->OpenGLID,
-									(GLint) Iterator.DataStream.ComponentsPerElement,
-									Translate ( Iterator.DataStream.ComponentType ),
-									Iterator.DataStream.NormalizeData,
-									(GLsizei) Iterator.DataStream.Stride,
-									(void *) Iterator.DataStream.StartOffset );
+			bool AttributeIsInt = ( ( ( AttributeInformation->Type >= ShaderAttributeType::Bool ) && ( AttributeInformation->Type <= ShaderAttributeType::Bool4 ) ) ||
+			                        ( ( AttributeInformation->Type >= ShaderAttributeType::UnsignedInteger ) && ( AttributeInformation->Type <= ShaderAttributeType::Integer4 ) ) );
+			if ( ( Iterator.DataStream.ComponentType != ShaderBufferComponentType::Float ) && ( AttributeIsInt ) )
+				{
+				glVertexAttribIPointer ( AttributeInformation->OpenGLID,
+				                         (GLint) Iterator.DataStream.ComponentsPerElement,
+				                         Translate ( Iterator.DataStream.ComponentType ),
+				                         (GLsizei) Iterator.DataStream.Stride,
+				                         (void *) Iterator.DataStream.StartOffset );
+				}
+			else
+				{
+				glVertexAttribPointer ( AttributeInformation->OpenGLID,
+				                        (GLint) Iterator.DataStream.ComponentsPerElement,
+				                        Translate ( Iterator.DataStream.ComponentType ),
+				                        Iterator.DataStream.NormalizeData,
+				                        (GLsizei) Iterator.DataStream.Stride,
+				                        (void *) Iterator.DataStream.StartOffset );
+				}
 			}
 		}
 	if ( CheckError () == false )
