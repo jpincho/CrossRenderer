@@ -24,65 +24,65 @@ struct OpenGLInformationStruct
 extern OpenGLInformationStruct OpenGLInformation;
 
 struct UniformInfo
-    {
-    GLint OpenGLID;
-    ShaderUniformValue CurrentValue;
-    ShaderUniformType Type;
-    std::string Name;
+	{
+	GLint OpenGLID;
+	ShaderUniformValue CurrentValue;
+	ShaderUniformType Type;
+	std::string Name;
 	};
 
 struct AttributeInfo
-    {
-    GLint OpenGLID;
-    bool Enabled;
-    ShaderAttributeType Type;
-    std::string Name;
+	{
+	GLint OpenGLID;
+	bool Enabled;
+	ShaderAttributeType Type;
+	std::string Name;
 	};
 
 struct ShaderInfo
-    {
-    GLuint OpenGLID;
+	{
+	GLuint OpenGLID;
 	std::vector <ShaderObjectHandle> AttachedShaderObjects;
-    std::vector <UniformInfo> Uniforms;
-    std::vector <AttributeInfo> Attributes;
+	std::vector <UniformInfo> Uniforms;
+	std::vector <AttributeInfo> Attributes;
 	};
 
 struct ShaderBufferInfo : public ShaderBufferDescriptor
-    {
-    GLuint OpenGLID;
-    GLenum GLAccessType;
-    GLenum GLBufferType;
-    GLenum GLMappedAccessType;
-    void *MappedPointer;
-    ShaderBufferInfo &operator = ( const ShaderBufferDescriptor &other )
-        {
-        * ( ( ShaderBufferDescriptor * ) this ) = other;
-        return *this;
-        }
+	{
+	GLuint OpenGLID;
+	GLenum GLAccessType;
+	GLenum GLBufferType;
+	GLenum GLMappedAccessType;
+	void *MappedPointer;
+	ShaderBufferInfo &operator = ( const ShaderBufferDescriptor &other )
+		{
+		* ( ( ShaderBufferDescriptor * ) this ) = other;
+		return *this;
+		}
 	};
 
 struct TextureInfo : public TextureDescriptor
-    {
-    GLuint OpenGLID;
-    GLint GLMinFilter, GLMagFilter, GLSWrap, GLTWrap;
-    TextureInfo &operator = ( const TextureDescriptor &other )
-        {
-        * ( ( TextureDescriptor * ) this ) = other;
-        return *this;
-        }
+	{
+	GLuint OpenGLID;
+	GLint GLMinFilter, GLMagFilter, GLSWrap, GLTWrap;
+	TextureInfo &operator = ( const TextureDescriptor &other )
+		{
+		* ( ( TextureDescriptor * ) this ) = other;
+		return *this;
+		}
 	};
 
 struct FramebufferInfo : public FramebufferDescriptor
-    {
-    GLuint OpenGLID;
-    std::vector <TextureHandle> ColorTextures;
-    TextureHandle DepthTexture;
+	{
+	GLuint OpenGLID;
+	std::vector <TextureHandle> ColorTextures;
+	TextureHandle DepthTexture;
 	TextureHandle StencilTexture;
-    FramebufferInfo &operator = ( const FramebufferDescriptor &other )
-        {
-        * ( ( FramebufferDescriptor * ) this ) = other;
-        return *this;
-        }
+	FramebufferInfo &operator = ( const FramebufferDescriptor &other )
+		{
+		* ( ( FramebufferDescriptor * ) this ) = other;
+		return *this;
+		}
 	};
 
 struct ShaderObjectInfo

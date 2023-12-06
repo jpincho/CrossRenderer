@@ -72,8 +72,8 @@ bool SpinningCubeTest::SpecificInitialize ( void )
 	IndexBufferHandle = CrossRenderer::CreateShaderBuffer ( IndexDescriptor );
 
 	ShaderHandle = LoadShader (
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.vert" ), "",
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.frag" ) );
+	                   std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.vert" ), "",
+	                   std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.frag" ) );
 	if ( !ShaderHandle )
 		return false;
 
@@ -83,20 +83,20 @@ bool SpinningCubeTest::SpecificInitialize ( void )
 		return false;
 
 	CrossRenderer::ShaderBufferDataStream PositionStream ( DataBufferHandle,
-														  offsetof ( Vertex, Position ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  3 );
+	        offsetof ( Vertex, Position ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        3 );
 	CrossRenderer::ShaderBufferDataStream TexCoordStream ( DataBufferHandle,
-														  offsetof ( Vertex, TexCoord ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  2 );
+	        offsetof ( Vertex, TexCoord ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        2 );
 	CrossRenderer::ShaderBufferDataStream IndexStream ( IndexBufferHandle,
-														0,
-														sizeof ( uint16_t ),
-														CrossRenderer::ShaderBufferComponentType::Unsigned16,
-														1 );
+	        0,
+	        sizeof ( uint16_t ),
+	        CrossRenderer::ShaderBufferComponentType::Unsigned16,
+	        1 );
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
 	CrossRenderer::ShaderUniformHandle TextureUniformHandle;
 	GET_ATTRIBUTE ( PositionAttributeHandle, ShaderHandle, "a_VertexPosition" );

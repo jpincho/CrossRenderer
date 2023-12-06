@@ -56,8 +56,8 @@ bool SkyboxTest::SpecificInitialize ( void )
 	SkyboxBufferHandle = CrossRenderer::CreateShaderBuffer ( Descriptor );
 
 	SkyboxShaderHandle = LoadShader (
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SkyboxTest.vert" ), "",
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SkyboxTest.frag" ) );
+	                         std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SkyboxTest.vert" ), "",
+	                         std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SkyboxTest.frag" ) );
 	if ( !SkyboxShaderHandle )
 		return false;
 
@@ -81,10 +81,10 @@ bool SkyboxTest::SpecificInitialize ( void )
 	MouseSensitivity = 1.0f / 10.0f;
 
 	CrossRenderer::ShaderBufferDataStream PositionStream ( SkyboxBufferHandle,
-														  0,
-														  sizeof ( glm::vec3 ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  3 );
+	        0,
+	        sizeof ( glm::vec3 ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        3 );
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle;
 	CrossRenderer::ShaderUniformHandle TextureUniformHandle;
 	CrossRenderer::TextureBindSettings TextureBindSettings ( SkyboxTextureHandle );

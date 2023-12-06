@@ -4,30 +4,30 @@
 namespace CrossRenderer
 {
 enum class LogLevel
-    {
-    Error,
-    Warning,
-    Debug,
-    Log,
+	{
+	Error,
+	Warning,
+	Debug,
+	Log,
 	Raw
-    };
+	};
 
 struct LoggerOptions
-    {
-    enum class FunctionNameStyle
-        {
-        Off,
-        Short,
-        Long
-        } FunctionStyle;
-    bool ShowFilename, ShowLineNumber, ShowTimestamp;
-    LoggerOptions ( void )
-        {
-        FunctionStyle = FunctionNameStyle::Short;
-        ShowFilename = false;
-        ShowLineNumber = true;
-        ShowTimestamp = false;
-        }
+	{
+	enum class FunctionNameStyle
+		{
+		Off,
+		Short,
+		Long
+		} FunctionStyle;
+	bool ShowFilename, ShowLineNumber, ShowTimestamp;
+	LoggerOptions ( void )
+		{
+		FunctionStyle = FunctionNameStyle::Short;
+		ShowFilename = false;
+		ShowLineNumber = true;
+		ShowTimestamp = false;
+		}
 	};
 
 extern LoggerOptions Options;

@@ -54,12 +54,12 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
 		goto error;
 		}
 
-	{
-	FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex () );
-	Framebuffers[NewHandle.GetKey ()] = NewFramebuffer;
-	CurrentBoundFramebuffer = NewHandle;
-	return NewHandle;
-	}
+		{
+		FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex () );
+		Framebuffers[NewHandle.GetKey ()] = NewFramebuffer;
+		CurrentBoundFramebuffer = NewHandle;
+		return NewHandle;
+		}
 
 error:
 	if ( NewFramebuffer.DepthTexture )

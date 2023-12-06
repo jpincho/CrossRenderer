@@ -23,8 +23,8 @@ bool TexturedQuadTest::SpecificInitialize ( void )
 	CrossRenderer::ShaderBufferDescriptor Descriptor ( Vertices, sizeof ( Vertices ) );
 	BufferHandle = CrossRenderer::CreateShaderBuffer ( Descriptor );
 	ShaderHandle = LoadShader (
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/TexturedQuadTest.vert" ), "",
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/TexturedQuadTest.frag" ) );
+	                   std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/TexturedQuadTest.vert" ), "",
+	                   std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/TexturedQuadTest.frag" ) );
 	if ( !ShaderHandle )
 		return false;
 
@@ -34,15 +34,15 @@ bool TexturedQuadTest::SpecificInitialize ( void )
 
 
 	CrossRenderer::ShaderBufferDataStream PositionStream ( BufferHandle,
-														  offsetof ( Vertex, Position ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  3 );
+	        offsetof ( Vertex, Position ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        3 );
 	CrossRenderer::ShaderBufferDataStream TexCoordStream ( BufferHandle,
-														  offsetof ( Vertex, TexCoord ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  2 );
+	        offsetof ( Vertex, TexCoord ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        2 );
 
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
 	CrossRenderer::ShaderUniformHandle TextureUniformHandle, MVPUniformHandle;

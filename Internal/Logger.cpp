@@ -17,11 +17,11 @@ const char *Stringify ( const LogLevel Value )
 #define STRINGIFY(X) case LogLevel::X: return #X;
 	switch ( Value )
 		{
-		STRINGIFY ( Error );
-		STRINGIFY ( Warning );
-		STRINGIFY ( Debug );
-		STRINGIFY ( Log );
-		STRINGIFY ( Raw );
+			STRINGIFY ( Error );
+			STRINGIFY ( Warning );
+			STRINGIFY ( Debug );
+			STRINGIFY ( Log );
+			STRINGIFY ( Raw );
 		}
 #undef STRINGIFY
 	throw "Unhandled log level";
@@ -39,7 +39,7 @@ std::string GetTimeString ( void )
 #endif
 	static char TimeString[100];
 	snprintf ( TimeString, sizeof ( TimeString ), "%02u-%02u-%04u %02u:%02u:%02u ", local_tm.tm_mday, local_tm.tm_mon + 1, local_tm.tm_year + 1900,
-			   local_tm.tm_hour, local_tm.tm_min, local_tm.tm_sec );
+	           local_tm.tm_hour, local_tm.tm_min, local_tm.tm_sec );
 	return TimeString;
 	}
 

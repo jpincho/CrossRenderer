@@ -12,7 +12,7 @@ class ImGuiTest : public TestBase
 			CrossRenderer::RenderCommand RenderCommand;
 			CrossRenderer::ShaderUniformHandle MVPUniformHandle;
 			glm::mat4 ProjectionMatrix, ModelMatrix, ViewMatrix;
-			}CubeData;
+			} CubeData;
 
 		struct
 			{
@@ -25,7 +25,7 @@ class ImGuiTest : public TestBase
 			CrossRenderer::ShaderBufferDataStream IndexBufferStream, VertexStream, TexCoordStream, ColorStream;
 			std::vector <CrossRenderer::RenderCommand> RenderCommands;
 			bool DeferredRendering;
-			}ImGuiData;
+			} ImGuiData;
 
 		float TotalTime;
 		bool SpecificInitialize ( void ) override;

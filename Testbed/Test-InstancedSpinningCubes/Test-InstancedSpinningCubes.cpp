@@ -80,8 +80,8 @@ bool InstancedSpinningCubesTest::SpecificInitialize ( void )
 	IndexBufferHandle = CrossRenderer::CreateShaderBuffer ( IndexDescriptor );
 
 	ShaderHandle = LoadShader (
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedSpinningCubesTest.vert" ), "",
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedSpinningCubesTest.frag" ) );
+	                   std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedSpinningCubesTest.vert" ), "",
+	                   std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedSpinningCubesTest.frag" ) );
 	if ( !ShaderHandle )
 		return false;
 
@@ -91,20 +91,20 @@ bool InstancedSpinningCubesTest::SpecificInitialize ( void )
 		return false;
 
 	CrossRenderer::ShaderBufferDataStream PositionStream ( DataBufferHandle,
-														  offsetof ( Vertex, Position ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  3 );
+	        offsetof ( Vertex, Position ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        3 );
 	CrossRenderer::ShaderBufferDataStream TexCoordStream ( DataBufferHandle,
-														  offsetof ( Vertex, TexCoord ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  2 );
+	        offsetof ( Vertex, TexCoord ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        2 );
 	CrossRenderer::ShaderBufferDataStream IndexStream ( IndexBufferHandle,
-														0,
-														sizeof ( uint16_t ),
-														CrossRenderer::ShaderBufferComponentType::Unsigned16,
-														1 );
+	        0,
+	        sizeof ( uint16_t ),
+	        CrossRenderer::ShaderBufferComponentType::Unsigned16,
+	        1 );
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
 	CrossRenderer::ShaderUniformHandle TextureUniformHandle;
 	GET_ATTRIBUTE ( PositionAttributeHandle, ShaderHandle, "a_VertexPosition" );
@@ -175,10 +175,10 @@ bool InstancedSpinningCubesTest::SpecificFrame ( const float TimeDelta )
 		Offset.z = -1.0f;
 		//LOG_DEBUG ( "%u %s", Index, glm::to_string(Offset).c_str() );
 		ModelMatrices[Index] = glm::rotate ( glm::quarter_pi<float> () * TimeDelta, Rotations[Index] ) * ModelMatrices[Index];
-		RenderCommand.UniformValues[Index].UniformValue = ProjectionMatrix * 
-			glm::translate ( glm::identity<glm::mat4> (), Offset ) *
-			ModelMatrices[Index] *
-			glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
+		RenderCommand.UniformValues[Index].UniformValue = ProjectionMatrix *
+		    glm::translate ( glm::identity<glm::mat4> (), Offset ) *
+		    ModelMatrices[Index] *
+		    glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
 		}
 	CrossRenderer::RunCommand ( RenderCommand );
 	return true;

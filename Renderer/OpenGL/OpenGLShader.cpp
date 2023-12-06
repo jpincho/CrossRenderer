@@ -111,11 +111,11 @@ bool ParseErrorMessages ( const std::string &Code, const std::string &Infolog, s
 	}
 
 ShaderHandle CreateShader ( void )
-    {
-    ShaderInfo NewShader;
-    NewShader.OpenGLID = glCreateProgram();
-    if ( CheckError() == false )
-        return ShaderHandle::Invalid;
+	{
+	ShaderInfo NewShader;
+	NewShader.OpenGLID = glCreateProgram();
+	if ( CheckError() == false )
+		return ShaderHandle::Invalid;
 	ShaderHandle NewHandle ( Shaders.GetFreeIndex () );
 	Shaders[NewHandle.GetKey ()] = NewShader;
 	return NewHandle;

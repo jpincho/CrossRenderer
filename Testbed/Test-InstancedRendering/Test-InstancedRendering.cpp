@@ -81,8 +81,8 @@ bool InstancedRendering::SpecificInitialize ( void )
 	MatricesBufferHandle = CrossRenderer::CreateShaderBuffer ( MatricesDescriptor );
 
 	ShaderHandle = LoadShader (
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedRendering.vert" ), "",
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedRendering.frag" ) );
+	                   std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedRendering.vert" ), "",
+	                   std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/InstancedRendering.frag" ) );
 	if ( !ShaderHandle )
 		return false;
 
@@ -92,26 +92,26 @@ bool InstancedRendering::SpecificInitialize ( void )
 		return false;
 
 	CrossRenderer::ShaderBufferDataStream PositionStream ( DataBufferHandle,
-														  offsetof ( Vertex, Position ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  3 );
+	        offsetof ( Vertex, Position ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        3 );
 	CrossRenderer::ShaderBufferDataStream TexCoordStream ( DataBufferHandle,
-														  offsetof ( Vertex, TexCoord ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  2 );
+	        offsetof ( Vertex, TexCoord ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        2 );
 	CrossRenderer::ShaderBufferDataStream IndexStream ( IndexBufferHandle,
-														0,
-														sizeof ( uint16_t ),
-														CrossRenderer::ShaderBufferComponentType::Unsigned16,
-														1 );
+	        0,
+	        sizeof ( uint16_t ),
+	        CrossRenderer::ShaderBufferComponentType::Unsigned16,
+	        1 );
 
 	CrossRenderer::ShaderBufferDataStream InstanceMatricesStream ( MatricesBufferHandle,
-														0,
-														sizeof ( glm::mat4 ),
-														CrossRenderer::ShaderBufferComponentType::Float,
-														4 );
+	        0,
+	        sizeof ( glm::mat4 ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        4 );
 
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle, InstanceMatricesAttributeHandle;
 	CrossRenderer::ShaderUniformHandle TextureUniformHandle, ViewProjectionUniformHandle;
@@ -187,8 +187,8 @@ bool InstancedRendering::SpecificFrame ( const float TimeDelta )
 
 		ModelMatrices[Index] = glm::rotate ( glm::quarter_pi<float> () * TimeDelta, Rotations[Index] ) * ModelMatrices[Index];
 		MatricesPointer[Index] = glm::translate ( glm::identity<glm::mat4> (), Offset ) *
-			ModelMatrices[Index] *
-			glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
+		                         ModelMatrices[Index] *
+		                         glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
 		}
 	CrossRenderer::UnmapShaderBuffer ( MatricesBufferHandle );
 	CrossRenderer::RunCommand ( RenderCommand );

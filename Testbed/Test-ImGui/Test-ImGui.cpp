@@ -74,8 +74,8 @@ bool ImGuiTest::SpecificInitialize ( void )
 	CubeData.IndexBufferHandle = CrossRenderer::CreateShaderBuffer ( IndexDescriptor );
 
 	CubeData.ShaderHandle = LoadShader (
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.vert" ), "",
-				std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.frag" ) );
+	                            std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.vert" ), "",
+	                            std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/SpinningCubeTest.frag" ) );
 	if ( !CubeData.ShaderHandle )
 		return false;
 
@@ -85,20 +85,20 @@ bool ImGuiTest::SpecificInitialize ( void )
 		return false;
 
 	CrossRenderer::ShaderBufferDataStream PositionStream ( CubeData.DataBufferHandle,
-														  offsetof ( Vertex, Position ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  3 );
+	        offsetof ( Vertex, Position ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        3 );
 	CrossRenderer::ShaderBufferDataStream TexCoordStream ( CubeData.DataBufferHandle,
-														  offsetof ( Vertex, TexCoord ),
-														  sizeof ( Vertex ),
-														  CrossRenderer::ShaderBufferComponentType::Float,
-														  2 );
+	        offsetof ( Vertex, TexCoord ),
+	        sizeof ( Vertex ),
+	        CrossRenderer::ShaderBufferComponentType::Float,
+	        2 );
 	CrossRenderer::ShaderBufferDataStream IndexStream ( CubeData.IndexBufferHandle,
-														0,
-														sizeof ( uint16_t ),
-														CrossRenderer::ShaderBufferComponentType::Unsigned16,
-														1 );
+	        0,
+	        sizeof ( uint16_t ),
+	        CrossRenderer::ShaderBufferComponentType::Unsigned16,
+	        1 );
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle;
 	CrossRenderer::ShaderUniformHandle TextureUniformHandle;
 	GET_ATTRIBUTE ( PositionAttributeHandle, CubeData.ShaderHandle, "a_VertexPosition" );
@@ -329,8 +329,8 @@ bool ImGuiTest::InitializeImGui ( void )
 
 	// Load imgui shader
 	ImGuiData.ShaderHandle = LoadShader (
-							std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/ImGui.vert" ), "",
-							std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/ImGui.frag" ) );
+	                             std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/ImGui.vert" ), "",
+	                             std::string ( TEST_PATH ) + std::string ( "/Shaders/OpenGLCore/ImGui.frag" ) );
 	if ( !ImGuiData.ShaderHandle )
 		{
 		CrossRenderer::DeleteTexture ( ImGuiData.FontTexture );
@@ -493,7 +493,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 
 				Command.TextureBindings.clear ();
 				Command.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( ImGuiData.ShaderTextureUniform,
-													CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( (intptr_t) ImGuiCommand->TextureId ) ) ) );
+				                                    CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( (intptr_t) ImGuiCommand->TextureId ) ) ) );
 				Command.State.Scissor.Set ( glm::uvec2 ( clip_rect.x, fb_height - clip_rect.w ), glm::uvec2 ( clip_rect.z - clip_rect.x, clip_rect.w - clip_rect.y ) );
 				Command.StartVertex = StartIndex;
 				Command.VertexCount = ImGuiCommand->ElemCount;
@@ -515,7 +515,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 			const ImDrawList *CommandList = DrawData->CmdLists[CommandListIndex];
 
 			// Upload both buffers to GPU
-            if ( sizeof ( ImDrawVert ) * CommandList->VtxBuffer.size () > ImGuiData.LastDataBufferSize )
+			if ( sizeof ( ImDrawVert ) * CommandList->VtxBuffer.size () > ImGuiData.LastDataBufferSize )
 				{
 				if ( ImGuiData.DataBufferHandle )
 					CrossRenderer::DeleteShaderBuffer ( ImGuiData.DataBufferHandle );
@@ -523,7 +523,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 				ImGuiData.LastDataBufferSize = sizeof ( ImDrawVert ) * CommandList->VtxBuffer.size ();
 				ImGuiData.VertexStream.BufferHandle = ImGuiData.TexCoordStream.BufferHandle = ImGuiData.ColorStream.BufferHandle = ImGuiData.DataBufferHandle;
 				}
-            if ( sizeof ( ImDrawIdx ) * CommandList->IdxBuffer.size () > ImGuiData.LastIndexBufferSize )
+			if ( sizeof ( ImDrawIdx ) * CommandList->IdxBuffer.size () > ImGuiData.LastIndexBufferSize )
 				{
 				if ( ImGuiData.IndexBufferHandle )
 					CrossRenderer::DeleteShaderBuffer ( ImGuiData.IndexBufferHandle );
@@ -565,7 +565,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 
 				Command.TextureBindings.clear ();
 				Command.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( ImGuiData.ShaderTextureUniform,
-													CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( (intptr_t) ImGuiCommand->TextureId ) ) ) );
+				                                    CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( (intptr_t) ImGuiCommand->TextureId ) ) ) );
 				Command.State.Scissor.Set ( glm::uvec2 ( clip_rect.x, fb_height - clip_rect.w ), glm::uvec2 ( clip_rect.z - clip_rect.x, clip_rect.w - clip_rect.y ) );
 				Command.StartVertex = StartIndex;
 				Command.VertexCount = ImGuiCommand->ElemCount;

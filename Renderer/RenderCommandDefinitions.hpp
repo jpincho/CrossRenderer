@@ -254,9 +254,9 @@ struct RenderState
 	DepthTestSettings DepthTest;
 	PolygonModeSettings PolygonMode;
 	};
-	
+
 struct ShaderTextureBindPair
-    {
+	{
 	ShaderUniformHandle UniformHandle;
 	TextureBindSettings BindSettings;
 	ShaderTextureBindPair ( const ShaderUniformHandle &NewUniformHandle, const TextureBindSettings NewBindSettings ) : UniformHandle ( NewUniformHandle ), BindSettings ( NewBindSettings )
@@ -264,33 +264,33 @@ struct ShaderTextureBindPair
 	};
 
 struct ShaderBufferBindPair
-    {
-    ShaderBufferBindPair ( const ShaderAttributeHandle &NewAttributeHandle, const ShaderBufferDataStream &NewDataStream ) : AttributeHandle ( NewAttributeHandle ), DataStream ( NewDataStream )
-        {}
-    ShaderAttributeHandle AttributeHandle;
-    ShaderBufferDataStream DataStream;
+	{
+	ShaderBufferBindPair ( const ShaderAttributeHandle &NewAttributeHandle, const ShaderBufferDataStream &NewDataStream ) : AttributeHandle ( NewAttributeHandle ), DataStream ( NewDataStream )
+		{}
+	ShaderAttributeHandle AttributeHandle;
+	ShaderBufferDataStream DataStream;
 	};
 
 struct ShaderUniformValuePair
-    {
-    ShaderUniformValuePair ( const ShaderUniformHandle &NewUniformHandle, const ShaderUniformValue &NewUniformValue ) : UniformHandle ( NewUniformHandle ), UniformValue ( NewUniformValue )
-        {}
-    ShaderUniformHandle UniformHandle;
-    ShaderUniformValue UniformValue;
+	{
+	ShaderUniformValuePair ( const ShaderUniformHandle &NewUniformHandle, const ShaderUniformValue &NewUniformValue ) : UniformHandle ( NewUniformHandle ), UniformValue ( NewUniformValue )
+		{}
+	ShaderUniformHandle UniformHandle;
+	ShaderUniformValue UniformValue;
 	};
 
 struct RenderCommand
-    {
-    std::vector <ShaderBufferBindPair> ShaderBufferBindings;
-    std::vector <ShaderTextureBindPair> TextureBindings;
-    std::vector <ShaderUniformValuePair> UniformValues;
-    ShaderHandle Shader;
-    ShaderBufferDataStream IndexBufferStream;
-    PrimitiveType Primitive;
-    size_t VertexCount, StartVertex;
+	{
+	std::vector <ShaderBufferBindPair> ShaderBufferBindings;
+	std::vector <ShaderTextureBindPair> TextureBindings;
+	std::vector <ShaderUniformValuePair> UniformValues;
+	ShaderHandle Shader;
+	ShaderBufferDataStream IndexBufferStream;
+	PrimitiveType Primitive;
+	size_t VertexCount, StartVertex;
 
 	size_t InstanceCount;
-    RenderState State;
+	RenderState State;
 	};
 }
 

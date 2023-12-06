@@ -165,16 +165,16 @@ void ConfigureStencil ( const StencilBufferSettings &NewSettings )
 		}
 
 	if ( ( NewSettings.FunctionReference != CurrentState.Stencil.FunctionReference ) ||
-			( NewSettings.FunctionMask != CurrentState.Stencil.FunctionMask ) ||
-			( NewSettings.Function != CurrentState.Stencil.Function ) )
+	        ( NewSettings.FunctionMask != CurrentState.Stencil.FunctionMask ) ||
+	        ( NewSettings.Function != CurrentState.Stencil.Function ) )
 		{
 		glStencilFunc ( Translate ( NewSettings.Function ), NewSettings.FunctionReference, NewSettings.FunctionMask );
 
 		}
 
 	if ( ( NewSettings.OnFail != CurrentState.Stencil.OnFail ) ||
-			( NewSettings.OnFailZ != CurrentState.Stencil.OnFailZ ) ||
-			( NewSettings.OnPassZ != CurrentState.Stencil.OnPassZ ) )
+	        ( NewSettings.OnFailZ != CurrentState.Stencil.OnFailZ ) ||
+	        ( NewSettings.OnPassZ != CurrentState.Stencil.OnPassZ ) )
 		{
 		glStencilOp ( Translate ( NewSettings.OnFail ), Translate ( NewSettings.OnFailZ ), Translate ( NewSettings.OnPassZ ) );
 		}
@@ -199,7 +199,7 @@ void ConfigureScissor ( const ScissorSettings &NewSettings )
 		return;
 
 	if ( ( CurrentState.Scissor.LowerLeft != NewSettings.LowerLeft ) ||
-			( CurrentState.Scissor.Dimensions != NewSettings.Dimensions ) )
+	        ( CurrentState.Scissor.Dimensions != NewSettings.Dimensions ) )
 		{
 		glScissor ( NewSettings.LowerLeft.x, NewSettings.LowerLeft.y, NewSettings.Dimensions.x, NewSettings.Dimensions.y );
 		}
