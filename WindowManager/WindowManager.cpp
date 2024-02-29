@@ -24,6 +24,7 @@ DECLARE_INTERFACE_FUNCTION ( void, SetWindowTitle, const RenderWindowHandle &Han
 DECLARE_INTERFACE_FUNCTION ( const char *, GetWindowTitle, const RenderWindowHandle &Handle );
 DECLARE_INTERFACE_FUNCTION ( bool, SetWindowState, const RenderWindowHandle &Handle, const WindowState NewState );
 DECLARE_INTERFACE_FUNCTION ( WindowState, GetWindowState, const RenderWindowHandle &Handle );
+DECLARE_INTERFACE_FUNCTION ( void, ProcessMessages, void );
 
 DECLARE_INTERFACE_FUNCTION ( void, SetMouseCursorState, const RenderWindowHandle &Handle, const bool NewState );
 DECLARE_INTERFACE_FUNCTION ( bool, GetMouseCursorState, const RenderWindowHandle &Handle );
@@ -89,6 +90,7 @@ void CreateNewWindowManager ( const WindowManager::WindowManagerBackend &Backend
 			ATTRIB ( GetWindowTitle );
 			ATTRIB ( SetWindowState );
 			ATTRIB ( GetWindowState );
+			ATTRIB ( ProcessMessages );
 			ATTRIB ( SetMouseCursorState );
 			ATTRIB ( GetMouseCursorState );
 			ATTRIB ( GetMousePosition );

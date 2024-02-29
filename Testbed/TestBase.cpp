@@ -61,6 +61,7 @@ bool TestBase::Run ( void )
 			}
 		CrossRenderer::DisplayFramebuffer ( Framebuffer, *CrossRenderer::WindowManager::WindowList.begin () );
 		CrossRenderer::DisplayWindow ( *CrossRenderer::WindowManager::WindowList.begin () );
+		CrossRenderer::WindowManager::ProcessMessages ();
 		}
 	return true;
 	}

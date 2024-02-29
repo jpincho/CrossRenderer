@@ -17,6 +17,7 @@ void SetWindowTitle ( const RenderWindowHandle &Handle, const char *NewTitle );
 const char *GetWindowTitle ( const RenderWindowHandle &Handle );
 bool SetWindowState ( const RenderWindowHandle &Handle, const WindowState NewState );
 WindowState GetWindowState ( const RenderWindowHandle &Handle );
+void ProcessMessages ( void );
 
 void SetMouseCursorState ( const RenderWindowHandle &Handle, const bool NewState );
 bool GetMouseCursorState ( const RenderWindowHandle &Handle );

@@ -182,6 +182,11 @@ WindowState GetWindowState ( const RenderWindowHandle &Handle )
 	return WindowInformation->State;
 	}
 
+void ProcessMessages ( void )
+	{
+	glfwPollEvents ();
+	}
+
 void SetMouseCursorState ( const RenderWindowHandle &Handle, const bool NewState )
 	{
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
@@ -217,7 +222,6 @@ void SwapGLWindowBuffer ( const RenderWindowHandle &Handle )
 	{
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	glfwSwapBuffers ( WindowInformation->Window );
-	glfwPollEvents ();
 	}
 
 //***************************************************************************
@@ -313,6 +317,8 @@ void GLFWKeyCallback ( GLFWwindow *GLFWHandle, int Key, int Scancode, int Action
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
 
 	WindowEvent NewEvent;
+	if ( Key == -1 ) // if it's some event I can't handle, just ignore it
+		return;
 	switch ( Action )
 		{
 		case GLFW_PRESS:
