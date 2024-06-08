@@ -27,7 +27,8 @@ bool TestBase::Initialize ( void )
 	if ( CrossRenderer::Initialize ( NewConfiguration ) == false )
 		return false;
 
-	CrossRenderer::FramebufferDescriptor NewFramebufferDescriptor ( glm::uvec2 ( 1920, 1080 ) );
+	glm::uvec2 FramebufferSize = CrossRenderer::WindowManager::GetWindowFramebufferSize ( *CrossRenderer::WindowManager::WindowList.begin () );
+	CrossRenderer::FramebufferDescriptor NewFramebufferDescriptor ( FramebufferSize );
 	Framebuffer = CrossRenderer::CreateFramebuffer ( NewFramebufferDescriptor );
 	if ( !Framebuffer )
 		return false;
