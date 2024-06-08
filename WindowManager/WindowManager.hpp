@@ -21,6 +21,7 @@ DECLARE_INTERFACE_FUNCTION ( void, SetWindowPosition, const RenderWindowHandle &
 DECLARE_INTERFACE_FUNCTION ( glm::ivec2, GetWindowPosition, const RenderWindowHandle &Handle );
 DECLARE_INTERFACE_FUNCTION ( void, SetWindowSize, const RenderWindowHandle &Handle, const glm::uvec2 &NewSize );
 DECLARE_INTERFACE_FUNCTION ( glm::uvec2, GetWindowSize, const RenderWindowHandle &Handle );
+DECLARE_INTERFACE_FUNCTION ( glm::uvec2, GetWindowFramebufferSize, const RenderWindowHandle &Handle );
 DECLARE_INTERFACE_FUNCTION ( void, SetWindowTitle, const RenderWindowHandle &Handle, const char *NewTitle );
 DECLARE_INTERFACE_FUNCTION ( const char *, GetWindowTitle, const RenderWindowHandle &Handle );
 DECLARE_INTERFACE_FUNCTION ( bool, SetWindowState, const RenderWindowHandle &Handle, const WindowState NewState );

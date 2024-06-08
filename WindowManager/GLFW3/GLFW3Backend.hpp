@@ -13,6 +13,7 @@ void SetWindowPosition ( const RenderWindowHandle &Handle, const glm::ivec2 &New
 glm::ivec2 GetWindowPosition ( const RenderWindowHandle &Handle );
 void SetWindowSize ( const RenderWindowHandle &Handle, const glm::uvec2 &NewSize );
 glm::uvec2 GetWindowSize ( const RenderWindowHandle &Handle );
+glm::uvec2 GetWindowFramebufferSize ( const RenderWindowHandle &Handle );
 void SetWindowTitle ( const RenderWindowHandle &Handle, const char *NewTitle );
 const char *GetWindowTitle ( const RenderWindowHandle &Handle );
 bool SetWindowState ( const RenderWindowHandle &Handle, const WindowState NewState );

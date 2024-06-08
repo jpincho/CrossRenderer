@@ -14,6 +14,7 @@ const char *Stringify ( const WindowEventType Value )
 			STRINGIFY ( WindowClosed );
 			STRINGIFY ( WindowMoved );
 			STRINGIFY ( WindowResized );
+			STRINGIFY ( WindowFramebufferResized );
 			STRINGIFY ( WindowFocusChanged );
 			STRINGIFY ( WindowStateChanged );
 			STRINGIFY ( KeyPressed );

@@ -13,7 +13,7 @@ struct GLFW3WindowInfo
 	{
 	GLFWwindow *Window;
 	glm::ivec2 Position;
-	glm::uvec2 Size;
+	glm::uvec2 Size, FramebufferSize;
 	std::string Title;
 	WindowState State;
 	};
@@ -23,7 +23,8 @@ static glm::ivec2 MousePosition = glm::ivec2 ( 0, 0 );
 static uint32_t MouseButtons = 0;
 
 void GLFWWindowPosCallback ( GLFWwindow *GLFWHandle, int NewX, int NewY );
-void GLFWWindowSizeCallback ( GLFWwindow *GLFWHandle, int NewX, int NewY );
+void GLFWWindowSizeCallback ( GLFWwindow *GLFWHandle, int NewWidth, int NewHeight );
+void GLFWFramebufferSizeCallback ( GLFWwindow *GLFWHandle, int NewWidth, int NewHeight );
 void GLFWWindowCloseCallback ( GLFWwindow *GLFWHandle );
 void GLFWWindowFocusCallback ( GLFWwindow *GLFWHandle, int State );
 void GLFWWindowIconifyCallback ( GLFWwindow *GLFWHandle, int State );
@@ -51,6 +52,7 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
 	glfwSetWindowPos ( NewWindow.Window, Descriptor.Position.x, Descriptor.Position.y );
 
 	glfwGetWindowSize ( NewWindow.Window, (int *) &NewWindow.Size.x, (int *) &NewWindow.Size.y );
+	glfwGetFramebufferSize( NewWindow.Window, (int *) &NewWindow.FramebufferSize.x, (int *) &NewWindow.FramebufferSize.y );
 	glfwGetWindowPos ( NewWindow.Window, &NewWindow.Position.x, &NewWindow.Position.y );
 
 	double TempMouseX, TempMouseY;
@@ -68,6 +70,7 @@ RenderWindowHandle CreateNewWindow ( const RenderWindowDescriptor &Descriptor )
 	glfwSetWindowCloseCallback ( NewWindow.Window, GLFWWindowCloseCallback );
 	glfwSetWindowPosCallback ( NewWindow.Window, GLFWWindowPosCallback );
 	glfwSetWindowSizeCallback ( NewWindow.Window, GLFWWindowSizeCallback );
+	glfwSetFramebufferSizeCallback ( NewWindow.Window, GLFWFramebufferSizeCallback );
 	glfwSetWindowFocusCallback ( NewWindow.Window, GLFWWindowFocusCallback );
 	glfwSetWindowIconifyCallback ( NewWindow.Window, GLFWWindowIconifyCallback );
 	glfwSetWindowMaximizeCallback ( NewWindow.Window, GLFWWindowMaximizeCallback );
@@ -129,6 +132,12 @@ glm::uvec2 GetWindowSize ( const RenderWindowHandle &Handle )
 	{
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
 	return WindowInformation->Size;
+	}
+
+glm::uvec2 GetWindowFramebufferSize ( const RenderWindowHandle &Handle )
+	{
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle.GetKey ()];
+	return WindowInformation->FramebufferSize;
 	}
 
 void SetWindowTitle ( const RenderWindowHandle &Handle, const char *NewTitle )
@@ -242,17 +251,32 @@ void GLFWWindowPosCallback ( GLFWwindow *GLFWHandle, int NewX, int NewY )
 	SendWindowEvent ( NewEvent );
 	}
 
-void GLFWWindowSizeCallback ( GLFWwindow *GLFWHandle, int NewX, int NewY )
+void GLFWWindowSizeCallback ( GLFWwindow *GLFWHandle, int NewWidth, int NewHeight )
 	{
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
 
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
-	WindowInformation->Size.x = NewX;
-	WindowInformation->Size.y = NewY;
+	WindowInformation->Size.x = NewWidth;
+	WindowInformation->Size.y = NewHeight;
 
 	WindowEvent NewEvent;
 	NewEvent.EventType = WindowEventType::WindowResized;
 	NewEvent.EventData.WindowResized.NewSize = WindowInformation->Size;
+	NewEvent.OwnerHandle = RenderWindowHandle ( Handle );
+	SendWindowEvent ( NewEvent );
+	}
+
+void GLFWFramebufferSizeCallback ( GLFWwindow *GLFWHandle, int NewWidth, int NewHeight )
+	{
+	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
+
+	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
+	WindowInformation->Size.x = NewWidth;
+	WindowInformation->Size.y = NewHeight;
+
+	WindowEvent NewEvent;
+	NewEvent.EventType = WindowEventType::WindowFramebufferResized;
+	NewEvent.EventData.WindowFramebufferResized.NewSize = WindowInformation->Size;
 	NewEvent.OwnerHandle = RenderWindowHandle ( Handle );
 	SendWindowEvent ( NewEvent );
 	}

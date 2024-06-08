@@ -164,6 +164,7 @@ enum class WindowEventType
 	WindowResized,
 	WindowFocusChanged,
 	WindowStateChanged,
+	WindowFramebufferResized,
 	KeyPressed,
 	KeyReleased,
 	ButtonPressed,
@@ -208,7 +209,7 @@ typedef struct WindowEvent
 		struct
 			{
 			glm::uvec2 NewSize;
-			} WindowResized;
+			} WindowResized, WindowFramebufferResized;
 		struct
 			{
 			bool NewState;
