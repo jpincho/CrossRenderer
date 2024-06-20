@@ -12,7 +12,6 @@ struct FramebufferDescriptor
 		ColorAttachmentFormat = PixelFormat::RedGreenBlueAlpha8888;
 		DepthEnabled = true;
 		DepthFormat = PixelFormat::DepthComponent;
-		StencilEnabled = false;
 		ClearDepth = 1.0f;
 		ClearColor = glm::zero<glm::vec4> ();
 		}
@@ -23,13 +22,12 @@ struct FramebufferDescriptor
 		ColorAttachmentFormat = PixelFormat::RedGreenBlueAlpha8888;
 		DepthEnabled = true;
 		DepthFormat = PixelFormat::DepthComponent;
-		StencilEnabled = false;
 		Dimensions = NewDimensions;
 		ClearDepth = 1.0f;
 		ClearColor = glm::zero<glm::vec4> ();
 		}
-	bool DepthEnabled, StencilEnabled;
-	PixelFormat ColorAttachmentFormat, DepthFormat, StencilFormat;
+	bool DepthEnabled;
+	PixelFormat ColorAttachmentFormat, DepthFormat;
 	uint8_t ColorAttachments;
 	glm::uvec2 Dimensions;
 	glm::vec4 ClearColor;
