@@ -1,7 +1,6 @@
 DECLARE_INTERFACE_FUNCTION(bool, InitializeRenderer, const RendererConfiguration &NewConfiguration);
 DECLARE_INTERFACE_FUNCTION(bool, ShutdownRenderer, void);
 
-DECLARE_INTERFACE_FUNCTION(bool, StartRenderToFramebuffer, const FramebufferHandle &Handle);
 DECLARE_INTERFACE_FUNCTION(bool, DisplayFramebuffer, const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle);
 
 DECLARE_INTERFACE_FUNCTION(bool, StartRenderToWindow, const RenderWindowHandle &Handle);
@@ -41,7 +40,9 @@ DECLARE_INTERFACE_FUNCTION(FramebufferHandle, CreateFramebuffer, const Framebuff
 DECLARE_INTERFACE_FUNCTION(bool, DeleteFramebuffer, const FramebufferHandle Handle);
 DECLARE_INTERFACE_FUNCTION(void, SetFramebufferClearColor, const FramebufferHandle Handle, const glm::vec4 ClearColor);
 DECLARE_INTERFACE_FUNCTION(void, SetFramebufferClearDepth, const FramebufferHandle Handle, const float ClearDepth);
+DECLARE_INTERFACE_FUNCTION(void, BindDrawFramebuffer, const FramebufferHandle Handle );
 DECLARE_INTERFACE_FUNCTION(void, ClearFramebuffer, const FramebufferHandle &Handle, const bool ShouldClearColorBuffer, const glm::vec4 Color, const bool ShouldClearDepthBuffer, const float DepthClearValue, const bool ShouldClearStencilBuffer, const int StencilClearValue, const int StencilMask);
+DECLARE_INTERFACE_FUNCTION(void, ClearFramebufferWithDefaultValues, const FramebufferHandle Handle );
 DECLARE_INTERFACE_FUNCTION(glm::uvec2, GetFramebufferSize, const FramebufferHandle Handle);
 DECLARE_INTERFACE_FUNCTION(TextureHandle, GetColorBufferFromFramebuffer, const FramebufferHandle Handle, const size_t Index);
 DECLARE_INTERFACE_FUNCTION(TextureHandle, GetDepthBufferFromFramebuffer, const FramebufferHandle Handle);

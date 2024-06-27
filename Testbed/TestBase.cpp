@@ -53,7 +53,7 @@ bool TestBase::Run ( void )
 		double TimeDelta = Seconds - LastEndFrameSeconds;
 		LastEndFrameSeconds = Seconds;
 		CrossRenderer::StartRenderToWindow ( *CrossRenderer::WindowManager::WindowList.begin () );
-		CrossRenderer::StartRenderToFramebuffer ( Framebuffer );
+		CrossRenderer::ClearFramebufferWithDefaultValues ( Framebuffer );
 
 		if ( SpecificFrame ( (float) TimeDelta ) == false )
 			{

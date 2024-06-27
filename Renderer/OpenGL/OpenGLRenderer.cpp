@@ -74,31 +74,6 @@ bool ShutdownRenderer ( void )
 	return true;
 	}
 
-bool StartRenderToFramebuffer ( const FramebufferHandle &Handle )
-	{
-	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
-
-	StateCache::SetDefaultViewportSize ( FramebufferInformation->Dimensions );
-	StateCache::ConfigureScissor ( ScissorSettings () );
-	StateCache::ConfigureViewport ( ViewportSettings () );
-	StateCache::ConfigureStencil ( StencilBufferSettings () );
-	StateCache::ConfigureFramebuffer ( Handle );
-	int BitMask = 0;
-	if ( FramebufferInformation->ColorTextures.size () )
-		{
-		BitMask |= GL_COLOR_BUFFER_BIT;
-		glClearColor ( FramebufferInformation->ClearColor[0], FramebufferInformation->ClearColor[1], FramebufferInformation->ClearColor[2], FramebufferInformation->ClearColor[3] );
-		}
-	if ( FramebufferInformation->DepthTexture )
-		{
-		BitMask |= GL_DEPTH_BUFFER_BIT;
-		glClearDepth ( FramebufferInformation->ClearDepth );
-		}
-	if ( BitMask )
-		glClear ( BitMask );
-	return CheckError ();
-	}
-
 bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle )
 	{
 	ActiveWindow = WindowHandle;

@@ -13,7 +13,6 @@ namespace OpenGL
 bool InitializeRenderer ( const RendererConfiguration &NewConfiguration );
 bool ShutdownRenderer ( void );
 
-bool StartRenderToFramebuffer ( const FramebufferHandle &Handle );
 bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHandle &WindowHandle );
 bool StartRenderToWindow ( const RenderWindowHandle &WindowHandle );
 bool DisplayWindow ( const RenderWindowHandle &WindowHandle );

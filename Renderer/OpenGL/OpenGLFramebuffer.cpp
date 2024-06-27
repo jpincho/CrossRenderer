@@ -24,7 +24,7 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
 		if ( !NewFramebuffer.DepthTexture )
 			return FramebufferHandle::Invalid;
 		}
-	for ( unsigned cont = 0; cont < CreationParameters.ColorAttachments; ++cont )
+	for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
 		{
 		TextureDescriptor NewTextureDescriptor;
 		NewTextureDescriptor.Dimensions = NewFramebuffer.Dimensions;
@@ -40,8 +40,8 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
 	glBindFramebuffer ( GL_FRAMEBUFFER, NewFramebuffer.OpenGLID );
 	if ( CreationParameters.DepthEnabled )
 		glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Textures[NewFramebuffer.DepthTexture.GetKey ()].OpenGLID, 0 );
-	for ( unsigned cont = 0; cont < CreationParameters.ColorAttachments; ++cont )
-		glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + cont, GL_TEXTURE_2D, Textures[NewFramebuffer.ColorTextures[cont].GetKey ()].OpenGLID, 0 );
+	for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
+		glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Index, GL_TEXTURE_2D, Textures[NewFramebuffer.ColorTextures[Index].GetKey ()].OpenGLID, 0 );
 
 	if ( CheckError () == false )
 		goto error;
@@ -54,12 +54,17 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
 		goto error;
 		}
 
-		{
-		FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex () );
-		Framebuffers[NewHandle.GetKey ()] = NewFramebuffer;
-		CurrentBoundFramebuffer = NewHandle;
-		return NewHandle;
-		}
+	GLuint *Attachments = (GLuint *) alloca ( CreationParameters.ColorAttachments * sizeof ( GLuint ) );
+	for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
+		Attachments[Index] = GL_COLOR_ATTACHMENT0 + Index;
+	glDrawBuffers ( CreationParameters.ColorAttachments, Attachments );
+
+	{
+	FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex () );
+	Framebuffers[NewHandle.GetKey ()] = NewFramebuffer;
+	CurrentBoundFramebuffer = NewHandle;
+	return NewHandle;
+	}
 
 error:
 	if ( NewFramebuffer.DepthTexture )
@@ -98,6 +103,11 @@ void SetFramebufferClearDepth ( const FramebufferHandle Handle, const float Clea
 	FramebufferInformation->ClearDepth = ClearDepth;
 	}
 
+void BindDrawFramebuffer ( const FramebufferHandle Handle )
+	{
+	StateCache::ConfigureFramebuffer ( Handle );
+	}
+
 void ClearFramebuffer ( const FramebufferHandle &Handle, const bool ShouldClearColorBuffer, const glm::vec4 Color, const bool ShouldClearDepthBuffer, const float DepthClearValue, const bool ShouldClearStencilBuffer, const int StencilClearValue, const int StencilMask )
 	{
 	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
@@ -132,6 +142,13 @@ void ClearFramebuffer ( const FramebufferHandle &Handle, const bool ShouldClearC
 		StateCache::ConfigureStencil ( StencilBufferSettings () );
 		glClear ( BitMask );
 		}
+	CheckError ();
+	}
+
+void ClearFramebufferWithDefaultValues ( const FramebufferHandle Handle )
+	{
+	FramebufferInfo *FramebufferInformation = &Framebuffers[Handle.GetKey ()];
+	ClearFramebuffer ( Handle, true, FramebufferInformation->ClearColor, true, FramebufferInformation->ClearDepth, true, 1, 1 );
 	}
 
 glm::uvec2 GetFramebufferSize ( const FramebufferHandle Handle )
