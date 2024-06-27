@@ -116,7 +116,7 @@ target_warning_options ( CrossRenderer HIGH AS_ERRORS )
 # Just to check if i have a parent
 get_directory_property ( HAS_PARENT PARENT_DIRECTORY )
 if ( HAS_PARENT )
-    set ( DEFAULT_BUILD_TEST TRUE )
+    set ( DEFAULT_BUILD_TEST FALSE )
 else()
     set ( DEFAULT_BUILD_TEST TRUE )
 endif()
