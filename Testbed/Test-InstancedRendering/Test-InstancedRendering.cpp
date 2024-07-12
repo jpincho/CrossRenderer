@@ -112,7 +112,7 @@ bool InstancedRendering::SpecificInitialize ( void )
 	        sizeof ( glm::mat4 ),
 	        CrossRenderer::ShaderBufferComponentType::Float,
 	        4 );
-
+	InstanceMatricesStream.PerInstance = true;
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle, TexCoordAttributeHandle, InstanceMatricesAttributeHandle;
 	CrossRenderer::ShaderUniformHandle TextureUniformHandle, ViewProjectionUniformHandle;
 	GET_ATTRIBUTE ( PositionAttributeHandle, ShaderHandle, "a_VertexPosition" );

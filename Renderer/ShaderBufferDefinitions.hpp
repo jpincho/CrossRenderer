@@ -44,6 +44,7 @@ struct ShaderBufferDataStream
 		ComponentType = NewComponentType;
 		ComponentsPerElement = NewComponentsPerElement;
 		NormalizeData = ShouldNormalizeData;
+		PerInstance = false;
 		}
 	ShaderBufferHandle BufferHandle;
 	size_t StartOffset;
@@ -51,6 +52,7 @@ struct ShaderBufferDataStream
 	ShaderBufferComponentType ComponentType;
 	size_t ComponentsPerElement;
 	bool NormalizeData;
+	bool PerInstance;
 	};
 
 struct ShaderBufferDescriptor
