@@ -2,6 +2,7 @@
 #include "../GLMHeaders.hpp"
 #include "../RendererHandleTemplate.hpp"
 #include "../PixelFormat.hpp"
+#include <vector>
 
 namespace CrossRenderer
 {
@@ -102,6 +103,7 @@ struct TextureDescriptor
 	TextureFilterSettings FilterSettings;
 	TextureWrapSettings WrapSettings;
 	bool Mipmapped;
+	std::vector <uint8_t> Data;
 	};
 
 struct TextureBindSettings
