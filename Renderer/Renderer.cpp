@@ -67,6 +67,17 @@ bool SanityCheckRenderCommand ( const RenderCommand& Command )
 			}
 		}
 
+	// Find invalid attribute buffers
+	for ( auto &Iterator : Command.ShaderBufferBindings )
+		{
+		if ( Iterator.DataStream.BufferHandle == ShaderBufferHandle::Invalid )
+			{
+			LOG_ERROR ( "Invalid shader buffer handle" );
+			Result = false;
+			break;
+			}
+		}
+
 	// Find invalid texture uniform handles
 	for ( auto &Iterator : Command.TextureBindings )
 		{
