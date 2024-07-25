@@ -310,6 +310,9 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 	if ( !CheckError () )
 		return false;
 
+	Uniforms.reserve ( UniformCount + UniformBlockCount );
+	Attributes.reserve ( AttributeCount );
+
 	size_t NameLength = std::max ( MaxUniformNameLength, MaxAttributeNameLength );
 	char *Name = new char[NameLength];
 
@@ -337,7 +340,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 		NewUniform.Name.assign ( Name );
 		NewUniform.Type = ShaderUniformType::Block;
 		NewUniform.OpenGLID = Location;
-		Uniforms.push_back ( NewUniform );
+		Uniforms.emplace_back ( std::move ( NewUniform ) );
 		}
 
 	for ( int cont = 0; cont < UniformCount; ++cont )
@@ -358,7 +361,18 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 			goto cleanup;
 		if ( Location == -1 )
 			{
+			bool IsPartOfBlock = false;
 			// TODO Check if this is part of an uniform block
+			for ( int BlockIterator = 0; BlockIterator < UniformBlockCount; ++BlockIterator )
+				{
+				if ( strncmp ( Name, Uniforms[BlockIterator].Name.c_str (), Uniforms[BlockIterator].Name.length () ) == 0 )
+					{
+					IsPartOfBlock = true;
+					break;
+					}
+				}
+			if ( IsPartOfBlock )
+				continue;// It's a uniform inside of a block. for some fucking reason, I can't get its location...
 			LOG_ERROR ( "Unable to get location for uniform '%s'", Name );
 			continue;
 			}
@@ -378,7 +392,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 				NewUniform.Name.append ( "]" );
 				NewUniform.Type = Type;
 				NewUniform.OpenGLID = Location + Index;
-				Uniforms.push_back ( NewUniform );
+				Uniforms.emplace_back ( std::move ( NewUniform ) );
 				}
 			}
 		else
@@ -388,7 +402,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 			NewUniform.Name.assign ( Name );
 			NewUniform.Type = Type;
 			NewUniform.OpenGLID = Location;
-			Uniforms.push_back ( NewUniform );
+			Uniforms.emplace_back ( std::move ( NewUniform ) );
 			}
 		}
 
@@ -421,7 +435,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 		NewAttribute.Type = Type;
 		NewAttribute.OpenGLID = Location;
 		NewAttribute.Enabled = false;
-		Attributes.push_back ( NewAttribute );
+		Attributes.emplace_back ( std::move ( NewAttribute ) );
 		}
 	Result = true;
 

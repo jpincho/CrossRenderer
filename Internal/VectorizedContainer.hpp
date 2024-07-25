@@ -247,20 +247,17 @@ void VectorizedContainer<ValueType>::AddNodeToList ( ListStruct &List, const int
 			{
 			// If I want to pack elements as much as possible, the indices need to be ordered, so that the lower-Index free slots are the first to be reused
 			intptr_t CurrentFreeNodeIndex = List.First;
-			while ( Elements[CurrentFreeNodeIndex].Next != -1 )
+			while ( Index > CurrentFreeNodeIndex )
 				{
-				if ( Index > CurrentFreeNodeIndex )
-					{
-					CurrentFreeNodeIndex = Elements[CurrentFreeNodeIndex].Next;
-					continue;
-					}
-				// when I get here, it's because I've found an index in the free list which is bigger than my own. insert mine right before it
-				Elements[Index].Previous = Elements[CurrentFreeNodeIndex].Previous;
-				Elements[Index].Next = CurrentFreeNodeIndex;
-				Elements[Elements[CurrentFreeNodeIndex].Previous].Next = Index;
-				Elements[CurrentFreeNodeIndex].Previous = Index;
-				break;
+				CurrentFreeNodeIndex = Elements[CurrentFreeNodeIndex].Next;
+				assert ( CurrentFreeNodeIndex != -1 );
 				}
+
+			// when I get here, it's because I've found an index in the free list which is bigger than my own. insert mine right before it
+			Elements[Index].Previous = Elements[CurrentFreeNodeIndex].Previous;
+			Elements[Index].Next = CurrentFreeNodeIndex;
+			Elements[Elements[CurrentFreeNodeIndex].Previous].Next = Index;
+			Elements[CurrentFreeNodeIndex].Previous = Index;
 			}
 		}
 	else
@@ -295,7 +292,6 @@ void VectorizedContainer<ValueType>::Reserve ( const size_t NewCapacity )
 
 	for ( size_t Index = Capacity; Index < NewCapacity; ++Index ) // Add all the new nodes to the List
 		{
-		new ( &Elements[Index] ) ListNode();
 		AddNodeToList ( FreeNodes, Index );
 		}
 	Capacity += delta;
@@ -309,6 +305,7 @@ size_t VectorizedContainer<ValueType>::GetFreeIndex ( void )
 		Reserve ( Capacity + 10 );
 		}
 	size_t Index = GetNodeFromList ( FreeNodes );
+	new ( &Elements[Index] ) ListNode ();
 	AddNodeToList ( UsedNodes, Index );
 	return Index;
 	}
@@ -316,12 +313,7 @@ size_t VectorizedContainer<ValueType>::GetFreeIndex ( void )
 template <typename ValueType>
 typename VectorizedContainer<ValueType>::iterator VectorizedContainer<ValueType>::GetFreeSlot ( void )
 	{
-	if ( FreeNodes.Count == 0 )
-		{
-		Reserve ( Capacity + 10 );
-		}
-	size_t Index = GetNodeFromList ( FreeNodes );
-	AddNodeToList ( UsedNodes, Index );
+	size_t Index = GetFreeIndex ();
 	return iterator ( this, Index );
 	}
 
@@ -338,12 +330,9 @@ void VectorizedContainer<ValueType>::ReleaseIndex ( const size_t Index )
 template <typename ValueType>
 void VectorizedContainer<ValueType>::ReleaseSlot ( const iterator Iterator )
 	{
-	assert ( Iterator.Index < Capacity );
 	if ( !Iterator )
 		return;
-	Elements[Iterator.Index].~ListNode ();
-	RemoveNodeFromList ( UsedNodes, Iterator.Index );
-	AddNodeToList ( FreeNodes, Iterator.Index );
+	ReleaseIndex ( Iterator.Index );
 	}
 
 template <typename ValueType>
@@ -390,12 +379,7 @@ typename VectorizedContainer<ValueType>::iterator VectorizedContainer<ValueType>
 template <typename ValueType>
 typename VectorizedContainer<ValueType>::iterator VectorizedContainer<ValueType>::push ( const ValueType &NewValue )
 	{
-	if ( FreeNodes.Count == 0 )
-		{
-		Reserve ( Capacity + 10 );
-		}
-	size_t Index = GetNodeFromList ( FreeNodes );
-	AddNodeToList ( UsedNodes, Index );
+	size_t Index = GetFreeIndex ();
 	Elements[Index].Data = NewValue;
 	return iterator ( this, Index );
 	}
