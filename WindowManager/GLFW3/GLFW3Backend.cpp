@@ -271,12 +271,12 @@ void GLFWFramebufferSizeCallback ( GLFWwindow *GLFWHandle, int NewWidth, int New
 	intptr_t Handle = (intptr_t) glfwGetWindowUserPointer ( GLFWHandle );
 
 	GLFW3WindowInfo *WindowInformation = &Windows[Handle];
-	WindowInformation->Size.x = NewWidth;
-	WindowInformation->Size.y = NewHeight;
+	WindowInformation->FramebufferSize.x = NewWidth;
+	WindowInformation->FramebufferSize.y = NewHeight;
 
 	WindowEvent NewEvent;
 	NewEvent.EventType = WindowEventType::WindowFramebufferResized;
-	NewEvent.EventData.WindowFramebufferResized.NewSize = WindowInformation->Size;
+	NewEvent.EventData.WindowFramebufferResized.NewSize = WindowInformation->FramebufferSize;
 	NewEvent.OwnerHandle = RenderWindowHandle ( Handle );
 	SendWindowEvent ( NewEvent );
 	}
