@@ -36,28 +36,52 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
 		NewFramebuffer.ColorTextures.push_back ( NewTexture );
 		}
 
-	glGenFramebuffers ( 1, &NewFramebuffer.OpenGLID );
-	glBindFramebuffer ( GL_FRAMEBUFFER, NewFramebuffer.OpenGLID );
-	if ( CreationParameters.DepthEnabled )
-		glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Textures[NewFramebuffer.DepthTexture.GetKey ()].OpenGLID, 0 );
-	for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
-		glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Index, GL_TEXTURE_2D, Textures[NewFramebuffer.ColorTextures[Index].GetKey ()].OpenGLID, 0 );
-
-	if ( CheckError () == false )
-		goto error;
-
-	FramebufferStatus = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
-
-	if ( FramebufferStatus != GL_FRAMEBUFFER_COMPLETE )
+	if ( OpenGLInformation.DirectStateAccessEnabled )
 		{
-		LOG_ERROR ( "Unable to create framebuffer. %s", StringifyOpenGL ( FramebufferStatus ) );
-		goto error;
-		}
+		glCreateFramebuffers ( 1, &NewFramebuffer.OpenGLID );
+		if ( CreationParameters.DepthEnabled )
+			glNamedFramebufferTexture ( NewFramebuffer.OpenGLID, GL_DEPTH_ATTACHMENT, Textures[NewFramebuffer.DepthTexture.GetKey ()].OpenGLID, 0 );
+		for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
+			glNamedFramebufferTexture ( NewFramebuffer.OpenGLID, GL_COLOR_ATTACHMENT0 + Index, Textures[NewFramebuffer.ColorTextures[Index].GetKey ()].OpenGLID, 0 );
+		if ( CheckError () == false )
+			goto error;
 
-	GLuint *Attachments = (GLuint *) alloca ( CreationParameters.ColorAttachments * sizeof ( GLuint ) );
-	for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
-		Attachments[Index] = GL_COLOR_ATTACHMENT0 + Index;
-	glDrawBuffers ( CreationParameters.ColorAttachments, Attachments );
+		FramebufferStatus = glCheckNamedFramebufferStatus ( NewFramebuffer.OpenGLID, GL_DRAW_FRAMEBUFFER );
+
+		if ( FramebufferStatus != GL_FRAMEBUFFER_COMPLETE )
+			{
+			LOG_ERROR ( "Unable to create framebuffer. %s", StringifyOpenGL ( FramebufferStatus ) );
+			goto error;
+			}
+		GLuint *Attachments = (GLuint *) alloca ( CreationParameters.ColorAttachments * sizeof ( GLuint ) );
+		for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
+			Attachments[Index] = GL_COLOR_ATTACHMENT0 + Index;
+		glNamedFramebufferDrawBuffers ( NewFramebuffer.OpenGLID, CreationParameters.ColorAttachments, Attachments );
+		}
+	else
+		{
+		glGenFramebuffers ( 1, &NewFramebuffer.OpenGLID );
+		glBindFramebuffer ( GL_FRAMEBUFFER, NewFramebuffer.OpenGLID );
+		if ( CreationParameters.DepthEnabled )
+			glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, Textures[NewFramebuffer.DepthTexture.GetKey ()].OpenGLID, 0 );
+		for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
+			glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Index, GL_TEXTURE_2D, Textures[NewFramebuffer.ColorTextures[Index].GetKey ()].OpenGLID, 0 );
+		if ( CheckError () == false )
+			goto error;
+
+		FramebufferStatus = glCheckFramebufferStatus ( GL_FRAMEBUFFER );
+
+		if ( FramebufferStatus != GL_FRAMEBUFFER_COMPLETE )
+			{
+			LOG_ERROR ( "Unable to create framebuffer. %s", StringifyOpenGL ( FramebufferStatus ) );
+			goto error;
+			}
+
+		GLuint *Attachments = (GLuint *) alloca ( CreationParameters.ColorAttachments * sizeof ( GLuint ) );
+		for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
+			Attachments[Index] = GL_COLOR_ATTACHMENT0 + Index;
+		glDrawBuffers ( CreationParameters.ColorAttachments, Attachments );
+		}
 
 	{
 	FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex () );
@@ -72,7 +96,10 @@ error:
 	for ( size_t cont = 0; cont < NewFramebuffer.ColorTextures.size (); ++cont )
 		DeleteTexture ( NewFramebuffer.ColorTextures[cont] );
 	glDeleteFramebuffers ( 1, &NewFramebuffer.OpenGLID );
-	glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+	if ( OpenGLInformation.DirectStateAccessEnabled == false )
+		{
+		glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+		}
 	CurrentBoundFramebuffer = FramebufferHandle::Invalid;
 	return FramebufferHandle::Invalid;
 	}

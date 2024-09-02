@@ -20,12 +20,14 @@ namespace OpenGL
 // OriginPixelFormat - GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_DEPTH_COMPONENT, and GL_STENCIL_INDEX.
 // DataType - GL_UNSIGNED_BYTE, GL_BYTE, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_FLOAT, GL_UNSIGNED_BYTE_3_3_2, GL_UNSIGNED_BYTE_2_3_3_REV, GL_UNSIGNED_SHORT_5_6_5, GL_UNSIGNED_SHORT_5_6_5_REV, GL_UNSIGNED_SHORT_4_4_4_4, GL_UNSIGNED_SHORT_4_4_4_4_REV, GL_UNSIGNED_SHORT_5_5_5_1, GL_UNSIGNED_SHORT_1_5_5_5_REV, GL_UNSIGNED_INT_8_8_8_8, GL_UNSIGNED_INT_8_8_8_8_REV, GL_UNSIGNED_INT_10_10_10_2, and GL_UNSIGNED_INT_2_10_10_10_REV.
 
-static struct
+struct StructPixelFormatData
 	{
 	GLint DataType;
 	GLint Format;
 	GLint SizedFormat;
-	} PixelFormatData[] =
+	};
+
+static StructPixelFormatData PixelFormatData[] =
 	{
 		{GL_UNSIGNED_BYTE, GL_RED, GL_R8},// Red8
 		{GL_UNSIGNED_BYTE, GL_RG, GL_RG8},// RedGreen88
@@ -45,51 +47,67 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
 	NewTexture.GLMinFilter = Translate ( CreationParameters.FilterSettings.MinFilter );
 	NewTexture.GLMagFilter = Translate ( CreationParameters.FilterSettings.MagFilter );
 
+	GLenum GLTextureType = GL_TEXTURE_2D;
 	switch ( NewTexture.Type )
 		{
 		case TextureType::Texture2D:
 			{
-			glGenTextures ( 1, &NewTexture.OpenGLID );
-			if ( CheckError () == false )
-				{
-				LOG_ERROR ( "Unable to create 2D texture" );
-				return TextureHandle::Invalid;
-				}
-			glBindTexture ( GL_TEXTURE_2D, NewTexture.OpenGLID );
-			glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
-			glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, NewTexture.GLTWrap );
-			glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, NewTexture.GLMinFilter );
-			glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
-			glTexStorage2D ( GL_TEXTURE_2D,
-			                 1,
-			                 PixelFormatData[ ( int ) NewTexture.Format].SizedFormat,
-			                 NewTexture.Dimensions.x, NewTexture.Dimensions.y );
+			GLTextureType = GL_TEXTURE_2D;
 			break;
 			}
 		case TextureType::TextureCubeMap:
 			{
-			glGenTextures ( 1, &NewTexture.OpenGLID );
-			if ( CheckError () == false )
-				{
-				LOG_ERROR ( "Unable to create cubemap texture" );
-				return TextureHandle::Invalid;
-				}
-			glBindTexture ( GL_TEXTURE_CUBE_MAP, NewTexture.OpenGLID );
-			glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
-			glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, NewTexture.GLTWrap );
-			glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, NewTexture.GLMinFilter );
-			glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
-			glTexParameteri ( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
-			glTexStorage2D ( GL_TEXTURE_CUBE_MAP,
-			                 1,
-			                 PixelFormatData[ ( int ) NewTexture.Format].SizedFormat,
-			                 NewTexture.Dimensions.x, NewTexture.Dimensions.y );
+			GLTextureType = GL_TEXTURE_CUBE_MAP;
 			break;
 			}
 		default:
+			{
 			LOG_ERROR ( "Unhandled texture type for creation" );
 			return TextureHandle::Invalid;
+			}
 		}
+
+	if ( OpenGLInformation.DirectStateAccessEnabled )
+		{
+		glCreateTextures ( GLTextureType, 1, &NewTexture.OpenGLID );
+		if ( CheckError () == false )
+			{
+			LOG_ERROR ( "Unable to create texture" );
+			return TextureHandle::Invalid;
+			}
+		glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
+		glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_WRAP_T, NewTexture.GLTWrap );
+		glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_MIN_FILTER, NewTexture.GLMinFilter );
+		glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
+		if ( NewTexture.Type == TextureType::TextureCubeMap )
+			glTextureParameteri ( NewTexture.OpenGLID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
+		glTextureStorage2D ( NewTexture.OpenGLID,
+						 1,
+						 PixelFormatData[(int) NewTexture.Format].SizedFormat,
+						 NewTexture.Dimensions.x, NewTexture.Dimensions.y );
+		}
+	else
+		{
+		glGenTextures ( 1, &NewTexture.OpenGLID );
+		if ( CheckError () == false )
+			{
+			LOG_ERROR ( "Unable to create texture" );
+			return TextureHandle::Invalid;
+			}
+		glBindTexture ( GLTextureType, NewTexture.OpenGLID );
+		glTexParameteri ( GLTextureType, GL_TEXTURE_WRAP_S, NewTexture.GLSWrap );
+		glTexParameteri ( GLTextureType, GL_TEXTURE_WRAP_T, NewTexture.GLTWrap );
+		glTexParameteri ( GLTextureType, GL_TEXTURE_MIN_FILTER, NewTexture.GLMinFilter );
+		glTexParameteri ( GLTextureType, GL_TEXTURE_MAG_FILTER, NewTexture.GLMagFilter );
+		if ( NewTexture.Type == TextureType::TextureCubeMap )
+			glTexParameteri ( GLTextureType, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
+		glTexStorage2D ( GLTextureType,
+						 1,
+						 PixelFormatData[(int) NewTexture.Format].SizedFormat,
+						 NewTexture.Dimensions.x, NewTexture.Dimensions.y );
+		glBindTexture ( GL_TEXTURE_2D, 0 );
+		}
+
 
 	if ( CheckError () == false )
 		{
@@ -104,7 +122,7 @@ TextureHandle CreateTexture ( const TextureDescriptor CreationParameters )
 
 bool DeleteTexture ( const TextureHandle Handle )
 	{
-	TextureInfo *TextureInformation = &Textures[Handle.GetKey()];
+	TextureInfo *TextureInformation = &Textures[Handle.GetKey ()];
 
 	glDeleteTextures ( 1, &TextureInformation->OpenGLID );
 	Textures.ReleaseIndex ( Handle.GetKey () );
@@ -113,7 +131,7 @@ bool DeleteTexture ( const TextureHandle Handle )
 
 bool Load2DTextureData ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, const void *Data )
 	{
-	TextureInfo *TextureInformation = &Textures[Handle.GetKey()];
+	TextureInfo *TextureInformation = &Textures[Handle.GetKey ()];
 	return Update2DTextureRegion ( Handle, glm::uvec2 ( 0, 0 ), TextureInformation->Dimensions, SourcePixelFormat, Data );
 	}
 
@@ -122,7 +140,7 @@ bool Update2DTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerL
 	TextureInfo *TextureInformation = &Textures[Handle.GetKey ()];
 
 	if ( ( LowerLeft.x + RegionDimensions.x > TextureInformation->Dimensions.x ) ||
-	        ( LowerLeft.y + RegionDimensions.y > TextureInformation->Dimensions.y ) )
+			( LowerLeft.y + RegionDimensions.y > TextureInformation->Dimensions.y ) )
 		return false;
 
 	uint8_t alignment = 1;
@@ -133,18 +151,35 @@ bool Update2DTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerL
 			alignment = alignment_mask & 0xFF;
 		}
 	glPixelStorei ( GL_UNPACK_ALIGNMENT, alignment );
-	glBindTexture ( GL_TEXTURE_2D, TextureInformation->OpenGLID );
-	glTexSubImage2D ( GL_TEXTURE_2D,
-	                  0,
-	                  LowerLeft.x, LowerLeft.y,
-	                  ( int ) RegionDimensions.x, ( int ) RegionDimensions.y,
-	                  PixelFormatData[ ( int ) SourcePixelFormat].Format,
-	                  PixelFormatData[ ( int ) SourcePixelFormat].DataType,
-	                  Data );
-	if ( !CheckError () )
-		return false;
-	if ( TextureInformation->Mipmapped )
-		glGenerateMipmap ( GL_TEXTURE_2D );
+	if ( OpenGLInformation.DirectStateAccessEnabled )
+		{
+		glTextureSubImage2D ( TextureInformation->OpenGLID,
+							 0,
+							 LowerLeft.x, LowerLeft.y,
+							 (int) RegionDimensions.x, (int) RegionDimensions.y,
+							 PixelFormatData[(int) SourcePixelFormat].Format,
+							 PixelFormatData[(int) SourcePixelFormat].DataType,
+							 Data );
+		if ( !CheckError () )
+			return false;
+		if ( TextureInformation->Mipmapped )
+			glGenerateTextureMipmap ( TextureInformation->OpenGLID );
+		}
+	else
+		{
+		glBindTexture ( GL_TEXTURE_2D, TextureInformation->OpenGLID );
+		glTexSubImage2D ( GL_TEXTURE_2D,
+						  0,
+						  LowerLeft.x, LowerLeft.y,
+						  (int) RegionDimensions.x, (int) RegionDimensions.y,
+						  PixelFormatData[(int) SourcePixelFormat].Format,
+						  PixelFormatData[(int) SourcePixelFormat].DataType,
+						  Data );
+		if ( !CheckError () )
+			return false;
+		if ( TextureInformation->Mipmapped )
+			glGenerateMipmap ( GL_TEXTURE_2D );
+		}
 
 	return true;
 	}
@@ -152,21 +187,41 @@ bool Update2DTextureRegion ( const TextureHandle Handle, const glm::uvec2 LowerL
 bool LoadCubeMapTextureData ( const TextureHandle Handle, const PixelFormat SourcePixelFormat, void *Data[6] )
 	{
 	TextureInfo *TextureInformation = &Textures[Handle.GetKey ()];
-	glBindTexture ( GL_TEXTURE_CUBE_MAP, TextureInformation->OpenGLID );
-	for ( unsigned Face = 0; Face < 6; ++Face )
+	if ( OpenGLInformation.DirectStateAccessEnabled )
 		{
-		glTexSubImage2D ( GL_TEXTURE_CUBE_MAP_POSITIVE_X + Face,
-		                  0,
-		                  0, 0,
-		                  TextureInformation->Dimensions.x, TextureInformation->Dimensions.y,
-		                  PixelFormatData[ ( int ) SourcePixelFormat].Format,
-		                  PixelFormatData[ ( int ) SourcePixelFormat].DataType,
-		                  Data[Face] );
+		for ( unsigned Face = 0; Face < 6; ++Face )
+			{
+			glTextureSubImage3D ( TextureInformation->OpenGLID,
+								  0,
+								  0, 0,Face,
+								  TextureInformation->Dimensions.x, TextureInformation->Dimensions.y, 1,
+								  PixelFormatData[(int) SourcePixelFormat].Format,
+								  PixelFormatData[(int) SourcePixelFormat].DataType,
+								  Data[Face] );
+			}
+		if ( !CheckError () )
+			return false;
+		if ( TextureInformation->Mipmapped )
+			glGenerateTextureMipmap ( TextureInformation->OpenGLID );
 		}
-	if ( TextureInformation->Mipmapped )
-		glGenerateMipmap ( GL_TEXTURE_CUBE_MAP );
+	else
+		{
+		glBindTexture ( GL_TEXTURE_CUBE_MAP, TextureInformation->OpenGLID );
+		for ( unsigned Face = 0; Face < 6; ++Face )
+			{
+			glTexSubImage2D ( GL_TEXTURE_CUBE_MAP_POSITIVE_X + Face,
+							  0,
+							  0, 0,
+							  TextureInformation->Dimensions.x, TextureInformation->Dimensions.y,
+							  PixelFormatData[(int) SourcePixelFormat].Format,
+							  PixelFormatData[(int) SourcePixelFormat].DataType,
+							  Data[Face] );
+			}
+		if ( TextureInformation->Mipmapped )
+			glGenerateMipmap ( GL_TEXTURE_CUBE_MAP );
 
-	glBindTexture ( GL_TEXTURE_CUBE_MAP, 0 );
+		glBindTexture ( GL_TEXTURE_CUBE_MAP, 0 );
+		}
 	return CheckError ();
 	}
 

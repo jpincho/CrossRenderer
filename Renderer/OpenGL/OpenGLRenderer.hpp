@@ -18,5 +18,9 @@ bool StartRenderToWindow ( const RenderWindowHandle &WindowHandle );
 bool DisplayWindow ( const RenderWindowHandle &WindowHandle );
 
 bool RunCommand ( const RenderCommand &Command );
+
+bool IsExtensionAvailable ( const char *Extension );
+bool EnableDirectStateAccess ( const bool NewState );
+bool IsDirectStateAccessEnabled ( void );
 }
 }

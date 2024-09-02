@@ -19,6 +19,7 @@ struct OpenGLInformationStruct
 	Version OpenGLVersion, GLSLVersion;
 	std::string OpenGLRendererString, OpenGLVendorString;
 	std::vector <std::string> Extensions;
+	bool DirectStateAccessEnabled;
 	};
 
 extern OpenGLInformationStruct OpenGLInformation;

@@ -47,6 +47,15 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 	glClearDepth ( 1.0 );
 	glEnable ( GL_PROGRAM_POINT_SIZE );
 
+	if ( ( OpenGLInformation.OpenGLVersion.GreaterEqual ( 3, 2 ) ) ||
+		 ( IsExtensionAvailable ( "ARB_seamless_cube_map" ) ) )
+		{
+		LOG_DEBUG ( "GL_TEXTURE_CUBE_MAP_SEAMLESS available. enabling" );
+		glEnable ( GL_TEXTURE_CUBE_MAP_SEAMLESS );
+		}
+	if ( OpenGLInformation.DirectStateAccessEnabled )
+		LOG_DEBUG ( "Direct State Access enabled" );
+
 	if ( CheckError () == false )
 		goto OnError;
 
@@ -173,44 +182,59 @@ bool RunCommand ( const RenderCommand &Command )
 
 		switch ( UniformInformation->Type )
 			{
-#define CASE_TYPE(TYPENAME,FUNCTION)\
+#define CASE_TYPE(TYPENAME,FUNCTION,DSAFUNCTION)\
         case ShaderUniformType::TYPENAME:\
             {\
-            FUNCTION ( UniformInformation->OpenGLID, Iterator.UniformValue.TYPENAME##Value );\
+			if ( OpenGLInformation.DirectStateAccessEnabled)\
+				DSAFUNCTION( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, Iterator.UniformValue.TYPENAME##Value );\
+			else\
+				FUNCTION ( UniformInformation->OpenGLID, Iterator.UniformValue.TYPENAME##Value );\
             break;\
             }
-#define CASE_TYPE_VEC(TYPENAME,FUNCTION)\
+#define CASE_TYPE_VEC(TYPENAME,FUNCTION,DSAFUNCTION)\
         case ShaderUniformType::TYPENAME:\
             {\
-            FUNCTION ( UniformInformation->OpenGLID, 1, glm::value_ptr(Iterator.UniformValue.TYPENAME##Value) );\
+			if(OpenGLInformation.DirectStateAccessEnabled)\
+				DSAFUNCTION( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, 1, glm::value_ptr(Iterator.UniformValue.TYPENAME##Value) );\
+			else\
+				FUNCTION ( UniformInformation->OpenGLID, 1, glm::value_ptr(Iterator.UniformValue.TYPENAME##Value) );\
             break;\
             }
 
-			CASE_TYPE ( Float, glUniform1f );
-			CASE_TYPE_VEC ( Float2, glUniform2fv );
-			CASE_TYPE_VEC ( Float3, glUniform3fv );
-			CASE_TYPE_VEC ( Float4, glUniform4fv );
+			CASE_TYPE ( Float, glUniform1f, glProgramUniform1f );
+			CASE_TYPE_VEC ( Float2, glUniform2fv, glProgramUniform2fv );
+			CASE_TYPE_VEC ( Float3, glUniform3fv, glProgramUniform3fv );
+			CASE_TYPE_VEC ( Float4, glUniform4fv, glProgramUniform4fv );
 
-			CASE_TYPE ( Integer, glUniform1i );
-			CASE_TYPE_VEC ( Integer2, glUniform2iv );
-			CASE_TYPE_VEC ( Integer3, glUniform3iv );
-			CASE_TYPE_VEC ( Integer4, glUniform4iv );
+			CASE_TYPE ( Integer, glUniform1i, glProgramUniform1i );
+			CASE_TYPE_VEC ( Integer2, glUniform2iv, glProgramUniform2iv );
+			CASE_TYPE_VEC ( Integer3, glUniform3iv, glProgramUniform3iv );
+			CASE_TYPE_VEC ( Integer4, glUniform4iv, glProgramUniform4iv );
 
-			CASE_TYPE ( UnsignedInteger, glUniform1ui );
-			CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv );
-			CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv );
-			CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv );
+			CASE_TYPE ( UnsignedInteger, glUniform1ui, glProgramUniform1ui );
+			CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv, glProgramUniform2uiv );
+			CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv, glProgramUniform3uiv );
+			CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv, glProgramUniform4uiv );
 #undef CASE_TYPE
 #undef CASE_TYPE_VEC
 
 			case ShaderUniformType::Matrix3:
-				glUniformMatrix3fv ( UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix3Value ) );
+				if ( OpenGLInformation.DirectStateAccessEnabled )
+					glProgramUniformMatrix3fv ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix3Value ) );
+				else
+					glUniformMatrix3fv ( UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix3Value ) );
 				break;
 			case ShaderUniformType::Matrix4:
-				glUniformMatrix4fv ( UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix4Value ) );
+				if ( OpenGLInformation.DirectStateAccessEnabled )
+					glProgramUniformMatrix4fv ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix4Value ) );
+				else
+					glUniformMatrix4fv ( UniformInformation->OpenGLID, 1, GL_FALSE, glm::value_ptr ( Iterator.UniformValue.Matrix4Value ) );
 				break;
 			case ShaderUniformType::Bool:
-				glUniform1i ( UniformInformation->OpenGLID, Iterator.UniformValue.BoolValue );
+				if ( OpenGLInformation.DirectStateAccessEnabled )
+					glProgramUniform1i ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, Iterator.UniformValue.BoolValue );
+				else
+					glUniform1i ( UniformInformation->OpenGLID, Iterator.UniformValue.BoolValue );
 				break;
 			case ShaderUniformType::Block:
 				{
@@ -354,18 +378,33 @@ bool RunCommand ( const RenderCommand &Command )
 				return false;
 			}
 
-		glActiveTexture ( GL_TEXTURE0 + TextureBindingIndex ); // Multitexture index
-		glBindTexture ( TextureType, TextureInformation->OpenGLID );
-		if ( TextureInformation->GLSWrap != DesiredSWrap )
-			glTexParameteri ( TextureType, GL_TEXTURE_WRAP_S, DesiredSWrap );
-		if ( TextureInformation->GLTWrap != DesiredTWrap )
-			glTexParameteri ( TextureType, GL_TEXTURE_WRAP_T, DesiredTWrap );
-		if ( TextureInformation->GLMinFilter != DesiredMinFilter )
-			glTexParameteri ( TextureType, GL_TEXTURE_MIN_FILTER, DesiredMinFilter );
-		if ( TextureInformation->GLMagFilter != DesiredMagFilter )
-			glTexParameteri ( TextureType, GL_TEXTURE_MAG_FILTER, DesiredMagFilter );
-		glUniform1i ( UniformInformation->OpenGLID, (GLint) TextureBindingIndex );
-
+		if ( OpenGLInformation.DirectStateAccessEnabled )
+			{
+			glBindTextureUnit ( TextureBindingIndex, TextureInformation->OpenGLID );
+			if ( TextureInformation->GLSWrap != DesiredSWrap )
+				glTextureParameteri ( TextureInformation->OpenGLID, GL_TEXTURE_WRAP_S, DesiredSWrap );
+			if ( TextureInformation->GLTWrap != DesiredTWrap )
+				glTextureParameteri ( TextureInformation->OpenGLID, GL_TEXTURE_WRAP_T, DesiredTWrap );
+			if ( TextureInformation->GLMinFilter != DesiredMinFilter )
+				glTextureParameteri ( TextureInformation->OpenGLID, GL_TEXTURE_MIN_FILTER, DesiredMinFilter );
+			if ( TextureInformation->GLMagFilter != DesiredMagFilter )
+				glTextureParameteri ( TextureInformation->OpenGLID, GL_TEXTURE_MAG_FILTER, DesiredMagFilter );
+			glProgramUniform1i ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, (GLint) TextureBindingIndex );
+			}
+		else
+			{
+			glActiveTexture ( GL_TEXTURE0 + TextureBindingIndex ); // Multitexture index
+			glBindTexture ( TextureType, TextureInformation->OpenGLID );
+			if ( TextureInformation->GLSWrap != DesiredSWrap )
+				glTexParameteri ( TextureType, GL_TEXTURE_WRAP_S, DesiredSWrap );
+			if ( TextureInformation->GLTWrap != DesiredTWrap )
+				glTexParameteri ( TextureType, GL_TEXTURE_WRAP_T, DesiredTWrap );
+			if ( TextureInformation->GLMinFilter != DesiredMinFilter )
+				glTexParameteri ( TextureType, GL_TEXTURE_MIN_FILTER, DesiredMinFilter );
+			if ( TextureInformation->GLMagFilter != DesiredMagFilter )
+				glTexParameteri ( TextureType, GL_TEXTURE_MAG_FILTER, DesiredMagFilter );
+			glUniform1i ( UniformInformation->OpenGLID, (GLint) TextureBindingIndex );
+			}
 		if ( CheckError () == false )
 			{
 			LOG_ERROR ( "Error activating texture" );
@@ -526,8 +565,25 @@ bool DetectOpenGLInformation ( void )
 #endif
 
 	glGetIntegerv ( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &OpenGLInformation.MaxTextureUnits );
-
+	OpenGLInformation.DirectStateAccessEnabled = IsExtensionAvailable ( "GL_ARB_direct_state_access" );
 	return true;
 	}
+
+bool IsExtensionAvailable ( const char *Extension )
+	{
+	return std::find ( OpenGLInformation.Extensions.begin (), OpenGLInformation.Extensions.end (), Extension ) != OpenGLInformation.Extensions.end ();
+	}
+
+bool EnableDirectStateAccess ( const bool NewState )
+	{
+	OpenGLInformation.DirectStateAccessEnabled = NewState;
+	return true;
+	}
+
+bool IsDirectStateAccessEnabled ( void )
+	{
+	return OpenGLInformation.DirectStateAccessEnabled;
+	}
+
 }
 }
