@@ -169,7 +169,10 @@ bool DeleteShader ( const ShaderHandle Handle )
 	{
 	ShaderInfo *ShaderInformation = &Shaders[Handle.GetKey ()];
 	for ( const auto &Iterator : ShaderInformation->AttachedShaderObjects )
+		{
 		glDetachShader ( ShaderInformation->OpenGLID, ShaderObjects[Iterator.GetKey ()].OpenGLID );
+		DeleteShaderObject ( Iterator );
+		}
 
 	glDeleteProgram ( ShaderInformation->OpenGLID );
 	Shaders.ReleaseIndex ( Handle.GetKey () );
