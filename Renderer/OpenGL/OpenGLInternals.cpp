@@ -16,62 +16,14 @@ VectorizedContainer <ShaderObjectInfo> ShaderObjects;
 VectorizedContainer <FramebufferInfo> Framebuffers;
 OpenGLInformationStruct OpenGLInformation;
 
-void OpenGLMessageCallback ( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, GLchar const *message, void const * )
+void OpenGLMessageCallback ( GLenum Source, GLenum Type, GLuint ID, GLenum Severity, GLsizei, GLchar const *Message, void const * )
 	{
-#define STRINGIFY(X) case GL_DEBUG_##X: return #X;
-	auto const src_str = [source]()
-		{
-		switch ( source )
-			{
-				STRINGIFY ( SOURCE_API );
-				STRINGIFY ( SOURCE_WINDOW_SYSTEM );
-				STRINGIFY ( SOURCE_SHADER_COMPILER );
-				STRINGIFY ( SOURCE_THIRD_PARTY );
-				STRINGIFY ( SOURCE_APPLICATION );
-				STRINGIFY ( SOURCE_OTHER );
-			default:
-				return "UNKNOWN SOURCE";
-			}
-		}
-	();
-
-	auto const type_str = [type]()
-		{
-		switch ( type )
-			{
-				STRINGIFY ( TYPE_ERROR );
-				STRINGIFY ( TYPE_DEPRECATED_BEHAVIOR );
-				STRINGIFY ( TYPE_UNDEFINED_BEHAVIOR );
-				STRINGIFY ( TYPE_PORTABILITY );
-				STRINGIFY ( TYPE_PERFORMANCE );
-				STRINGIFY ( TYPE_MARKER );
-				STRINGIFY ( TYPE_OTHER );
-			default:
-				return "UNKNOWN TYPE";
-			}
-		}
-	();
-
-	auto const severity_str = [severity]()
-		{
-		switch ( severity )
-			{
-				STRINGIFY ( SEVERITY_NOTIFICATION );
-				STRINGIFY ( SEVERITY_LOW );
-				STRINGIFY ( SEVERITY_MEDIUM );
-				STRINGIFY ( SEVERITY_HIGH );
-			default:
-				return "UNKNOWN SEVERITY";
-			}
-		}
-	();
-#undef STRINGIFY
-	if ( ( type == GL_DEBUG_TYPE_OTHER ) && ( severity == GL_DEBUG_SEVERITY_NOTIFICATION ) )
+	if ( ( Type == GL_DEBUG_TYPE_OTHER ) && ( Severity == GL_DEBUG_SEVERITY_NOTIFICATION ) )
 		return;
-	if ( type == GL_DEBUG_TYPE_ERROR )
-		LOG_ERROR ( "%s - %s - %s - %X - %s", src_str, type_str, severity_str, id, message );
+	if ( Type == GL_DEBUG_TYPE_ERROR )
+		LOG_ERROR ( "%s - %s - %s - %X - %s", StringifyOpenGL ( Source ), StringifyOpenGL ( Type ), StringifyOpenGL ( Severity ), ID, Message );
 	else
-		LOG_DEBUG ( "%s - %s - %s - %X - %s", src_str, type_str, severity_str, id, message );
+		LOG_DEBUG ( "%s - %s - %s - %X - %s", StringifyOpenGL ( Source ), StringifyOpenGL ( Type ), StringifyOpenGL ( Severity ), ID, Message );
 	}
 
 const char *StringifyOpenGL ( GLenum Value )
@@ -79,24 +31,45 @@ const char *StringifyOpenGL ( GLenum Value )
 	switch ( Value )
 		{
 #define STRINGIFY(X) case X: return #X;
-			STRINGIFY ( GL_FRAMEBUFFER_UNDEFINED );
-			STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT );
-			STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT );
-			STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER );
-			STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER );
-			STRINGIFY ( GL_FRAMEBUFFER_UNSUPPORTED );
-			STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE );
-			STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS );
-			STRINGIFY ( GL_FRAMEBUFFER_COMPLETE );
+		STRINGIFY ( GL_FRAMEBUFFER_UNDEFINED );
+		STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT );
+		STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT );
+		STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER );
+		STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER );
+		STRINGIFY ( GL_FRAMEBUFFER_UNSUPPORTED );
+		STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE );
+		STRINGIFY ( GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS );
+		STRINGIFY ( GL_FRAMEBUFFER_COMPLETE );
 
-			STRINGIFY ( GL_NO_ERROR );
-			STRINGIFY ( GL_INVALID_ENUM );
-			STRINGIFY ( GL_INVALID_VALUE );
-			STRINGIFY ( GL_INVALID_OPERATION );
-			STRINGIFY ( GL_STACK_OVERFLOW );
-			STRINGIFY ( GL_STACK_UNDERFLOW );
-			STRINGIFY ( GL_OUT_OF_MEMORY );
-			STRINGIFY ( GL_TABLE_TOO_LARGE );
+		STRINGIFY ( GL_NO_ERROR );
+		STRINGIFY ( GL_INVALID_ENUM );
+		STRINGIFY ( GL_INVALID_VALUE );
+		STRINGIFY ( GL_INVALID_OPERATION );
+		STRINGIFY ( GL_STACK_OVERFLOW );
+		STRINGIFY ( GL_STACK_UNDERFLOW );
+		STRINGIFY ( GL_OUT_OF_MEMORY );
+		STRINGIFY ( GL_TABLE_TOO_LARGE );
+
+		STRINGIFY ( GL_DEBUG_SOURCE_API );
+		STRINGIFY ( GL_DEBUG_SOURCE_WINDOW_SYSTEM );
+		STRINGIFY ( GL_DEBUG_SOURCE_SHADER_COMPILER );
+		STRINGIFY ( GL_DEBUG_SOURCE_THIRD_PARTY );
+		STRINGIFY ( GL_DEBUG_SOURCE_APPLICATION );
+		STRINGIFY ( GL_DEBUG_SOURCE_OTHER );
+
+		STRINGIFY ( GL_DEBUG_TYPE_ERROR );
+		STRINGIFY ( GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR );
+		STRINGIFY ( GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR );
+		STRINGIFY ( GL_DEBUG_TYPE_PORTABILITY );
+		STRINGIFY ( GL_DEBUG_TYPE_PERFORMANCE );
+		STRINGIFY ( GL_DEBUG_TYPE_MARKER );
+		STRINGIFY ( GL_DEBUG_TYPE_OTHER );
+
+		STRINGIFY ( GL_DEBUG_SEVERITY_NOTIFICATION );
+		STRINGIFY ( GL_DEBUG_SEVERITY_LOW );
+		STRINGIFY ( GL_DEBUG_SEVERITY_MEDIUM );
+		STRINGIFY ( GL_DEBUG_SEVERITY_HIGH );
+
 		default:
 			throw std::runtime_error ( "Unhandled OpenGL enum" );
 		}
@@ -112,14 +85,14 @@ bool CheckError ( void )
 	bool Result = true;
 	do
 		{
-		Error = glGetError();
+		Error = glGetError ();
 		if ( Error != GL_NO_ERROR )
 			{
 			Result = false;
 			std::string ErrorString ( "OpenGL error - " );
 			ErrorString.append ( StringifyOpenGL ( Error ) );
-			LOG_ERROR ( ErrorString.c_str() );
-			throw std::runtime_error ( ErrorString.c_str() );
+			LOG_ERROR ( ErrorString.c_str () );
+			throw std::runtime_error ( ErrorString.c_str () );
 			}
 		}
 	while ( Error != GL_NO_ERROR );
@@ -143,12 +116,12 @@ GLenum Translate ( const DepthTestMode Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid depth function" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const BlendMode Value )
 	{
-	static GLenum Values [] =
+	static GLenum Values[] =
 		{
 		GL_ZERO,
 		GL_ONE,
@@ -165,12 +138,12 @@ GLenum Translate ( const BlendMode Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid blend mode" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const StencilFunction Value )
 	{
-	static GLenum Values [] =
+	static GLenum Values[] =
 		{
 		GL_NEVER,
 		GL_LESS,
@@ -184,7 +157,7 @@ GLenum Translate ( const StencilFunction Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid stencil function" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const StencilFailAction Value )
@@ -201,7 +174,7 @@ GLenum Translate ( const StencilFailAction Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid stencil fail action" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const CullingMode Value )
@@ -218,7 +191,7 @@ GLenum Translate ( const CullingMode Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid culling mode" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const CullingFaceWinding Value )
@@ -231,7 +204,7 @@ GLenum Translate ( const CullingFaceWinding Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid winding mode" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const ShaderBufferComponentType Value )
@@ -246,7 +219,7 @@ GLenum Translate ( const ShaderBufferComponentType Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid component type" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const ShaderBufferAccessType Value )
@@ -260,7 +233,7 @@ GLenum Translate ( const ShaderBufferAccessType Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid access type" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const ShaderBufferMapAccessType Value )
@@ -287,7 +260,7 @@ GLenum Translate ( const ShaderBufferType Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid buffer type" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const PrimitiveType Value )
@@ -303,7 +276,7 @@ GLenum Translate ( const PrimitiveType Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid primitive type" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLint Translate ( const TextureFilter Value )
@@ -320,7 +293,7 @@ GLint Translate ( const TextureFilter Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid texture filter" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLint Translate ( const TextureWrapMode Value )
@@ -335,7 +308,7 @@ GLint Translate ( const TextureWrapMode Value )
 	static unsigned Count = sizeof ( Values ) / sizeof ( GLenum );
 	if ( static_cast <unsigned> ( Value ) >= Count )
 		throw std::runtime_error ( std::string ( "Invalid texture wrap mode" ) );
-	return Values[ static_cast <unsigned> ( Value )];
+	return Values[static_cast <unsigned> ( Value )];
 	}
 
 GLenum Translate ( const PolygonMode Value )
@@ -354,7 +327,7 @@ GLenum Translate ( const PolygonMode Value )
 
 ShaderUniformType TranslateOpenGLUniformType ( GLenum Type )
 	{
-	switch (Type)
+	switch ( Type )
 		{
 		case GL_FLOAT:
 			return ShaderUniformType::Float;
