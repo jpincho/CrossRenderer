@@ -53,10 +53,13 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
 			LOG_ERROR ( "Unable to create framebuffer. %s", StringifyOpenGL ( FramebufferStatus ) );
 			goto error;
 			}
-		GLuint *Attachments = (GLuint *) alloca ( CreationParameters.ColorAttachments * sizeof ( GLuint ) );
-		for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
-			Attachments[Index] = GL_COLOR_ATTACHMENT0 + Index;
-		glNamedFramebufferDrawBuffers ( NewFramebuffer.OpenGLID, CreationParameters.ColorAttachments, Attachments );
+		if ( CreationParameters.ColorAttachments != 0 )
+			{
+			GLuint *Attachments = ( GLuint * ) alloca ( CreationParameters.ColorAttachments * sizeof ( GLuint ) );
+			for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
+				Attachments[Index] = GL_COLOR_ATTACHMENT0 + Index;
+			glNamedFramebufferDrawBuffers ( NewFramebuffer.OpenGLID, CreationParameters.ColorAttachments, Attachments );
+			}
 		}
 	else
 		{
@@ -77,18 +80,21 @@ FramebufferHandle CreateFramebuffer ( const FramebufferDescriptor CreationParame
 			goto error;
 			}
 
-		GLuint *Attachments = (GLuint *) alloca ( CreationParameters.ColorAttachments * sizeof ( GLuint ) );
-		for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
-			Attachments[Index] = GL_COLOR_ATTACHMENT0 + Index;
-		glDrawBuffers ( CreationParameters.ColorAttachments, Attachments );
+		if ( CreationParameters.ColorAttachments != 0 )
+			{
+			GLuint *Attachments = ( GLuint * ) alloca ( CreationParameters.ColorAttachments * sizeof ( GLuint ) );
+			for ( unsigned Index = 0; Index < CreationParameters.ColorAttachments; ++Index )
+				Attachments[Index] = GL_COLOR_ATTACHMENT0 + Index;
+			glDrawBuffers ( CreationParameters.ColorAttachments, Attachments );
+			}
 		}
 
-	{
-	FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex () );
-	Framebuffers[NewHandle.GetKey ()] = NewFramebuffer;
-	CurrentBoundFramebuffer = NewHandle;
-	return NewHandle;
-	}
+		{
+		FramebufferHandle NewHandle ( Framebuffers.GetFreeIndex () );
+		Framebuffers[NewHandle.GetKey ()] = NewFramebuffer;
+		CurrentBoundFramebuffer = NewHandle;
+		return NewHandle;
+		}
 
 error:
 	if ( NewFramebuffer.DepthTexture )

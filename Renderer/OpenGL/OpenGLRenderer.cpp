@@ -48,7 +48,7 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 	glEnable ( GL_PROGRAM_POINT_SIZE );
 
 	if ( ( OpenGLInformation.OpenGLVersion.GreaterEqual ( 3, 2 ) ) ||
-		 ( IsExtensionAvailable ( "ARB_seamless_cube_map" ) ) )
+	        ( IsExtensionAvailable ( "ARB_seamless_cube_map" ) ) )
 		{
 		LOG_DEBUG ( "GL_TEXTURE_CUBE_MAP_SEAMLESS available. enabling" );
 		glEnable ( GL_TEXTURE_CUBE_MAP_SEAMLESS );
@@ -99,9 +99,9 @@ bool DisplayFramebuffer ( const FramebufferHandle &Handle, const RenderWindowHan
 		glBindFramebuffer ( GL_READ_FRAMEBUFFER, FramebufferInformation->OpenGLID );
 		glBindFramebuffer ( GL_DRAW_FRAMEBUFFER, 0 );
 		glBlitFramebuffer (
-			0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
-			0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
-			GL_COLOR_BUFFER_BIT, GL_NEAREST );
+		    0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
+		    0, 0, FramebufferInformation->Dimensions.x, FramebufferInformation->Dimensions.y,
+		    GL_COLOR_BUFFER_BIT, GL_NEAREST );
 		// Restore old framebuffer binding
 		glBindFramebuffer ( GL_DRAW_FRAMEBUFFER, FramebufferInformation->OpenGLID );
 		}
@@ -201,20 +201,20 @@ bool RunCommand ( const RenderCommand &Command )
             break;\
             }
 
-			CASE_TYPE ( Float, glUniform1f, glProgramUniform1f );
-			CASE_TYPE_VEC ( Float2, glUniform2fv, glProgramUniform2fv );
-			CASE_TYPE_VEC ( Float3, glUniform3fv, glProgramUniform3fv );
-			CASE_TYPE_VEC ( Float4, glUniform4fv, glProgramUniform4fv );
+				CASE_TYPE ( Float, glUniform1f, glProgramUniform1f );
+				CASE_TYPE_VEC ( Float2, glUniform2fv, glProgramUniform2fv );
+				CASE_TYPE_VEC ( Float3, glUniform3fv, glProgramUniform3fv );
+				CASE_TYPE_VEC ( Float4, glUniform4fv, glProgramUniform4fv );
 
-			CASE_TYPE ( Integer, glUniform1i, glProgramUniform1i );
-			CASE_TYPE_VEC ( Integer2, glUniform2iv, glProgramUniform2iv );
-			CASE_TYPE_VEC ( Integer3, glUniform3iv, glProgramUniform3iv );
-			CASE_TYPE_VEC ( Integer4, glUniform4iv, glProgramUniform4iv );
+				CASE_TYPE ( Integer, glUniform1i, glProgramUniform1i );
+				CASE_TYPE_VEC ( Integer2, glUniform2iv, glProgramUniform2iv );
+				CASE_TYPE_VEC ( Integer3, glUniform3iv, glProgramUniform3iv );
+				CASE_TYPE_VEC ( Integer4, glUniform4iv, glProgramUniform4iv );
 
-			CASE_TYPE ( UnsignedInteger, glUniform1ui, glProgramUniform1ui );
-			CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv, glProgramUniform2uiv );
-			CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv, glProgramUniform3uiv );
-			CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv, glProgramUniform4uiv );
+				CASE_TYPE ( UnsignedInteger, glUniform1ui, glProgramUniform1ui );
+				CASE_TYPE_VEC ( UnsignedInteger2, glUniform2uiv, glProgramUniform2uiv );
+				CASE_TYPE_VEC ( UnsignedInteger3, glUniform3uiv, glProgramUniform3uiv );
+				CASE_TYPE_VEC ( UnsignedInteger4, glUniform4uiv, glProgramUniform4uiv );
 #undef CASE_TYPE
 #undef CASE_TYPE_VEC
 
@@ -281,11 +281,11 @@ bool RunCommand ( const RenderCommand &Command )
 				for ( unsigned RowCount = 0; RowCount < 4; ++RowCount )
 					{
 					glVertexAttribPointer ( AttributeInformation->OpenGLID + RowCount,
-											4,
-											Translate ( Iterator.DataStream.ComponentType ),
-											Iterator.DataStream.NormalizeData,
-											(GLsizei) Iterator.DataStream.Stride,
-											(void *) ( (uint8_t *) Iterator.DataStream.StartOffset + ( sizeof ( glm::vec4 ) * RowCount ) ) );
+					                        4,
+					                        Translate ( Iterator.DataStream.ComponentType ),
+					                        Iterator.DataStream.NormalizeData,
+					                        (GLsizei) Iterator.DataStream.Stride,
+					                        (void *) ( (uint8_t *) Iterator.DataStream.StartOffset + ( sizeof ( glm::vec4 ) * RowCount ) ) );
 					CheckError ();
 					}
 				break;
@@ -318,23 +318,23 @@ bool RunCommand ( const RenderCommand &Command )
 
 				// Is the attribute in the shader an int, meaning I should convert these values?
 				bool AttributeIsInt = ( ( ( AttributeInformation->Type >= ShaderAttributeType::Bool ) && ( AttributeInformation->Type <= ShaderAttributeType::Bool4 ) ) ||
-										( ( AttributeInformation->Type >= ShaderAttributeType::UnsignedInteger ) && ( AttributeInformation->Type <= ShaderAttributeType::Integer4 ) ) );
+				                        ( ( AttributeInformation->Type >= ShaderAttributeType::UnsignedInteger ) && ( AttributeInformation->Type <= ShaderAttributeType::Integer4 ) ) );
 				if ( ( Iterator.DataStream.ComponentType != ShaderBufferComponentType::Float ) && ( AttributeIsInt ) )
 					{
 					glVertexAttribIPointer ( AttributeInformation->OpenGLID,
-											 (GLint) Iterator.DataStream.ComponentsPerElement,
-											 Translate ( Iterator.DataStream.ComponentType ),
-											 (GLsizei) Iterator.DataStream.Stride,
-											 (void *) Iterator.DataStream.StartOffset );
+					                         (GLint) Iterator.DataStream.ComponentsPerElement,
+					                         Translate ( Iterator.DataStream.ComponentType ),
+					                         (GLsizei) Iterator.DataStream.Stride,
+					                         (void *) Iterator.DataStream.StartOffset );
 					}
 				else
 					{
 					glVertexAttribPointer ( AttributeInformation->OpenGLID,
-											(GLint) Iterator.DataStream.ComponentsPerElement,
-											Translate ( Iterator.DataStream.ComponentType ),
-											Iterator.DataStream.NormalizeData,
-											(GLsizei) Iterator.DataStream.Stride,
-											(void *) Iterator.DataStream.StartOffset );
+					                        (GLint) Iterator.DataStream.ComponentsPerElement,
+					                        Translate ( Iterator.DataStream.ComponentType ),
+					                        Iterator.DataStream.NormalizeData,
+					                        (GLsizei) Iterator.DataStream.Stride,
+					                        (void *) Iterator.DataStream.StartOffset );
 					}
 				break;
 				}
@@ -428,17 +428,17 @@ bool RunCommand ( const RenderCommand &Command )
 		ShaderBufferInfo *BufferToUse = &ShaderBuffers[Command.IndexBufferStream.BufferHandle.GetKey ()];
 		glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, BufferToUse->OpenGLID );
 		glDrawElementsInstanced ( Translate ( Command.Primitive ),
-								  static_cast <GLsizei> ( Command.VertexCount ),
-								  Translate ( Command.IndexBufferStream.ComponentType ),
-								  reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ),
-								  static_cast <GLsizei> ( Command.InstanceCount ) );
+		                          static_cast <GLsizei> ( Command.VertexCount ),
+		                          Translate ( Command.IndexBufferStream.ComponentType ),
+		                          reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ),
+		                          static_cast <GLsizei> ( Command.InstanceCount ) );
 		}
 	else
 		{
 		glDrawArraysInstanced ( Translate ( Command.Primitive ),
-								static_cast<GLint> ( Command.StartVertex ),
-								static_cast <GLsizei> ( Command.VertexCount ),
-								static_cast <GLsizei> ( Command.InstanceCount ) );
+		                        static_cast<GLint> ( Command.StartVertex ),
+		                        static_cast <GLsizei> ( Command.VertexCount ),
+		                        static_cast <GLsizei> ( Command.InstanceCount ) );
 		}
 	return CheckError ();
 	}

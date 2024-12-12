@@ -176,9 +176,9 @@ bool InstancedSpinningCubesTest::SpecificFrame ( const float TimeDelta )
 		//LOG_DEBUG ( "%u %s", Index, glm::to_string(Offset).c_str() );
 		ModelMatrices[Index] = glm::rotate ( glm::quarter_pi<float> () * TimeDelta, Rotations[Index] ) * ModelMatrices[Index];
 		RenderCommand.UniformValues[Index].UniformValue = ProjectionMatrix *
-		    glm::translate ( glm::identity<glm::mat4> (), Offset ) *
-		    ModelMatrices[Index] *
-		    glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
+		        glm::translate ( glm::identity<glm::mat4> (), Offset ) *
+		        ModelMatrices[Index] *
+		        glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
 		}
 	CrossRenderer::RunCommand ( RenderCommand );
 	return true;
