@@ -6,6 +6,7 @@
 #endif
 #include <mutex>
 #include <time.h>
+#include <chrono>
 
 namespace CrossRenderer
 {
