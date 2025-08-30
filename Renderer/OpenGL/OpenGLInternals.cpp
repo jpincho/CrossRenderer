@@ -442,5 +442,21 @@ GLenum TranslateUniformType ( ShaderUniformType Type )
 			throw "Unhandled shader uniform type";
 		}
 	}
+
+uint8_t BytesPerPixel ( const PixelFormat Format )
+	{
+	switch ( Format )
+		{
+		case PixelFormat::Red8:return 1;
+		case PixelFormat::RedGreen88:return 2;
+		case PixelFormat::RedGreenBlue888:return 3;
+		case PixelFormat::RedGreenBlueAlpha8888:return 4;
+		case PixelFormat::AlphaRedGreenBlue8888:return 4;
+		case PixelFormat::RedGreenBlue565:return 2;
+		case PixelFormat::DepthComponent:return sizeof ( float );
+		default:
+			return 0;
+		}
+	}
 }
 }

@@ -120,6 +120,6 @@ GLint Translate ( const TextureWrapMode Value );
 GLenum Translate ( const PolygonMode Value );
 ShaderUniformType TranslateOpenGLUniformType ( GLenum Type );
 GLenum TranslateUniformType ( ShaderUniformType Type );
-
+uint8_t BytesPerPixel ( const PixelFormat Format );
 }
 }
