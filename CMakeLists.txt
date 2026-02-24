@@ -17,7 +17,6 @@ endforeach()
 list ( APPEND CMAKE_PREFIX_PATH ${CMAKE_MODULE_PATH} )
 include ( LocalPackage )
 set ( LOCAL_PACKAGE_ALLOW_SYSTEM TRUE )
-set_local_package_install_location ( "${PROJECT_BINARY_DIR}/output/" )
 
 list ( APPEND CROSS_RENDERER_NECESSARY_DEPENDENCIES glfw3 )
 list ( APPEND CROSS_RENDERER_NECESSARY_DEPENDENCIES glm )
