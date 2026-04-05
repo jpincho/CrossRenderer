@@ -62,13 +62,13 @@ bool InstancedSpinningCubesTest::SpecificInitialize ( void )
 		};
 
 	glm::uvec2 WindowSize = CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () );
-	ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), (float) WindowSize.x / (float) WindowSize.y, 0.1f, 10.0f );
+	ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), ( float ) WindowSize.x / ( float ) WindowSize.y, 0.1f, 10.0f );
 	ViewMatrix = glm::lookAt ( glm::vec3 ( 0.0f, 0.0f, -2.0f ), glm::zero<glm::vec3> (), glm::vec3 ( 0.0f, 1.0f, 0.0f ) );
 	for ( unsigned Index = 0; Index < 100; ++Index )
 		{
-		Rotations[Index].x = (float) rand ();
-		Rotations[Index].y = (float) rand ();
-		Rotations[Index].z = (float) rand ();
+		Rotations[Index].x = ( float ) rand ();
+		Rotations[Index].y = ( float ) rand ();
+		Rotations[Index].z = ( float ) rand ();
 		Rotations[Index] = glm::normalize ( Rotations[Index] );
 		ModelMatrices[Index] = glm::identity<glm::mat4> ();
 		}
@@ -164,9 +164,9 @@ bool InstancedSpinningCubesTest::SpecificFrame ( const float TimeDelta )
 	for ( unsigned Index = 0; Index < 100; ++Index )
 		{
 		glm::vec3 Offset ( -1.0f, -1.0f, -3.0f );
-		Offset.x = (float) ( Index / 10 );
+		Offset.x = ( float ) ( Index / 10 );
 		Offset.x /= 5.0f;
-		Offset.y = (float) ( Index % 10 );
+		Offset.y = ( float ) ( Index % 10 );
 		Offset.y /= 5.0f;
 		Offset.x -= 1.0f;
 		Offset.y -= 1.0f;
@@ -176,9 +176,9 @@ bool InstancedSpinningCubesTest::SpecificFrame ( const float TimeDelta )
 		//LOG_DEBUG ( "%u %s", Index, glm::to_string(Offset).c_str() );
 		ModelMatrices[Index] = glm::rotate ( glm::quarter_pi<float> () * TimeDelta, Rotations[Index] ) * ModelMatrices[Index];
 		RenderCommand.UniformValues[Index].UniformValue = ProjectionMatrix *
-		        glm::translate ( glm::identity<glm::mat4> (), Offset ) *
-		        ModelMatrices[Index] *
-		        glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
+		    glm::translate ( glm::identity<glm::mat4> (), Offset ) *
+		    ModelMatrices[Index] *
+		    glm::scale ( glm::vec3 ( 0.1f, 0.1f, 0.1f ) );
 		}
 	CrossRenderer::RunCommand ( RenderCommand );
 	return true;

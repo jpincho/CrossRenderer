@@ -55,7 +55,7 @@ bool TestBase::Run ( void )
 		CrossRenderer::StartRenderToWindow ( *CrossRenderer::WindowManager::WindowList.begin () );
 		CrossRenderer::ClearFramebufferWithDefaultValues ( Framebuffer );
 
-		if ( SpecificFrame ( (float) TimeDelta ) == false )
+		if ( SpecificFrame ( ( float ) TimeDelta ) == false )
 			{
 			ShouldQuit = true;
 			break;
@@ -125,10 +125,10 @@ CrossRenderer::ShaderHandle LoadShader ( const std::string &VertexFile, const st
 		}
 
 	CrossRenderer::ShaderCode ShaderCode;
-	ShaderCode.VertexShader.assign ( (const char *) VShaderFileContents.data (), (const char *) VShaderFileContents.data () + VShaderFileContents.size () );
+	ShaderCode.VertexShader.assign ( ( const char * ) VShaderFileContents.data (), ( const char * ) VShaderFileContents.data () + VShaderFileContents.size () );
 	if ( GeometryFile.length () )
-		ShaderCode.GeometryShader.assign ( (const char *) GShaderFileContents.data (), (const char *) GShaderFileContents.data () + GShaderFileContents.size () );
-	ShaderCode.FragmentShader.assign ( (const char *) FShaderFileContents.data (), (const char *) FShaderFileContents.data () + FShaderFileContents.size () );
+		ShaderCode.GeometryShader.assign ( ( const char * ) GShaderFileContents.data (), ( const char * ) GShaderFileContents.data () + GShaderFileContents.size () );
+	ShaderCode.FragmentShader.assign ( ( const char * ) FShaderFileContents.data (), ( const char * ) FShaderFileContents.data () + FShaderFileContents.size () );
 	CrossRenderer::ShaderHandle Shader = CrossRenderer::CreateShader ( ShaderCode );
 	if ( !Shader )
 		{
@@ -148,7 +148,7 @@ bool LoadFileContents ( const std::string &Path, std::vector <uint8_t> &Contents
 	size = file.tellg ();
 	Contents.resize ( size );
 	file.seekg ( 0, std::ios::beg );
-	file.read ( (char *) Contents.data (), size );
+	file.read ( ( char * ) Contents.data (), size );
 	file.close ();
 	return true;
 	}
@@ -258,7 +258,7 @@ double GetSeconds ( void )
 		QueryPerformanceFrequency ( &Frequency );
 		}
 	QueryPerformanceCounter ( &Now );
-	return (double) Now.QuadPart / (double) Frequency.QuadPart;
+	return ( double ) Now.QuadPart / ( double ) Frequency.QuadPart;
 	}
 
 #else

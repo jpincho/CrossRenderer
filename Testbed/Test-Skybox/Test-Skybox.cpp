@@ -3,7 +3,7 @@
 bool SkyboxTest::SpecificInitialize ( void )
 	{
 	glm::uvec2 WindowSize = CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () );
-	ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), (float) WindowSize.x / (float) WindowSize.y, 0.1f, 10.0f );
+	ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), ( float ) WindowSize.x / ( float ) WindowSize.y, 0.1f, 10.0f );
 	ViewMatrix = glm::lookAt ( glm::vec3 ( 0.0f, 0.0f, 0.0f ), glm::vec3 ( 0.0f, 0.0f, -1.0f ), glm::vec3 ( 0.0f, 1.0f, 0.0f ) );
 
 	glm::vec3 SkyboxVertices[] =
@@ -88,7 +88,7 @@ bool SkyboxTest::SpecificInitialize ( void )
 	CrossRenderer::ShaderAttributeHandle PositionAttributeHandle;
 	CrossRenderer::ShaderUniformHandle TextureUniformHandle;
 	CrossRenderer::TextureBindSettings TextureBindSettings ( SkyboxTextureHandle );
-	GET_ATTRIBUTE (PositionAttributeHandle, SkyboxShaderHandle, "a_VertexPosition");
+	GET_ATTRIBUTE ( PositionAttributeHandle, SkyboxShaderHandle, "a_VertexPosition" );
 	GET_UNIFORM ( TextureUniformHandle, SkyboxShaderHandle, "u_SkyboxTexture" );
 	GET_UNIFORM ( MVPUniformHandle, SkyboxShaderHandle, "u_MVP" );
 	SkyboxRenderCommand.Primitive = CrossRenderer::PrimitiveType::TriangleList;
@@ -148,7 +148,7 @@ void SkyboxTest::SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEve
 		{
 		case CrossRenderer::WindowManager::WindowEventType::WindowResized:
 			{
-			ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), (float) Event.EventData.WindowResized.NewSize.x / (float) Event.EventData.WindowResized.NewSize.y, 0.1f, 10.0f );
+			ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), ( float ) Event.EventData.WindowResized.NewSize.x / ( float ) Event.EventData.WindowResized.NewSize.y, 0.1f, 10.0f );
 			break;
 			}
 		case CrossRenderer::WindowManager::WindowEventType::MouseMoved:

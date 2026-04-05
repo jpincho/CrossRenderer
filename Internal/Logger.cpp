@@ -61,10 +61,10 @@ void Log ( const char *Filename, const char *PrettyFunctionName, const char *Fun
 		ConsoleTextColor::TextColor ( FilenameFormatString, ConsoleTextColor::Color::Magenta );
 		ConsoleTextColor::TextColor ( FilenameFormatString, ConsoleTextColor::Color::Magenta );
 		ConsoleTextColor::TextColor ( FunctionFormatString, ConsoleTextColor::Color::Green );
-		ConsoleTextColor::TextColor ( LogLevelFormatStrings[(int) LogLevel::Error], ConsoleTextColor::Color::Red, ConsoleTextColor::Color::Ignore, ConsoleTextColor::Attribute::Bright );
-		ConsoleTextColor::TextColor ( LogLevelFormatStrings[(int) LogLevel::Warning], ConsoleTextColor::Color::Yellow );
-		ConsoleTextColor::TextColor ( LogLevelFormatStrings[(int) LogLevel::Debug], ConsoleTextColor::Color::Cyan );
-		ConsoleTextColor::TextColorReset ( LogLevelFormatStrings[(int) LogLevel::Log] );
+		ConsoleTextColor::TextColor ( LogLevelFormatStrings[ ( int ) LogLevel::Error], ConsoleTextColor::Color::Red, ConsoleTextColor::Color::Ignore, ConsoleTextColor::Attribute::Bright );
+		ConsoleTextColor::TextColor ( LogLevelFormatStrings[ ( int ) LogLevel::Warning], ConsoleTextColor::Color::Yellow );
+		ConsoleTextColor::TextColor ( LogLevelFormatStrings[ ( int ) LogLevel::Debug], ConsoleTextColor::Color::Cyan );
+		ConsoleTextColor::TextColorReset ( LogLevelFormatStrings[ ( int ) LogLevel::Log] );
 		ConsoleTextColor::TextColorReset ( TextColorResetString );
 
 #if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
@@ -129,7 +129,7 @@ void Log ( const char *Filename, const char *PrettyFunctionName, const char *Fun
 			}
 
 		// Log level
-		FinalString.append ( LogLevelFormatStrings[(int) Level] );
+		FinalString.append ( LogLevelFormatStrings[ ( int ) Level] );
 		FinalString.append ( 1, '[' );
 		FinalString.append ( Stringify ( Level ) );
 		FinalString.append ( 1, ']' );

@@ -18,7 +18,7 @@ struct RendererConfiguration
 		DepthBits = 24;
 		StencilBits = 8;
 		DesiredRendererBackend = ( RendererBackend ) 0;
-		DesiredWindowBackend = (WindowManager::WindowManagerBackend ) 0;
+		DesiredWindowBackend = ( WindowManager::WindowManagerBackend ) 0;
 		}
 	std::vector <WindowManager::RenderWindowDescriptor> InitialWindowConfigurations;
 	WindowManager::WindowManagerBackend DesiredWindowBackend;

@@ -64,7 +64,7 @@ bool ImGuiTest::SpecificInitialize ( void )
 		};
 
 	glm::uvec2 WindowSize = CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () );
-	CubeData.ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), (float) WindowSize.x / (float) WindowSize.y, 0.1f, 10.0f );
+	CubeData.ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), ( float ) WindowSize.x / ( float ) WindowSize.y, 0.1f, 10.0f );
 	CubeData.ModelMatrix = glm::identity<glm::mat4> ();
 	CubeData.ViewMatrix = glm::lookAt ( glm::vec3 ( 0.0f, 0.0f, -2.0f ), glm::zero<glm::vec3> (), glm::vec3 ( 0.0f, 1.0f, 0.0f ) );
 
@@ -213,12 +213,12 @@ void ImGuiTest::SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEven
 			{
 			case CrossRenderer::WindowManager::WindowEventType::KeyPressed:
 				{
-				io.KeysDown[(uint32_t) Event.EventData.KeyPressed.Key] = true;
+				io.KeysDown[ ( uint32_t ) Event.EventData.KeyPressed.Key] = true;
 				break;
 				}
 			case CrossRenderer::WindowManager::WindowEventType::KeyReleased:
 				{
-				io.KeysDown[(uint32_t) Event.EventData.KeyReleased.Key] = false;
+				io.KeysDown[ ( uint32_t ) Event.EventData.KeyReleased.Key] = false;
 				break;
 				}
 			case CrossRenderer::WindowManager::WindowEventType::TextInput:
@@ -259,15 +259,15 @@ void ImGuiTest::SpecificOnEvent ( const CrossRenderer::WindowManager::WindowEven
 		case CrossRenderer::WindowManager::WindowEventType::WindowResized:
 			{
 			CrossRenderer::SetFramebufferClearColor ( Framebuffer, glm::vec4 ( 0.5f, 0.5f, 0.5f, 1.0f ) );
-			io.DisplaySize.x = (float) Event.EventData.WindowResized.NewSize.x;
-			io.DisplaySize.y = (float) Event.EventData.WindowResized.NewSize.y;
+			io.DisplaySize.x = ( float ) Event.EventData.WindowResized.NewSize.x;
+			io.DisplaySize.y = ( float ) Event.EventData.WindowResized.NewSize.y;
 			break;
 			}
 
 		case CrossRenderer::WindowManager::WindowEventType::MouseMoved:
 			{
-			io.MousePos.x = (float) Event.EventData.MouseMoved.NewPosition.x;
-			io.MousePos.y = (float) Event.EventData.MouseMoved.NewPosition.y;
+			io.MousePos.x = ( float ) Event.EventData.MouseMoved.NewPosition.x;
+			io.MousePos.y = ( float ) Event.EventData.MouseMoved.NewPosition.y;
 			break;
 			}
 		default:
@@ -285,31 +285,31 @@ bool ImGuiTest::InitializeImGui ( void )
 	//  io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
 
 	// Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[]array.
-	io.KeyMap[ImGuiKey_Tab] = (int) CrossRenderer::WindowManager::KeyCode::Tab;
-	io.KeyMap[ImGuiKey_LeftArrow] = (int) CrossRenderer::WindowManager::KeyCode::Left;
-	io.KeyMap[ImGuiKey_RightArrow] = (int) CrossRenderer::WindowManager::KeyCode::Right;
-	io.KeyMap[ImGuiKey_UpArrow] = (int) CrossRenderer::WindowManager::KeyCode::Up;
-	io.KeyMap[ImGuiKey_DownArrow] = (int) CrossRenderer::WindowManager::KeyCode::Down;
-	io.KeyMap[ImGuiKey_PageUp] = (int) CrossRenderer::WindowManager::KeyCode::PageUp;
-	io.KeyMap[ImGuiKey_PageDown] = (int) CrossRenderer::WindowManager::KeyCode::PageDown;
-	io.KeyMap[ImGuiKey_Home] = (int) CrossRenderer::WindowManager::KeyCode::Home;
-	io.KeyMap[ImGuiKey_End] = (int) CrossRenderer::WindowManager::KeyCode::End;
-	io.KeyMap[ImGuiKey_Insert] = (int) CrossRenderer::WindowManager::KeyCode::Insert;
-	io.KeyMap[ImGuiKey_Delete] = (int) CrossRenderer::WindowManager::KeyCode::Delete;
-	io.KeyMap[ImGuiKey_Backspace] = (int) CrossRenderer::WindowManager::KeyCode::Backspace;
-	io.KeyMap[ImGuiKey_Space] = (int) CrossRenderer::WindowManager::KeyCode::Space;
-	io.KeyMap[ImGuiKey_Enter] = (int) CrossRenderer::WindowManager::KeyCode::Enter;
-	io.KeyMap[ImGuiKey_Escape] = (int) CrossRenderer::WindowManager::KeyCode::Escape;
-	io.KeyMap[ImGuiKey_KeyPadEnter] = (int) CrossRenderer::WindowManager::KeyCode::KeypadEnter;
-	io.KeyMap[ImGuiKey_A] = (int) CrossRenderer::WindowManager::KeyCode::A;
-	io.KeyMap[ImGuiKey_C] = (int) CrossRenderer::WindowManager::KeyCode::C;
-	io.KeyMap[ImGuiKey_V] = (int) CrossRenderer::WindowManager::KeyCode::V;
-	io.KeyMap[ImGuiKey_X] = (int) CrossRenderer::WindowManager::KeyCode::X;
-	io.KeyMap[ImGuiKey_Y] = (int) CrossRenderer::WindowManager::KeyCode::Y;
-	io.KeyMap[ImGuiKey_Z] = (int) CrossRenderer::WindowManager::KeyCode::Z;
+	io.KeyMap[ImGuiKey_Tab] = ( int ) CrossRenderer::WindowManager::KeyCode::Tab;
+	io.KeyMap[ImGuiKey_LeftArrow] = ( int ) CrossRenderer::WindowManager::KeyCode::Left;
+	io.KeyMap[ImGuiKey_RightArrow] = ( int ) CrossRenderer::WindowManager::KeyCode::Right;
+	io.KeyMap[ImGuiKey_UpArrow] = ( int ) CrossRenderer::WindowManager::KeyCode::Up;
+	io.KeyMap[ImGuiKey_DownArrow] = ( int ) CrossRenderer::WindowManager::KeyCode::Down;
+	io.KeyMap[ImGuiKey_PageUp] = ( int ) CrossRenderer::WindowManager::KeyCode::PageUp;
+	io.KeyMap[ImGuiKey_PageDown] = ( int ) CrossRenderer::WindowManager::KeyCode::PageDown;
+	io.KeyMap[ImGuiKey_Home] = ( int ) CrossRenderer::WindowManager::KeyCode::Home;
+	io.KeyMap[ImGuiKey_End] = ( int ) CrossRenderer::WindowManager::KeyCode::End;
+	io.KeyMap[ImGuiKey_Insert] = ( int ) CrossRenderer::WindowManager::KeyCode::Insert;
+	io.KeyMap[ImGuiKey_Delete] = ( int ) CrossRenderer::WindowManager::KeyCode::Delete;
+	io.KeyMap[ImGuiKey_Backspace] = ( int ) CrossRenderer::WindowManager::KeyCode::Backspace;
+	io.KeyMap[ImGuiKey_Space] = ( int ) CrossRenderer::WindowManager::KeyCode::Space;
+	io.KeyMap[ImGuiKey_Enter] = ( int ) CrossRenderer::WindowManager::KeyCode::Enter;
+	io.KeyMap[ImGuiKey_Escape] = ( int ) CrossRenderer::WindowManager::KeyCode::Escape;
+	io.KeyMap[ImGuiKey_KeyPadEnter] = ( int ) CrossRenderer::WindowManager::KeyCode::KeypadEnter;
+	io.KeyMap[ImGuiKey_A] = ( int ) CrossRenderer::WindowManager::KeyCode::A;
+	io.KeyMap[ImGuiKey_C] = ( int ) CrossRenderer::WindowManager::KeyCode::C;
+	io.KeyMap[ImGuiKey_V] = ( int ) CrossRenderer::WindowManager::KeyCode::V;
+	io.KeyMap[ImGuiKey_X] = ( int ) CrossRenderer::WindowManager::KeyCode::X;
+	io.KeyMap[ImGuiKey_Y] = ( int ) CrossRenderer::WindowManager::KeyCode::Y;
+	io.KeyMap[ImGuiKey_Z] = ( int ) CrossRenderer::WindowManager::KeyCode::Z;
 
-	io.DisplaySize.x = (float) CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () ).x;
-	io.DisplaySize.y = (float) CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () ).y;
+	io.DisplaySize.x = ( float ) CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () ).x;
+	io.DisplaySize.y = ( float ) CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () ).y;
 
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
@@ -343,7 +343,7 @@ bool ImGuiTest::InitializeImGui ( void )
 	ImGuiData.TexCoordShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( ImGuiData.ShaderHandle, "a_TexCoord" );
 	ImGuiData.ColorShaderAttribute = CrossRenderer::GetShaderAttributeHandle ( ImGuiData.ShaderHandle, "a_Color" );
 
-	io.Fonts->TexID = (ImTextureID) ImGuiData.FontTexture.GetKey ();
+	io.Fonts->TexID = ( ImTextureID ) ImGuiData.FontTexture.GetKey ();
 
 	ImGuiData.LastDataBufferSize = 0;
 	ImGuiData.LastIndexBufferSize = 0;
@@ -389,14 +389,14 @@ void ImGuiTest::EndImGuiFrame ( void )
 	// Start rendering
 	ImGuiIO &io = ImGui::GetIO ();
 
-	io.DisplaySize.x = (float) CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () ).x;
-	io.DisplaySize.y = (float) CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () ).y;
+	io.DisplaySize.x = ( float ) CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () ).x;
+	io.DisplaySize.y = ( float ) CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () ).y;
 
 	ImGui::Render ();
 
 	ImDrawData *DrawData = ImGui::GetDrawData ();
-	int fb_width = (int) ( DrawData->DisplaySize.x * DrawData->FramebufferScale.x );
-	int fb_height = (int) ( DrawData->DisplaySize.y * DrawData->FramebufferScale.y );
+	int fb_width = ( int ) ( DrawData->DisplaySize.x * DrawData->FramebufferScale.x );
+	int fb_height = ( int ) ( DrawData->DisplaySize.y * DrawData->FramebufferScale.y );
 	if ( fb_width <= 0 || fb_height <= 0 )
 		return;
 
@@ -435,8 +435,8 @@ void ImGuiTest::EndImGuiFrame ( void )
 
 		// Upload both buffers to GPU
 		size_t VertexBufferOffset = 0, IndexBufferOffset = 0;
-		uint8_t *VertexBufferPointer = (uint8_t *) CrossRenderer::MapShaderBuffer ( ImGuiData.DataBufferHandle, CrossRenderer::ShaderBufferMapAccessType::WriteOnly );
-		uint8_t *IndexBufferPointer = (uint8_t *) CrossRenderer::MapShaderBuffer ( ImGuiData.IndexBufferHandle, CrossRenderer::ShaderBufferMapAccessType::WriteOnly );
+		uint8_t *VertexBufferPointer = ( uint8_t * ) CrossRenderer::MapShaderBuffer ( ImGuiData.DataBufferHandle, CrossRenderer::ShaderBufferMapAccessType::WriteOnly );
+		uint8_t *IndexBufferPointer = ( uint8_t * ) CrossRenderer::MapShaderBuffer ( ImGuiData.IndexBufferHandle, CrossRenderer::ShaderBufferMapAccessType::WriteOnly );
 		for ( int CommandListIndex = 0; CommandListIndex < DrawData->CmdListsCount; ++CommandListIndex )
 			{
 			const ImDrawList *CommandList = DrawData->CmdLists[CommandListIndex];
@@ -493,7 +493,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 
 				Command.TextureBindings.clear ();
 				Command.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( ImGuiData.ShaderTextureUniform,
-				                                    CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( (intptr_t) ImGuiCommand->TextureId ) ) ) );
+				                                    CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( ( intptr_t ) ImGuiCommand->TextureId ) ) ) );
 				Command.State.Scissor.Set ( glm::uvec2 ( clip_rect.x, fb_height - clip_rect.w ), glm::uvec2 ( clip_rect.z - clip_rect.x, clip_rect.w - clip_rect.y ) );
 				Command.StartVertex = StartIndex;
 				Command.VertexCount = ImGuiCommand->ElemCount;
@@ -565,7 +565,7 @@ void ImGuiTest::EndImGuiFrame ( void )
 
 				Command.TextureBindings.clear ();
 				Command.TextureBindings.push_back ( CrossRenderer::ShaderTextureBindPair ( ImGuiData.ShaderTextureUniform,
-				                                    CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( (intptr_t) ImGuiCommand->TextureId ) ) ) );
+				                                    CrossRenderer::TextureBindSettings ( CrossRenderer::TextureHandle ( ( intptr_t ) ImGuiCommand->TextureId ) ) ) );
 				Command.State.Scissor.Set ( glm::uvec2 ( clip_rect.x, fb_height - clip_rect.w ), glm::uvec2 ( clip_rect.z - clip_rect.x, clip_rect.w - clip_rect.y ) );
 				Command.StartVertex = StartIndex;
 				Command.VertexCount = ImGuiCommand->ElemCount;

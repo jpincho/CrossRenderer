@@ -80,7 +80,7 @@ enum class DepthTestMode : uint8_t
 	Always
 	};
 
-enum class PolygonMode: uint8_t
+enum class PolygonMode : uint8_t
 	{
 	Point = 0,
 	Line,

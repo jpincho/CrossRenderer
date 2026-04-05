@@ -202,7 +202,7 @@ bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHand
 		if ( InfoLogLength )
 			{
 			Infolog.resize ( InfoLogLength );
-			glGetProgramInfoLog ( ShaderInformation->OpenGLID, InfoLogLength, nullptr, (GLchar *) Infolog.c_str () );
+			glGetProgramInfoLog ( ShaderInformation->OpenGLID, InfoLogLength, nullptr, ( GLchar * ) Infolog.c_str () );
 			}
 
 		LOG_ERROR ( "OpenGL error during shader program linking. '%s'", Infolog.c_str () );
@@ -212,7 +212,7 @@ bool LinkShader ( const ShaderHandle Handle, const std::vector <ShaderObjectHand
 			glGetShaderiv ( ShaderObjects[Iterator.GetKey ()].OpenGLID, GL_SHADER_SOURCE_LENGTH, &length );
 			std::string Source;
 			Source.resize ( length );
-			glGetShaderSource ( ShaderObjects[Iterator.GetKey ()].OpenGLID, length, &length, (char *) Source.c_str () );
+			glGetShaderSource ( ShaderObjects[Iterator.GetKey ()].OpenGLID, length, &length, ( char * ) Source.c_str () );
 			LOG_ERROR ( "%s", Source.c_str () );
 			}
 
@@ -324,7 +324,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 		{
 		GLint Location;
 
-		glGetActiveUniformBlockName ( OpenGLID, cont, (GLsizei) NameLength, nullptr, Name );
+		glGetActiveUniformBlockName ( OpenGLID, cont, ( GLsizei ) NameLength, nullptr, Name );
 		if ( !CheckError () )
 			goto cleanup;
 		if ( strncmp ( "gl_", Name, 3 ) == 0 )
@@ -353,7 +353,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 		GLint UniformSize;
 		ShaderUniformType Type;
 
-		glGetActiveUniform ( OpenGLID, cont, (GLsizei) NameLength, nullptr, &UniformSize, &GLType, Name );
+		glGetActiveUniform ( OpenGLID, cont, ( GLsizei ) NameLength, nullptr, &UniformSize, &GLType, Name );
 		if ( !CheckError () )
 			goto cleanup;
 		if ( strncmp ( "gl_", Name, 3 ) == 0 )
@@ -417,7 +417,7 @@ bool DetectUniformsAndAttributes ( GLuint OpenGLID, std::vector <UniformInfo> &U
 		GLint AttributeSize;
 		ShaderAttributeType Type;
 
-		glGetActiveAttrib ( OpenGLID, cont, (GLsizei) NameLength, nullptr, &AttributeSize, &GLType, Name );
+		glGetActiveAttrib ( OpenGLID, cont, ( GLsizei ) NameLength, nullptr, &AttributeSize, &GLType, Name );
 		if ( !CheckError () )
 			goto cleanup;
 		if ( strncmp ( "gl_", Name, 3 ) == 0 )

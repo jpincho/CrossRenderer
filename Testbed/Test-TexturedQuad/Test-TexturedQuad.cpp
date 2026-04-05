@@ -16,7 +16,7 @@ bool TexturedQuadTest::SpecificInitialize ( void )
 		};
 
 	glm::uvec2 WindowSize = CrossRenderer::WindowManager::GetWindowSize ( *CrossRenderer::WindowManager::WindowList.begin () );
-	ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), (float) WindowSize.x / (float) WindowSize.y, 0.1f, 10.0f );
+	ProjectionMatrix = glm::perspective ( glm::half_pi<float> (), ( float ) WindowSize.x / ( float ) WindowSize.y, 0.1f, 10.0f );
 	ModelMatrix = glm::identity<glm::mat4> ();
 	ViewMatrix = glm::lookAt ( glm::vec3 ( 0.0f, 0.0f, -2.0f ), glm::zero<glm::vec3> (), glm::vec3 ( 0.0f, 1.0f, 0.0f ) );
 

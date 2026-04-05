@@ -51,7 +51,7 @@ struct TextureFilterSettings
 		}
 	bool operator != ( const TextureFilterSettings &Other ) const
 		{
-		return !( operator ==( Other ) );
+		return ! ( operator == ( Other ) );
 		}
 
 	TextureFilter MinFilter, MagFilter;
@@ -78,7 +78,7 @@ struct TextureWrapSettings
 		}
 	bool operator != ( const TextureWrapSettings &Other ) const
 		{
-		return !( operator ==( Other ) );
+		return ! ( operator == ( Other ) );
 		}
 	TextureWrapMode Horizontal, Vertical;
 	};
@@ -121,7 +121,7 @@ struct TextureBindSettings
 		}
 	bool operator != ( const TextureBindSettings &Other ) const
 		{
-		return !( operator ==( Other ) );
+		return ! ( operator == ( Other ) );
 		}
 	TextureHandle Handle;
 	TextureWrapSettings WrapSettings;

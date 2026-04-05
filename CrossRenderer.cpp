@@ -33,7 +33,7 @@ bool Initialize ( RendererConfiguration &NewConfiguration )
 
 bool Shutdown ( void )
 	{
-	while ( WindowManager::WindowList.size()>0 )
+	while ( WindowManager::WindowList.size() > 0 )
 		{
 		WindowManager::DestroyWindow ( *WindowManager::WindowList.begin() );
 		}

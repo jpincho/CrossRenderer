@@ -25,7 +25,7 @@ bool InitializeRenderer ( const RendererConfiguration &NewConfiguration )
 		if ( !NewWindow )
 			return false;
 		}
-	ActiveWindow = *( WindowManager::WindowList.begin () );
+	ActiveWindow = * ( WindowManager::WindowList.begin () );
 	WindowManager::MakeGLActive ( ActiveWindow );
 	gladLoadGL ();
 	DetectOpenGLInformation ();
@@ -255,8 +255,8 @@ bool RunCommand ( const RenderCommand &Command )
 	// Bind all attribute buffers
 	for ( auto &Iterator : Command.ShaderBufferBindings )
 		{
-		AttributeInfo *AttributeInformation = &( ShaderInformation->Attributes[Iterator.AttributeHandle.GetKey ()] );
-		ShaderBufferInfo *BufferInformation = &( ShaderBuffers[Iterator.DataStream.BufferHandle.GetKey ()] );
+		AttributeInfo *AttributeInformation = & ( ShaderInformation->Attributes[Iterator.AttributeHandle.GetKey ()] );
+		ShaderBufferInfo *BufferInformation = & ( ShaderBuffers[Iterator.DataStream.BufferHandle.GetKey ()] );
 
 		if ( BufferInformation->MappedPointer )
 			{
@@ -284,8 +284,8 @@ bool RunCommand ( const RenderCommand &Command )
 					                        4,
 					                        Translate ( Iterator.DataStream.ComponentType ),
 					                        Iterator.DataStream.NormalizeData,
-					                        (GLsizei) Iterator.DataStream.Stride,
-					                        (void *) ( (uint8_t *) Iterator.DataStream.StartOffset + ( sizeof ( glm::vec4 ) * RowCount ) ) );
+					                        ( GLsizei ) Iterator.DataStream.Stride,
+					                        ( void * ) ( ( uint8_t * ) Iterator.DataStream.StartOffset + ( sizeof ( glm::vec4 ) * RowCount ) ) );
 					CheckError ();
 					}
 				break;
@@ -322,19 +322,19 @@ bool RunCommand ( const RenderCommand &Command )
 				if ( ( Iterator.DataStream.ComponentType != ShaderBufferComponentType::Float ) && ( AttributeIsInt ) )
 					{
 					glVertexAttribIPointer ( AttributeInformation->OpenGLID,
-					                         (GLint) Iterator.DataStream.ComponentsPerElement,
+					                         ( GLint ) Iterator.DataStream.ComponentsPerElement,
 					                         Translate ( Iterator.DataStream.ComponentType ),
-					                         (GLsizei) Iterator.DataStream.Stride,
-					                         (void *) Iterator.DataStream.StartOffset );
+					                         ( GLsizei ) Iterator.DataStream.Stride,
+					                         ( void * ) Iterator.DataStream.StartOffset );
 					}
 				else
 					{
 					glVertexAttribPointer ( AttributeInformation->OpenGLID,
-					                        (GLint) Iterator.DataStream.ComponentsPerElement,
+					                        ( GLint ) Iterator.DataStream.ComponentsPerElement,
 					                        Translate ( Iterator.DataStream.ComponentType ),
 					                        Iterator.DataStream.NormalizeData,
-					                        (GLsizei) Iterator.DataStream.Stride,
-					                        (void *) Iterator.DataStream.StartOffset );
+					                        ( GLsizei ) Iterator.DataStream.Stride,
+					                        ( void * ) Iterator.DataStream.StartOffset );
 					}
 				break;
 				}
@@ -389,7 +389,7 @@ bool RunCommand ( const RenderCommand &Command )
 				glTextureParameteri ( TextureInformation->OpenGLID, GL_TEXTURE_MIN_FILTER, DesiredMinFilter );
 			if ( TextureInformation->GLMagFilter != DesiredMagFilter )
 				glTextureParameteri ( TextureInformation->OpenGLID, GL_TEXTURE_MAG_FILTER, DesiredMagFilter );
-			glProgramUniform1i ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, (GLint) TextureBindingIndex );
+			glProgramUniform1i ( ShaderInformation->OpenGLID, UniformInformation->OpenGLID, ( GLint ) TextureBindingIndex );
 			}
 		else
 			{
@@ -403,7 +403,7 @@ bool RunCommand ( const RenderCommand &Command )
 				glTexParameteri ( TextureType, GL_TEXTURE_MIN_FILTER, DesiredMinFilter );
 			if ( TextureInformation->GLMagFilter != DesiredMagFilter )
 				glTexParameteri ( TextureType, GL_TEXTURE_MAG_FILTER, DesiredMagFilter );
-			glUniform1i ( UniformInformation->OpenGLID, (GLint) TextureBindingIndex );
+			glUniform1i ( UniformInformation->OpenGLID, ( GLint ) TextureBindingIndex );
 			}
 		if ( CheckError () == false )
 			{
@@ -430,7 +430,7 @@ bool RunCommand ( const RenderCommand &Command )
 		glDrawElementsInstanced ( Translate ( Command.Primitive ),
 		                          static_cast <GLsizei> ( Command.VertexCount ),
 		                          Translate ( Command.IndexBufferStream.ComponentType ),
-		                          reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[(int) Command.IndexBufferStream.ComponentType] ),
+		                          reinterpret_cast <void *> ( Command.IndexBufferStream.StartOffset + Command.StartVertex * Sizes[ ( int ) Command.IndexBufferStream.ComponentType] ),
 		                          static_cast <GLsizei> ( Command.InstanceCount ) );
 		}
 	else
@@ -529,7 +529,7 @@ bool DetectOpenGLInformation ( void )
 			OpenGLInformation.Extensions.reserve ( ExtensionCount );
 			for ( int ExtensionIndex = 0; ExtensionIndex < ExtensionCount; ++ExtensionIndex )
 				{
-				const char *CurrentExtension = (const char *) glGetStringi ( GL_EXTENSIONS, ExtensionIndex );
+				const char *CurrentExtension = ( const char * ) glGetStringi ( GL_EXTENSIONS, ExtensionIndex );
 				if ( CurrentExtension == nullptr ) continue;
 				OpenGLInformation.Extensions.push_back ( CurrentExtension );
 				}
@@ -540,12 +540,12 @@ bool DetectOpenGLInformation ( void )
 	if ( OpenGLInformation.Extensions.empty () )
 		{
 		const char *ExtensionString, *Begin, *End;
-		ExtensionString = (const char *) glGetString ( GL_EXTENSIONS );
+		ExtensionString = ( const char * ) glGetString ( GL_EXTENSIONS );
 		if ( ExtensionString == NULL )
 			return false;
 		if ( glGetError () == GL_NO_ERROR )
 			{
-			unsigned Length = (unsigned) strlen ( ExtensionString );
+			unsigned Length = ( unsigned ) strlen ( ExtensionString );
 			for ( Begin = ExtensionString; Begin < ExtensionString + Length; Begin = End + 1 )
 				{
 				End = strchr ( Begin, ' ' );
@@ -559,7 +559,7 @@ bool DetectOpenGLInformation ( void )
 		}
 	std::sort ( OpenGLInformation.Extensions.begin (), OpenGLInformation.Extensions.end () );
 #if 1
-	LOG_DEBUG ( "Detected extensions: %lu", (unsigned long) OpenGLInformation.Extensions.size () );
+	LOG_DEBUG ( "Detected extensions: %lu", ( unsigned long ) OpenGLInformation.Extensions.size () );
 	for ( const auto &Iterator : OpenGLInformation.Extensions )
 		LOG_DEBUG ( "%s", Iterator.c_str () );
 #endif
