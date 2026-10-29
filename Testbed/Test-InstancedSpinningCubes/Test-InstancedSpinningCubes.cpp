@@ -123,7 +123,12 @@ bool InstancedSpinningCubesTest::SpecificInitialize ( void )
 	for ( unsigned Index = 0; Index < 100; ++Index )
 		{
 		char Name[30];
+#if defined ( CROSS_RENDERER_TARGET_PLATFORM_WINDOWS )
 		sprintf_s ( Name, "u_MVP[%u]", Index );
+#else
+		sprintf ( Name, "u_MVP[%u]", Index );
+#endif
+
 		CrossRenderer::ShaderUniformHandle MVPUniformHandle;
 		GET_UNIFORM ( MVPUniformHandle, ShaderHandle, Name );
 		RenderCommand.UniformValues.push_back ( CrossRenderer::ShaderUniformValuePair ( MVPUniformHandle, ModelMatrices[Index] ) );
